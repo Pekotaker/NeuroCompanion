@@ -1,5 +1,6 @@
 ﻿using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
+using System;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -32,6 +33,13 @@ namespace NeuroCompanion.Neuro
                 return NeuroActionResult.Fail("No active player was available.");
             }
 
+            if (NeuroActionCooldowns.IsOnCooldown(command.Type, out TimeSpan remaining))
+            {
+                return NeuroActionResult.Ok(
+                    $"Action skipped: {command.Type} is on cooldown for {Math.Ceiling(remaining.TotalSeconds)} more seconds."
+                );
+            }
+
             NeuroCompanionPlayer neuroPlayer =
                 player.GetModPlayer<NeuroCompanionPlayer>();
 
@@ -53,33 +61,54 @@ namespace NeuroCompanion.Neuro
             {
                 case NeuroCommandType.Recall:
                     neuroPlayer.RequestRecall();
-                    return NeuroActionResult.Ok("Neuro companion recall requested.");
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroActionResult.Ok("Neuro companion recall requested.")
+                    );
 
                 case NeuroCommandType.Follow:
                     neuroPlayer.StopTimedAttack();
-                    return NeuroActionResult.Ok("Neuro companion returned to follow mode.");
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroActionResult.Ok("Neuro companion returned to follow mode.")
+                    );
 
                 case NeuroCommandType.AttackOnce:
                     neuroPlayer.RequestSingleAttack();
-                    return NeuroActionResult.Ok("Neuro companion single attack requested.");
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroActionResult.Ok("Neuro companion single attack requested.")
+                    );
 
                 case NeuroCommandType.StartTimedAttack:
-                    return StartTimedAttack(neuroPlayer, command.DurationSeconds);
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        StartTimedAttack(neuroPlayer, command.DurationSeconds)
+                    );
 
                 case NeuroCommandType.BuffPlayer:
                     NeuroPotionEffects.ApplyRandomRedPotionBuffs(player);
-                    return NeuroActionResult.Ok(
-                        "Neuro applied 3 random Red Potion-style buffs to the player."
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroActionResult.Ok(
+                            "Neuro applied 3 random Red Potion-style buffs to the player."
+                        )
                     );
 
                 case NeuroCommandType.DebuffPlayer:
                     NeuroPotionEffects.ApplyRedPotionDebuffs(player);
-                    return NeuroActionResult.Ok(
-                        "Neuro applied Red Potion-style debuffs to the player."
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroActionResult.Ok(
+                            "Neuro applied Red Potion-style debuffs to the player."
+                        )
                     );
 
                 case NeuroCommandType.DebuffNearestEnemy:
-                    return DebuffNearestEnemy(player);
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        DebuffNearestEnemy(player)
+                    );
 
                 default:
                     return NeuroActionResult.Fail($"Unknown Neuro command: {command.Type}");
@@ -168,6 +197,19 @@ namespace NeuroCompanion.Neuro
             }
 
             return value;
+        }
+
+        private static NeuroActionResult StartCooldownAndReturn(
+            NeuroCommandType commandType,
+            NeuroActionResult result
+        )
+        {
+            if (result.Success)
+            {
+                NeuroActionCooldowns.StartCooldown(commandType);
+            }
+
+            return result;
         }
     }
 }

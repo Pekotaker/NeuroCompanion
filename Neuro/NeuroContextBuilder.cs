@@ -38,6 +38,7 @@ namespace NeuroCompanion.Neuro
             builder.AppendLine($"- Companion summoned: {companionSummoned}");
             builder.AppendLine($"- Companion mode: {neuroPlayer.CompanionMode.ToCommandName()}");
             builder.AppendLine($"- Autoattack remaining: {autoAttackSecondsRemaining} seconds");
+            builder.AppendLine($"- {NeuroActionCooldowns.GetCooldownStatusText()}");
             builder.AppendLine($"- Valid enemy target available: {validEnemyAvailable}");
 
             AppendNearestEnemy(builder, player, nearestEnemy);

@@ -68,6 +68,12 @@ namespace NeuroCompanion.Commands
             caller.Reply(
                 $"Neuro companion mode: {neuroPlayer.CompanionMode.ToCommandName()}"
             );
+
+            caller.Reply(
+                $"Autoattack remaining: {neuroPlayer.GetTimedAttackSecondsRemaining()} seconds"
+            );
+
+            caller.Reply(NeuroActionCooldowns.GetCooldownStatusText());
         }
 
         private static bool TryCreateCommand(
