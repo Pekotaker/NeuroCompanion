@@ -8,18 +8,20 @@ namespace NeuroCompanion.Projectiles
 {
     public class NeuroCompanionProjectile : ModProjectile
     {
+        private const float StateIdle = 0f;
+        private const float StateApproachingTarget = 1f;
+        private const float StateDashing = 2f;
+        private const float StateRecovering = 3f;
+
         // Temporary texture: vanilla Baby Slime projectile.
         public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.BabySlime}";
 
         public override void SetStaticDefaults()
         {
-            // Baby Slime uses an animation sheet.
             Main.projFrames[Projectile.type] = Main.projFrames[ProjectileID.BabySlime];
 
-            // Required for pet/minion contact-damage behavior.
             Main.projPet[Projectile.type] = true;
 
-            // Standard minion behavior flags.
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
@@ -56,13 +58,9 @@ namespace NeuroCompanion.Projectiles
 
         public override bool? CanDamage()
         {
-            // ai[0] is our simple state:
-            // 0 = idle/following player
-            // 1 = attacking enemy
-            //
-            // This prevents the companion from accidentally damaging enemies
-            // while calmly floating near the player.
-            if (Projectile.ai[0] == 1f)
+            // Only deal contact damage during the dash.
+            // This prevents the companion from passively grinding enemies while hovering.
+            if (Projectile.ai[0] == StateDashing)
             {
                 return null;
             }
@@ -79,24 +77,28 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            float oldState = Projectile.ai[0];
-
-            NPC target = FindTarget(player);
-
-            if (target != null)
+            if (Projectile.ai[0] == StateDashing)
             {
-                Projectile.ai[0] = 1f;
-                AttackTarget(target);
+                ContinueDash();
+            }
+            else if (Projectile.ai[0] == StateRecovering)
+            {
+                RecoverAfterDash(player);
             }
             else
             {
-                Projectile.ai[0] = 0f;
-                FollowPlayer(player);
-            }
+                NPC target = FindTarget(player);
 
-            if (Projectile.ai[0] != oldState)
-            {
-                Projectile.netUpdate = true;
+                if (target != null)
+                {
+                    ApproachTarget(target);
+                }
+                else
+                {
+                    Projectile.ai[0] = StateIdle;
+                    Projectile.ai[1] = 0f;
+                    FollowPlayer(player);
+                }
             }
 
             AnimateProjectile();
@@ -117,14 +119,13 @@ namespace NeuroCompanion.Projectiles
                 return true;
             }
 
-            // If the player manually cancels the buff, remove the minion.
             Projectile.Kill();
             return false;
         }
 
         private NPC FindTarget(Player player)
         {
-            // First, respect the player's manually selected minion target.
+            // Respect the player's manually selected minion target first.
             if (player.HasMinionAttackTargetNPC)
             {
                 NPC selectedTarget = Main.npc[player.MinionAttackTargetNPC];
@@ -178,7 +179,6 @@ namespace NeuroCompanion.Projectiles
                 return false;
             }
 
-            // This prevents the minion from targeting enemies through solid walls.
             bool hasLineOfSight = Collision.CanHitLine(
                 Projectile.position,
                 Projectile.width,
@@ -191,9 +191,13 @@ namespace NeuroCompanion.Projectiles
             return hasLineOfSight;
         }
 
-        private void AttackTarget(NPC target)
+        private void ApproachTarget(NPC target)
         {
-            Vector2 directionToTarget = target.Center - Projectile.Center;
+            Projectile.ai[0] = StateApproachingTarget;
+            Projectile.ai[1]++;
+
+            Vector2 targetPosition = target.Center + new Vector2(0f, -40f);
+            Vector2 directionToTarget = targetPosition - Projectile.Center;
             float distanceToTarget = directionToTarget.Length();
 
             directionToTarget = directionToTarget.SafeNormalize(Vector2.Zero);
@@ -201,7 +205,7 @@ namespace NeuroCompanion.Projectiles
             float speed = 10f;
             float inertia = 18f;
 
-            if (distanceToTarget > 300f)
+            if (distanceToTarget > 350f)
             {
                 speed = 14f;
                 inertia = 24f;
@@ -214,18 +218,86 @@ namespace NeuroCompanion.Projectiles
 
             FaceMovementDirection();
 
-            // A slightly more aggressive rotation while attacking.
-            Projectile.rotation = Projectile.velocity.X * 0.08f;
+            Projectile.rotation = Projectile.velocity.X * 0.06f;
+
+            // Dash if close enough, or if we have been approaching for about one second.
+            if (distanceToTarget < 140f || Projectile.ai[1] >= 50f)
+            {
+                StartDash(target);
+            }
+        }
+
+        private void StartDash(NPC target)
+        {
+            Projectile.ai[0] = StateDashing;
+            Projectile.ai[1] = 0f;
+
+            Vector2 dashDirection = target.Center - Projectile.Center;
+            dashDirection = dashDirection.SafeNormalize(Vector2.UnitX);
+
+            Projectile.velocity = dashDirection * 13f;
+
+            Projectile.netUpdate = true;
+
+            FaceMovementDirection();
+        }
+
+        private void ContinueDash()
+        {
+            Projectile.ai[1]++;
+
+            Projectile.velocity *= 0.88f;
+
+            FaceMovementDirection();
+
+            Projectile.rotation += Projectile.spriteDirection * 0.35f;
+
+            if (Projectile.ai[1] >= 8f)
+            {
+                Projectile.ai[0] = StateRecovering;
+                Projectile.ai[1] = 0f;
+
+  
+                Projectile.velocity *= 0.45f;
+
+                Projectile.netUpdate = true;
+            }
+        }
+
+        private void RecoverAfterDash(Player player)
+        {
+            Projectile.ai[1]++;
+
+            // Slow down after the dash.
+            Projectile.velocity *= 0.82f;
+
+            FaceMovementDirection();
+
+            Projectile.rotation = Projectile.velocity.X * 0.05f;
+
+            // Recovery lasts about 1/3 second.
+            if (Projectile.ai[1] >= 20f)
+            {
+                Projectile.ai[0] = StateIdle;
+                Projectile.ai[1] = 0f;
+                Projectile.netUpdate = true;
+            }
+
+            // If it drifted too far during recovery, gently pull it back toward the player.
+            float distanceFromPlayer = Vector2.Distance(Projectile.Center, player.Center);
+
+            if (distanceFromPlayer > 500f)
+            {
+                FollowPlayer(player);
+            }
         }
 
         private void FollowPlayer(Player player)
         {
-            // Idle position: slightly behind and above the player.
             Vector2 idlePosition = player.Center + new Vector2(-48f * player.direction, -60f);
 
             float distanceToIdlePosition = Vector2.Distance(Projectile.Center, idlePosition);
 
-            // Emergency teleport if the minion gets extremely far away.
             if (distanceToIdlePosition > 2000f)
             {
                 Projectile.Center = player.Center;
@@ -293,10 +365,22 @@ namespace NeuroCompanion.Projectiles
 
         private void CreateVisualEffects()
         {
-            if (Projectile.ai[0] == 1f)
+            if (Projectile.ai[0] == StateDashing)
             {
-                // More dust while attacking.
-                if (Main.rand.NextBool(4))
+                // Dash trail.
+                if (Main.rand.NextBool(2))
+                {
+                    Dust.NewDust(
+                        Projectile.position,
+                        Projectile.width,
+                        Projectile.height,
+                        DustID.GemSapphire
+                    );
+                }
+            }
+            else if (Projectile.ai[0] == StateApproachingTarget)
+            {
+                if (Main.rand.NextBool(5))
                 {
                     Dust.NewDust(
                         Projectile.position,
@@ -308,7 +392,6 @@ namespace NeuroCompanion.Projectiles
             }
             else
             {
-                // Less dust while idle.
                 if (Main.rand.NextBool(12))
                 {
                     Dust.NewDust(
