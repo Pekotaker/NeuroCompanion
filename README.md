@@ -1,5 +1,18 @@
 # Neuro Companion
 
+## Table of Contents
+
+- [Setup](#setup)
+  - [1. Install requirements](#1-install-requirements)
+  - [2. Enable the mod](#2-enable-the-mod)
+  - [3. Start Randy](#3-start-randy)
+  - [4. Connect Terraria to Randy](#4-connect-terraria-to-randy)
+- [Commands](#commands)
+  - [Companion commands](#companion-commands)
+  - [Websocket commands](#websocket-commands)
+  - [Debug command](#debug-command)
+- [Troubleshooting](#troubleshooting)
+
 Neuro Companion is a tModLoader mod for Terraria that adds a summon companion intended to act as Neuro-sama’s in-game body.
 
 Neuro can work like a normal Terraria summon, but she can also connect to Randy from the VedalAI Neuro SDK for local action testing.
