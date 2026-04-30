@@ -1,8 +1,15 @@
 Items: {
 	NeuroCompanionStaff: {
 		DisplayName: Neuro Companion Staff
-		Tooltip: ""
+		Tooltip: Summons Neuro's companion body
 	}
 }
 
-Projectiles.NeuroCompanionProjectile.DisplayName: Neuro Companion Projectile
+Projectiles.NeuroCompanionProjectile.DisplayName: Neuro Companion
+
+Buffs: {
+	NeuroCompanionBuff: {
+		DisplayName: Neuro Companion
+		Description: Neuro-sama is following you
+	}
+}
