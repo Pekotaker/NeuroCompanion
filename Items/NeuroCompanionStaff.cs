@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using NeuroCompanion.Projectiles;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -6,32 +7,45 @@ namespace NeuroCompanion.Items
 {
     public class NeuroCompanionStaff : ModItem
     {
-        public override string Texture => $"Terraria/Images/Item_{ItemID.SlimeStaff}"; // TODO: Replace with custom texture
+        // Temporary texture: use vanilla Slime Staff sprite.
+        public override string Texture => $"Terraria/Images/Item_{ItemID.SlimeStaff}";
 
         public override void SetDefaults()
         {
-            // The size of the item icon/hitbox in inventory/world.
             Item.width = 32;
             Item.height = 32;
-
-            // This is a single staff, not a stackable material.
             Item.maxStack = 1;
 
             Item.value = Item.buyPrice(silver: 50);
             Item.rare = ItemRarityID.Blue;
 
+            // Basic use behavior.
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 20;
-            Item.useAnimation = 20;
-            Item.UseSound = SoundID.Item1;
+            Item.useTime = 25;
+            Item.useAnimation = 25;
+            Item.UseSound = SoundID.Item44;
             Item.autoReuse = false;
+
+            // Important: this staff itself should not hit enemies like a sword.
+            Item.noMelee = true;
+
+            // Mana cost, because this is becoming summon/magic-like.
+            Item.mana = 5;
+
+            // Damage info.
+            Item.damage = 8;
+            Item.knockBack = 2f;
+            Item.DamageType = DamageClass.Summon;
+
+            // This connects the item to our custom projectile.
+            Item.shoot = ModContent.ProjectileType<NeuroCompanionProjectile>();
+            Item.shootSpeed = 8f;
         }
 
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();
 
-            // Simple beginner recipe: 10 wood at a workbench.
             recipe.AddIngredient(ItemID.Wood, 10);
             recipe.AddTile(TileID.WorkBenches);
 

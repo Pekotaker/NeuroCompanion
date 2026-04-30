@@ -4,3 +4,5 @@ Items: {
 		Tooltip: ""
 	}
 }
+
+Projectiles.NeuroCompanionProjectile.DisplayName: Neuro Companion Projectile
