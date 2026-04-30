@@ -144,57 +144,7 @@ namespace NeuroCompanion.Neuro
                     game = GameName,
                     data = new
                     {
-                        actions = new object[]
-                        {
-                            new
-                            {
-                                name = "recall_companion",
-                                description = "Recall Neuro's Terraria companion body back to the player."
-                            },
-                            new
-                            {
-                                name = "follow",
-                                description = "Make Neuro stop attacking and follow the player."
-                            },
-                            new
-                            {
-                                name = "attack_once",
-                                description = "Make Neuro fire one Razorblade Typhoon attack. If no enemy is nearby, she fires toward the cursor."
-                            },
-                            new
-                            {
-                                name = "autoattack",
-                                description = "Make Neuro automatically attack nearby enemies for a limited duration.",
-                                schema = new
-                                {
-                                    type = "object",
-                                    properties = new
-                                    {
-                                        duration_seconds = new
-                                        {
-                                            type = "integer",
-                                            minimum = 1,
-                                            maximum = 180
-                                        }
-                                    }
-                                }
-                            },
-                            new
-                            {
-                                name = "buff_player",
-                                description = "Apply 3 random Red Potion-style positive buffs to the player."
-                            },
-                            new
-                            {
-                                name = "debuff_player",
-                                description = "Apply Red Potion-style debuffs to the player."
-                            },
-                            new
-                            {
-                                name = "debuff_enemy",
-                                description = "Apply Red Potion-style debuffs to the nearest valid enemy."
-                            }
-                        }
+                        actions = NeuroActionDefinitions.CreateActions()
                     }
                 },
                 cancellationToken
@@ -282,7 +232,7 @@ namespace NeuroCompanion.Neuro
                 return;
             }
 
-            if (!TryCreateCommandFromAction(data, out NeuroCommand command, out string error))
+            if (!NeuroActionParser.TryCreateCommandFromAction(data, out NeuroCommand command, out string error))
             {
                 SendActionResult(
                     actionId,
@@ -300,81 +250,6 @@ namespace NeuroCompanion.Neuro
             LastStatus = $"Queued Neuro action: {actionName}";
         }
 
-        private static bool TryCreateCommandFromAction(
-            JsonNode data,
-            out NeuroCommand command,
-            out string error
-        )
-        {
-            command = null;
-            error = null;
-
-            string actionName = data?["name"]?.GetValue<string>();
-
-            switch (actionName)
-            {
-                case "recall_companion":
-                    command = new NeuroCommand(NeuroCommandType.Recall);
-                    return true;
-
-                case "follow":
-                    command = new NeuroCommand(NeuroCommandType.Follow);
-                    return true;
-
-                case "attack_once":
-                    command = new NeuroCommand(NeuroCommandType.AttackOnce);
-                    return true;
-
-                case "autoattack":
-                    command = new NeuroCommand(
-                        NeuroCommandType.StartTimedAttack,
-                        GetDurationSecondsFromActionData(data)
-                    );
-                    return true;
-
-                case "buff_player":
-                    command = new NeuroCommand(NeuroCommandType.BuffPlayer);
-                    return true;
-
-                case "debuff_player":
-                    command = new NeuroCommand(NeuroCommandType.DebuffPlayer);
-                    return true;
-
-                case "debuff_enemy":
-                    command = new NeuroCommand(NeuroCommandType.DebuffNearestEnemy);
-                    return true;
-
-                default:
-                    error = $"Unknown Neuro action: {actionName}";
-                    return false;
-            }
-        }
-
-        private static int GetDurationSecondsFromActionData(JsonNode data)
-        {
-            const int defaultDurationSeconds = 10;
-
-            string actionDataJson = data?["data"]?.GetValue<string>();
-
-            if (string.IsNullOrWhiteSpace(actionDataJson))
-            {
-                return defaultDurationSeconds;
-            }
-
-            try
-            {
-                JsonNode actionData = JsonNode.Parse(actionDataJson);
-
-                int? durationSeconds =
-                    actionData?["duration_seconds"]?.GetValue<int>();
-
-                return durationSeconds ?? defaultDurationSeconds;
-            }
-            catch
-            {
-                return defaultDurationSeconds;
-            }
-        }
 
         private async Task SendActionResultAsync(
             string actionId,
