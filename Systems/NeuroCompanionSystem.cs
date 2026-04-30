@@ -8,6 +8,8 @@ namespace NeuroCompanion.Systems
     {
         private const int ContextIntervalTicks = 5 * 60;
 
+        private readonly NeuroContextEvents contextEvents = new();
+
         private int contextTimer;
 
         public override void PostUpdateEverything()
@@ -20,7 +22,14 @@ namespace NeuroCompanion.Systems
             Player player = Main.LocalPlayer;
 
             ExecuteQueuedCommands(player);
+            contextEvents.CheckAndSendEvents(player);
             SendPeriodicContext(player);
+        }
+
+        public override void OnWorldUnload()
+        {
+            contextTimer = 0;
+            contextEvents.Reset();
         }
 
         public override void Unload()
