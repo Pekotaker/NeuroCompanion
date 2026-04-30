@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using NeuroCompanion.Buffs;
+using NeuroCompanion.Neuro;
+using NeuroCompanion.Players;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -17,6 +19,7 @@ namespace NeuroCompanion.Projectiles
         private const int ProjectileWidth = 26;
         private const int ProjectileHeight = 20;
 
+        private const int MinionLifetimeTicks = 18000;
         private const int BuffRefreshTimeTicks = 2;
         private const int AnimationFrameDurationTicks = 8;
 
@@ -33,6 +36,9 @@ namespace NeuroCompanion.Projectiles
         private const float CombatOffsetX = 64f;
         private const float CombatOffsetY = -70f;
 
+        private const float StayCloseOffsetX = 32f;
+        private const float StayCloseOffsetY = -50f;
+
         private const float TeleportDistance = 2000f;
         private const float FarDistance = 600f;
         private const float ArriveDistance = 20f;
@@ -43,9 +49,8 @@ namespace NeuroCompanion.Projectiles
         private const float IdleInertia = 40f;
         private const float FarInertia = 60f;
 
-        private const float TargetSearchRange = 900f;
-        private const float ManualTargetSearchRange = 1000f;
-        private const float ProjectileTargetSearchRange = 700f;
+        private const float TargetSearchRangeFromPlayer = 700f;
+        private const float ManualTargetSearchRangeFromPlayer = 1200f;
 
         private const float ShotSpeed = 11f;
         private const float ShotSpawnOffset = 20f;
@@ -55,11 +60,6 @@ namespace NeuroCompanion.Projectiles
 
         private const float SlowdownWhenArrived = 0.9f;
         private const float MinimumFacingVelocity = 0.1f;
-
-        private const float TargetSearchRangeFromPlayer = 700f;
-        private const float ManualTargetSearchRangeFromPlayer = 1200f;
-        private const float TargetForgetRangeFromPlayer = 1000f;
-
 
         // Temporary texture: vanilla Baby Slime projectile.
         public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.BabySlime}";
@@ -100,7 +100,7 @@ namespace NeuroCompanion.Projectiles
             Projectile.DamageType = DamageClass.Summon;
 
             Projectile.penetrate = -1;
-            Projectile.timeLeft = 18000;
+            Projectile.timeLeft = MinionLifetimeTicks;
 
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
@@ -110,11 +110,13 @@ namespace NeuroCompanion.Projectiles
 
         public override bool MinionContactDamage()
         {
+            // Neuro's body should not damage by touching enemies.
             return false;
         }
 
         public override bool? CanDamage()
         {
+            // Damage comes from NeuroCompanionShot, not from the companion body.
             return false;
         }
 
@@ -127,20 +129,11 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            NPC target = FindTarget(owner);
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
 
-            if (target == null)
-            {
-                State = CompanionState.Idle;
-                ShootTimer = 0f;
-                FollowOwner(owner);
-            }
-            else
-            {
-                State = CompanionState.Attacking;
-                HoverNearOwnerForCombat(owner, target);
-                ShootAtTargetWhenReady(target);
-            }
+            ApplyPlayerCommands(owner, neuroPlayer);
+            RunModeBehavior(owner, neuroPlayer.CompanionMode);
 
             Animate();
             CreateVisualEffects();
@@ -162,6 +155,89 @@ namespace NeuroCompanion.Projectiles
 
             Projectile.Kill();
             return false;
+        }
+
+        private void ApplyPlayerCommands(
+            Player owner,
+            NeuroCompanionPlayer neuroPlayer
+        )
+        {
+            if (!neuroPlayer.ConsumeRecallRequest())
+            {
+                return;
+            }
+
+            State = CompanionState.Idle;
+            ShootTimer = 0f;
+
+            TeleportTo(GetIdlePosition(owner));
+            Projectile.netUpdate = true;
+        }
+
+        private void RunModeBehavior(
+            Player owner,
+            NeuroCompanionMode mode
+        )
+        {
+            switch (mode)
+            {
+                case NeuroCompanionMode.FollowOnly:
+                    RunFollowOnlyMode(owner);
+                    break;
+
+                case NeuroCompanionMode.StayClose:
+                    RunStayCloseMode(owner);
+                    break;
+
+                case NeuroCompanionMode.AttackNearest:
+                default:
+                    RunAttackNearestMode(owner);
+                    break;
+            }
+        }
+
+        private void RunFollowOnlyMode(Player owner)
+        {
+            State = CompanionState.Idle;
+            ShootTimer = 0f;
+
+            FollowOwner(owner);
+        }
+
+        private void RunStayCloseMode(Player owner)
+        {
+            NPC target = FindTarget(owner);
+
+            if (target == null)
+            {
+                State = CompanionState.Idle;
+                ShootTimer = 0f;
+                FollowOwner(owner);
+                return;
+            }
+
+            State = CompanionState.Attacking;
+
+            HoverStayClose(owner, target);
+            ShootAtTargetWhenReady(owner, target);
+        }
+
+        private void RunAttackNearestMode(Player owner)
+        {
+            NPC target = FindTarget(owner);
+
+            if (target == null)
+            {
+                State = CompanionState.Idle;
+                ShootTimer = 0f;
+                FollowOwner(owner);
+                return;
+            }
+
+            State = CompanionState.Attacking;
+
+            HoverNearOwnerForCombat(owner, target);
+            ShootAtTargetWhenReady(owner, target);
         }
 
         private NPC FindTarget(Player owner)
@@ -202,7 +278,7 @@ namespace NeuroCompanion.Projectiles
             {
                 NPC npc = Main.npc[i];
 
-                if (!IsValidTarget(npc, owner, TargetForgetRangeFromPlayer))
+                if (!IsValidTarget(npc, owner, TargetSearchRangeFromPlayer))
                 {
                     continue;
                 }
@@ -219,34 +295,11 @@ namespace NeuroCompanion.Projectiles
             return bestTarget;
         }
 
-
-        private NPC FindClosestTarget(Player owner)
-        {
-            NPC closestTarget = null;
-            float closestDistance = ProjectileTargetSearchRange;
-
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC npc = Main.npc[i];
-
-                if (!IsValidTarget(npc, owner, TargetSearchRange))
-                {
-                    continue;
-                }
-
-                float distanceToProjectile = Vector2.Distance(Projectile.Center, npc.Center);
-
-                if (distanceToProjectile < closestDistance)
-                {
-                    closestDistance = distanceToProjectile;
-                    closestTarget = npc;
-                }
-            }
-
-            return closestTarget;
-        }
-
-        private bool IsValidTarget(NPC npc, Player owner, float maxDistanceFromOwner)
+        private bool IsValidTarget(
+            NPC npc,
+            Player owner,
+            float maxDistanceFromOwner
+        )
         {
             if (!npc.active)
             {
@@ -270,7 +323,6 @@ namespace NeuroCompanion.Projectiles
 
         private bool CanShootTarget(NPC npc, Player owner)
         {
-            // Prefer line of sight from the companion's body to the enemy.
             bool companionCanSeeTarget = Collision.CanHitLine(
                 Projectile.position,
                 Projectile.width,
@@ -285,8 +337,6 @@ namespace NeuroCompanion.Projectiles
                 return true;
             }
 
-            // Fallback: if the player can see the enemy, allow targeting.
-            // This makes the minion less stupid when it is slightly behind a wall or corner.
             bool ownerCanSeeTarget = Collision.CanHitLine(
                 owner.position,
                 owner.width,
@@ -299,34 +349,40 @@ namespace NeuroCompanion.Projectiles
             return ownerCanSeeTarget;
         }
 
-        private bool HasLineOfSightTo(NPC npc)
-        {
-            return Collision.CanHitLine(
-                Projectile.position,
-                Projectile.width,
-                Projectile.height,
-                npc.position,
-                npc.width,
-                npc.height
-            );
-        }
-
         private void FollowOwner(Player owner)
         {
             Vector2 idlePosition = GetIdlePosition(owner);
-            MoveToward(idlePosition, IdleMoveSpeed, IdleInertia, FarMoveSpeed, FarInertia);
+
+            MoveToward(
+                idlePosition,
+                IdleMoveSpeed,
+                IdleInertia,
+                FarMoveSpeed,
+                FarInertia
+            );
+
             RotateForMovement(IdleRotationFactor);
         }
 
         private Vector2 GetIdlePosition(Player owner)
         {
-            return owner.Center + new Vector2(-IdleOffsetX * owner.direction, IdleOffsetY);
+            return owner.Center + new Vector2(
+                -IdleOffsetX * owner.direction,
+                IdleOffsetY
+            );
         }
 
         private void HoverNearOwnerForCombat(Player owner, NPC target)
         {
             Vector2 combatPosition = GetCombatPosition(owner, target);
-            MoveToward(combatPosition, IdleMoveSpeed, IdleInertia, FarMoveSpeed, FarInertia);
+
+            MoveToward(
+                combatPosition,
+                IdleMoveSpeed,
+                IdleInertia,
+                FarMoveSpeed,
+                FarInertia
+            );
 
             FaceTarget(target);
             RotateForMovement(AttackRotationFactor);
@@ -336,7 +392,34 @@ namespace NeuroCompanion.Projectiles
         {
             float sideFacingTarget = target.Center.X >= owner.Center.X ? 1f : -1f;
 
-            return owner.Center + new Vector2(CombatOffsetX * sideFacingTarget, CombatOffsetY);
+            return owner.Center + new Vector2(
+                CombatOffsetX * sideFacingTarget,
+                CombatOffsetY
+            );
+        }
+
+        private void HoverStayClose(Player owner, NPC target)
+        {
+            Vector2 stayClosePosition = GetStayClosePosition(owner);
+
+            MoveToward(
+                stayClosePosition,
+                IdleMoveSpeed,
+                IdleInertia,
+                FarMoveSpeed,
+                FarInertia
+            );
+
+            FaceTarget(target);
+            RotateForMovement(AttackRotationFactor);
+        }
+
+        private Vector2 GetStayClosePosition(Player owner)
+        {
+            return owner.Center + new Vector2(
+                -StayCloseOffsetX * owner.direction,
+                StayCloseOffsetY
+            );
         }
 
         private void MoveToward(
@@ -383,7 +466,7 @@ namespace NeuroCompanion.Projectiles
             Projectile.netUpdate = true;
         }
 
-        private void ShootAtTargetWhenReady(NPC target)
+        private void ShootAtTargetWhenReady(Player owner, NPC target)
         {
             ShootTimer++;
 
@@ -392,21 +475,22 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            if (!CanShootTarget(target, Main.player[Projectile.owner]))
+            if (!CanShootTarget(target, owner))
+            {
+                return;
+            }
+
+            if (Projectile.owner != Main.myPlayer)
             {
                 return;
             }
 
             ShootTimer = 0f;
 
-            // Projectile-spawning should only happen on the projectile owner's client.
-            if (Projectile.owner != Main.myPlayer)
-            {
-                return;
-            }
-
             Vector2 shotDirection = target.Center - Projectile.Center;
-            shotDirection = shotDirection.SafeNormalize(Vector2.UnitX * Projectile.spriteDirection);
+            shotDirection = shotDirection.SafeNormalize(
+                Vector2.UnitX * Projectile.spriteDirection
+            );
 
             Vector2 shotVelocity = shotDirection * ShotSpeed;
             Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
