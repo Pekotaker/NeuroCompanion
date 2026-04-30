@@ -7,16 +7,11 @@ namespace NeuroCompanion.Commands
 {
     public class NeuroCompanionCommand : ModCommand
     {
-        private const int TicksPerSecond = 60;
-        private const int DefaultAttackDurationSeconds = 10;
-        private const float DebuffEnemySearchRange = 700f;
-
         public override CommandType Type => CommandType.Chat;
 
         public override string Command => "neuro";
-
         public override string Usage =>
-            "/neuro <recall|status|follow|attack|autoattack [seconds]|buff|debuff player|debuff enemy>";
+            "/neuro <help|recall|status|follow|attack|autoattack [seconds]|buff|debuff player|debuff enemy>";
 
         public override string Description =>
             "Controls the Neuro Companion test state.";
@@ -29,99 +24,125 @@ namespace NeuroCompanion.Commands
                 return;
             }
 
-            Player player = caller.Player;
-            NeuroCompanionPlayer neuroPlayer =
-                player.GetModPlayer<NeuroCompanionPlayer>();
-
             if (args.Length == 0)
             {
                 ReplyWithHelp(caller);
                 return;
             }
 
+            Player player = caller.Player;
+            string subcommand = args[0].ToLowerInvariant();
+
+            if (subcommand == "help")
+            {
+                ReplyWithHelp(caller);
+                return;
+            }
+
+            if (subcommand == "status")
+            {
+                ReplyWithStatus(caller, player);
+                return;
+            }
+
+            NeuroCommand command;
+
+            if (!TryCreateCommand(args, out command))
+            {
+                caller.Reply($"Unknown or invalid Neuro command: {input}");
+                ReplyWithHelp(caller);
+                return;
+            }
+
+            NeuroActionResult result =
+                NeuroActionExecutor.Execute(player, command);
+
+            caller.Reply(result.Message);
+        }
+
+        private static void ReplyWithStatus(CommandCaller caller, Player player)
+        {
+            NeuroCompanionPlayer neuroPlayer =
+                player.GetModPlayer<NeuroCompanionPlayer>();
+
+            caller.Reply(
+                $"Neuro companion mode: {neuroPlayer.CompanionMode.ToCommandName()}"
+            );
+        }
+
+        private static bool TryCreateCommand(
+            string[] args,
+            out NeuroCommand command
+        )
+        {
+            command = null;
+
             string subcommand = args[0].ToLowerInvariant();
 
             switch (subcommand)
             {
                 case "recall":
-                    neuroPlayer.RequestRecall();
-                    caller.Reply("Neuro companion recall requested.");
-                    break;
-
-                case "status":
-                    caller.Reply(
-                        $"Neuro companion mode: {neuroPlayer.CompanionMode.ToCommandName()}"
-                    );
-                    break;
+                    command = new NeuroCommand(NeuroCommandType.Recall);
+                    return true;
 
                 case "follow":
-                    neuroPlayer.StopTimedAttack();
-                    caller.Reply("Neuro companion mode set to: follow");
-                    break;
+                    command = new NeuroCommand(NeuroCommandType.Follow);
+                    return true;
 
                 case "attack":
-                    neuroPlayer.RequestSingleAttack();
-                    caller.Reply("Neuro companion single attack requested.");
-                    break;
+                    command = new NeuroCommand(NeuroCommandType.AttackOnce);
+                    return true;
 
                 case "autoattack":
                 case "attackmode":
-                    StartTimedAttack(caller, neuroPlayer, args);
-                    break;
+                    command = CreateTimedAttackCommand(args);
+                    return true;
 
                 case "buff":
-                    NeuroPotionEffects.ApplyRandomRedPotionBuffs(player);
-                    caller.Reply("Neuro applied 3 random Red Potion-style buffs to you.");
-                    break;
+                    command = new NeuroCommand(NeuroCommandType.BuffPlayer);
+                    return true;
 
                 case "debuff":
-                    HandleDebuffCommand(caller, player, args);
-                    break;
+                    return TryCreateDebuffCommand(args, out command);
 
                 default:
-                    caller.Reply($"Unknown Neuro command: {subcommand}");
-                    ReplyWithHelp(caller);
-                    break;
+                    return false;
             }
         }
 
-        private static void StartTimedAttack(
-            CommandCaller caller,
-            NeuroCompanionPlayer neuroPlayer,
-            string[] args
-        )
+        private static NeuroCommand CreateTimedAttackCommand(string[] args)
         {
-            int seconds = DefaultAttackDurationSeconds;
+            const int defaultSeconds = 10;
 
-            if (args.Length >= 2 && !int.TryParse(args[1], out seconds))
-            {
-                caller.Reply($"Invalid duration: {args[1]}");
-                caller.Reply("Usage: /neuro autoattack [seconds]");
-                return;
-            }
-
-            if (seconds < 1)
-            {
-                seconds = 1;
-            }
-
-            int durationTicks = seconds * TicksPerSecond;
-
-            neuroPlayer.StartTimedAttack(durationTicks);
-
-            caller.Reply($"Neuro companion will attack for {seconds} seconds.");
-        }
-
-        private static void HandleDebuffCommand(
-            CommandCaller caller,
-            Player player,
-            string[] args
-        )
-        {
             if (args.Length < 2)
             {
-                caller.Reply("Usage: /neuro debuff <player|enemy>");
-                return;
+                return new NeuroCommand(
+                    NeuroCommandType.StartTimedAttack,
+                    defaultSeconds
+                );
+            }
+
+            if (!int.TryParse(args[1], out int seconds))
+            {
+                seconds = defaultSeconds;
+            }
+
+            return new NeuroCommand(
+                NeuroCommandType.StartTimedAttack,
+                seconds
+            );
+        }
+
+        private static bool TryCreateDebuffCommand(
+            string[] args,
+            out NeuroCommand command
+        )
+        {
+            command = null;
+
+            if (args.Length < 2)
+            {
+                return false;
             }
 
             string target = args[1].ToLowerInvariant();
@@ -130,63 +151,22 @@ namespace NeuroCompanion.Commands
             {
                 case "player":
                 case "self":
-                    NeuroPotionEffects.ApplyRedPotionDebuffs(player);
-                    caller.Reply("Neuro applied Red Potion-style debuffs to you.");
-                    break;
+                    command = new NeuroCommand(NeuroCommandType.DebuffPlayer);
+                    return true;
 
                 case "enemy":
-                    NPC npc = FindNearestDebuffTarget(player);
-
-                    if (npc == null)
-                    {
-                        caller.Reply("No valid enemy found nearby.");
-                        return;
-                    }
-
-                    int appliedCount = NeuroPotionEffects.ApplyRedPotionDebuffs(npc);
-                    caller.Reply(
-                        $"Neuro applied {appliedCount} Red Potion-style debuffs to {npc.FullName}."
-                    );
-                    break;
+                    command = new NeuroCommand(NeuroCommandType.DebuffNearestEnemy);
+                    return true;
 
                 default:
-                    caller.Reply($"Invalid debuff target: {target}");
-                    caller.Reply("Valid targets: player, enemy");
-                    break;
+                    return false;
             }
-        }
-
-        private static NPC FindNearestDebuffTarget(Player player)
-        {
-            NPC bestTarget = null;
-            float bestDistance = DebuffEnemySearchRange;
-
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC npc = Main.npc[i];
-
-                if (!npc.active || !npc.CanBeChasedBy())
-                {
-                    continue;
-                }
-
-                float distance = player.Distance(npc.Center);
-
-                if (distance >= bestDistance)
-                {
-                    continue;
-                }
-
-                bestDistance = distance;
-                bestTarget = npc;
-            }
-
-            return bestTarget;
         }
 
         private static void ReplyWithHelp(CommandCaller caller)
         {
             caller.Reply("Neuro Companion commands:");
+            caller.Reply("/neuro help");
             caller.Reply("/neuro recall");
             caller.Reply("/neuro status");
             caller.Reply("/neuro follow");
