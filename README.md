@@ -2,7 +2,7 @@
 
 Neuro Companion is a tModLoader mod for Terraria that adds a summon companion intended to act as Neuro-sama’s in-game body.
 
-The companion can work like a normal Terraria summon, but it can also connect to Randy from the VedalAI Neuro SDK for local action testing.
+Neuro can work like a normal Terraria summon, but she can also connect to Randy from the VedalAI Neuro SDK for local action testing.
 
 Neuro does not directly control the player. Instead, the mod exposes high-level actions such as:
 
@@ -119,7 +119,7 @@ Disconnect:
 /neuro follow
 ```
 
-Stops autoattack and makes the companion follow the player.
+Stops autoattack and makes Neuro follow the player.
 
 ### Attack once
 
@@ -127,10 +127,10 @@ Stops autoattack and makes the companion follow the player.
 /neuro attack
 ```
 
-Makes the companion fire one Razorblade Typhoon-style attack.
+Makes Neuro fire one Razorblade Typhoon-style attack.
 
-If an enemy is nearby, it attacks the enemy.  
-If no enemy is nearby, it fires toward the cursor.
+If an enemy is nearby, she attacks the enemy.  
+If no enemy is nearby, she fires toward the cursor.
 
 ### Autoattack
 
@@ -154,7 +154,7 @@ The current maximum duration is 180 seconds.
 /neuro buff
 ```
 
-Applies 3 random Red Potion-style positive buffs to the player.
+Neuro will apply 3 random Red Potion-style positive buffs to the player.
 
 ### Debuff player
 
@@ -162,7 +162,7 @@ Applies 3 random Red Potion-style positive buffs to the player.
 /neuro debuff player
 ```
 
-Applies Red Potion-style debuffs to the player.
+Neuro will apply Red Potion-style debuffs to the player.
 
 ### Debuff nearest enemy
 
@@ -170,7 +170,7 @@ Applies Red Potion-style debuffs to the player.
 /neuro debuff enemy
 ```
 
-Applies Red Potion-style debuffs to the nearest valid enemy.
+Neuro will apply Red Potion-style debuffs to the nearest valid enemy.
 
 ## Websocket commands
 
