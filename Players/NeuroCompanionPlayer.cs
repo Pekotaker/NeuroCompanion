@@ -69,5 +69,34 @@ namespace NeuroCompanion.Players
         {
             Player.ClearBuff(ModContent.BuffType<NeuroCompanionAttackBuff>());
         }
+
+        public int GetTimedAttackTicksRemaining()
+        {
+            int attackBuffType = ModContent.BuffType<NeuroCompanionAttackBuff>();
+
+            for (int i = 0; i < Player.buffType.Length; i++)
+            {
+                if (Player.buffType[i] == attackBuffType)
+                {
+                    return Player.buffTime[i];
+                }
+            }
+
+            return 0;
+        }
+
+        public int GetTimedAttackSecondsRemaining()
+        {
+            const int ticksPerSecond = 60;
+
+            int ticksRemaining = GetTimedAttackTicksRemaining();
+
+            if (ticksRemaining <= 0)
+            {
+                return 0;
+            }
+
+            return ticksRemaining / ticksPerSecond;
+        }
     }
 }
