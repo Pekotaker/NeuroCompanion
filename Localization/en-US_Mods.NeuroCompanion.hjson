@@ -5,7 +5,10 @@ Items: {
 	}
 }
 
-Projectiles.NeuroCompanionProjectile.DisplayName: Neuro Companion
+Projectiles: {
+	NeuroCompanionProjectile.DisplayName: Neuro Companion
+	NeuroCompanionShot.DisplayName: Neuro Companion Fireball
+}
 
 Buffs: {
 	NeuroCompanionBuff: {

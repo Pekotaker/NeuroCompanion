@@ -8,13 +8,68 @@ namespace NeuroCompanion.Projectiles
 {
     public class NeuroCompanionProjectile : ModProjectile
     {
-        private const float StateIdle = 0f;
-        private const float StateApproachingTarget = 1f;
-        private const float StateDashing = 2f;
-        private const float StateRecovering = 3f;
+        private enum CompanionState
+        {
+            Idle = 0,
+            Attacking = 1
+        }
+
+        private const int ProjectileWidth = 26;
+        private const int ProjectileHeight = 20;
+
+        private const int BuffRefreshTimeTicks = 2;
+        private const int AnimationFrameDurationTicks = 8;
+
+        private const int IdleDustChance = 12;
+        private const int AttackDustChance = 5;
+
+        private const int ShootCooldownTicks = 50;
+
+        private const float MinionSlotsUsed = 1f;
+
+        private const float IdleOffsetX = 48f;
+        private const float IdleOffsetY = -60f;
+
+        private const float CombatOffsetX = 64f;
+        private const float CombatOffsetY = -70f;
+
+        private const float TeleportDistance = 2000f;
+        private const float FarDistance = 600f;
+        private const float ArriveDistance = 20f;
+
+        private const float IdleMoveSpeed = 8f;
+        private const float FarMoveSpeed = 16f;
+
+        private const float IdleInertia = 40f;
+        private const float FarInertia = 60f;
+
+        private const float TargetSearchRange = 900f;
+        private const float ManualTargetSearchRange = 1000f;
+        private const float ProjectileTargetSearchRange = 700f;
+
+        private const float ShotSpeed = 11f;
+        private const float ShotSpawnOffset = 20f;
+
+        private const float IdleRotationFactor = 0.05f;
+        private const float AttackRotationFactor = 0.06f;
+
+        private const float SlowdownWhenArrived = 0.9f;
+        private const float MinimumFacingVelocity = 0.1f;
 
         // Temporary texture: vanilla Baby Slime projectile.
         public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.BabySlime}";
+
+        private CompanionState State
+        {
+            get => (CompanionState)(int)Projectile.ai[0];
+            set => Projectile.ai[0] = (float)value;
+        }
+
+        private float ShootTimer
+        {
+            get => Projectile.ai[1];
+            set => Projectile.ai[1] = value;
+        }
 
         public override void SetStaticDefaults()
         {
@@ -28,14 +83,14 @@ namespace NeuroCompanion.Projectiles
 
         public override void SetDefaults()
         {
-            Projectile.width = 26;
-            Projectile.height = 20;
+            Projectile.width = ProjectileWidth;
+            Projectile.height = ProjectileHeight;
 
             Projectile.friendly = true;
             Projectile.hostile = false;
 
             Projectile.minion = true;
-            Projectile.minionSlots = 1f;
+            Projectile.minionSlots = MinionSlotsUsed;
 
             Projectile.DamageType = DamageClass.Summon;
 
@@ -46,76 +101,60 @@ namespace NeuroCompanion.Projectiles
             Projectile.ignoreWater = true;
 
             Projectile.netImportant = true;
-
-            Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 20;
         }
 
         public override bool MinionContactDamage()
         {
-            return true;
+            // Neuro's body should not damage by touching enemies.
+            // Damage comes from NeuroCompanionShot instead.
+            return false;
         }
 
         public override bool? CanDamage()
         {
-            // Only deal contact damage during the dash.
-            // This prevents the companion from passively grinding enemies while hovering.
-            if (Projectile.ai[0] == StateDashing)
-            {
-                return null;
-            }
-
+            // Completely disable contact damage from the companion body.
             return false;
         }
 
         public override void AI()
         {
-            Player player = Main.player[Projectile.owner];
+            Player owner = Main.player[Projectile.owner];
 
-            if (!CheckActive(player))
+            if (!ShouldStayAlive(owner))
             {
                 return;
             }
 
-            if (Projectile.ai[0] == StateDashing)
+            NPC target = FindTarget(owner);
+
+            if (target == null)
             {
-                ContinueDash();
-            }
-            else if (Projectile.ai[0] == StateRecovering)
-            {
-                RecoverAfterDash(player);
+                State = CompanionState.Idle;
+                ShootTimer = 0f;
+                FollowOwner(owner);
             }
             else
             {
-                NPC target = FindTarget(player);
-
-                if (target != null)
-                {
-                    ApproachTarget(target);
-                }
-                else
-                {
-                    Projectile.ai[0] = StateIdle;
-                    Projectile.ai[1] = 0f;
-                    FollowPlayer(player);
-                }
+                State = CompanionState.Attacking;
+                HoverNearOwnerForCombat(owner, target);
+                ShootAtTargetWhenReady(target);
             }
 
-            AnimateProjectile();
+            Animate();
             CreateVisualEffects();
         }
 
-        private bool CheckActive(Player player)
+        private bool ShouldStayAlive(Player owner)
         {
-            if (!player.active || player.dead)
+            if (!owner.active || owner.dead)
             {
-                player.ClearBuff(ModContent.BuffType<NeuroCompanionBuff>());
+                owner.ClearBuff(ModContent.BuffType<NeuroCompanionBuff>());
                 return false;
             }
 
-            if (player.HasBuff(ModContent.BuffType<NeuroCompanionBuff>()))
+            if (owner.HasBuff(ModContent.BuffType<NeuroCompanionBuff>()))
             {
-                Projectile.timeLeft = 2;
+                Projectile.timeLeft = BuffRefreshTimeTicks;
                 return true;
             }
 
@@ -123,27 +162,45 @@ namespace NeuroCompanion.Projectiles
             return false;
         }
 
-        private NPC FindTarget(Player player)
+        private NPC FindTarget(Player owner)
         {
-            // Respect the player's manually selected minion target first.
-            if (player.HasMinionAttackTargetNPC)
-            {
-                NPC selectedTarget = Main.npc[player.MinionAttackTargetNPC];
+            NPC manualTarget = FindManualTarget(owner);
 
-                if (IsValidTarget(selectedTarget, player, 1000f))
-                {
-                    return selectedTarget;
-                }
+            if (manualTarget != null)
+            {
+                return manualTarget;
             }
 
+            return FindClosestTarget(owner);
+        }
+
+        private NPC FindManualTarget(Player owner)
+        {
+            if (!owner.HasMinionAttackTargetNPC)
+            {
+                return null;
+            }
+
+            NPC selectedTarget = Main.npc[owner.MinionAttackTargetNPC];
+
+            if (IsValidTarget(selectedTarget, owner, ManualTargetSearchRange))
+            {
+                return selectedTarget;
+            }
+
+            return null;
+        }
+
+        private NPC FindClosestTarget(Player owner)
+        {
             NPC closestTarget = null;
-            float closestDistance = 700f;
+            float closestDistance = ProjectileTargetSearchRange;
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
 
-                if (!IsValidTarget(npc, player, 900f))
+                if (!IsValidTarget(npc, owner, TargetSearchRange))
                 {
                     continue;
                 }
@@ -160,7 +217,7 @@ namespace NeuroCompanion.Projectiles
             return closestTarget;
         }
 
-        private bool IsValidTarget(NPC npc, Player player, float maxDistanceFromPlayer)
+        private bool IsValidTarget(NPC npc, Player owner, float maxDistanceFromOwner)
         {
             if (!npc.active)
             {
@@ -172,14 +229,19 @@ namespace NeuroCompanion.Projectiles
                 return false;
             }
 
-            float distanceFromPlayer = Vector2.Distance(player.Center, npc.Center);
+            float distanceFromOwner = Vector2.Distance(owner.Center, npc.Center);
 
-            if (distanceFromPlayer > maxDistanceFromPlayer)
+            if (distanceFromOwner > maxDistanceFromOwner)
             {
                 return false;
             }
 
-            bool hasLineOfSight = Collision.CanHitLine(
+            return HasLineOfSightTo(npc);
+        }
+
+        private bool HasLineOfSightTo(NPC npc)
+        {
+            return Collision.CanHitLine(
                 Projectile.position,
                 Projectile.width,
                 Projectile.height,
@@ -187,220 +249,175 @@ namespace NeuroCompanion.Projectiles
                 npc.width,
                 npc.height
             );
-
-            return hasLineOfSight;
         }
 
-        private void ApproachTarget(NPC target)
+        private void FollowOwner(Player owner)
         {
-            Projectile.ai[0] = StateApproachingTarget;
-            Projectile.ai[1]++;
-
-            Vector2 targetPosition = target.Center + new Vector2(0f, -40f);
-            Vector2 directionToTarget = targetPosition - Projectile.Center;
-            float distanceToTarget = directionToTarget.Length();
-
-            directionToTarget = directionToTarget.SafeNormalize(Vector2.Zero);
-
-            float speed = 10f;
-            float inertia = 18f;
-
-            if (distanceToTarget > 350f)
-            {
-                speed = 14f;
-                inertia = 24f;
-            }
-
-            Vector2 desiredVelocity = directionToTarget * speed;
-
-            Projectile.velocity =
-                (Projectile.velocity * (inertia - 1f) + desiredVelocity) / inertia;
-
-            FaceMovementDirection();
-
-            Projectile.rotation = Projectile.velocity.X * 0.06f;
-
-            // Dash if close enough, or if we have been approaching for about one second.
-            if (distanceToTarget < 140f || Projectile.ai[1] >= 50f)
-            {
-                StartDash(target);
-            }
+            Vector2 idlePosition = GetIdlePosition(owner);
+            MoveToward(idlePosition, IdleMoveSpeed, IdleInertia, FarMoveSpeed, FarInertia);
+            RotateForMovement(IdleRotationFactor);
         }
 
-        private void StartDash(NPC target)
+        private Vector2 GetIdlePosition(Player owner)
         {
-            Projectile.ai[0] = StateDashing;
-            Projectile.ai[1] = 0f;
-
-            Vector2 dashDirection = target.Center - Projectile.Center;
-            dashDirection = dashDirection.SafeNormalize(Vector2.UnitX);
-
-            Projectile.velocity = dashDirection * 13f;
-
-            Projectile.netUpdate = true;
-
-            FaceMovementDirection();
+            return owner.Center + new Vector2(-IdleOffsetX * owner.direction, IdleOffsetY);
         }
 
-        private void ContinueDash()
+        private void HoverNearOwnerForCombat(Player owner, NPC target)
         {
-            Projectile.ai[1]++;
+            Vector2 combatPosition = GetCombatPosition(owner, target);
+            MoveToward(combatPosition, IdleMoveSpeed, IdleInertia, FarMoveSpeed, FarInertia);
 
-            Projectile.velocity *= 0.88f;
-
-            FaceMovementDirection();
-
-            Projectile.rotation += Projectile.spriteDirection * 0.35f;
-
-            if (Projectile.ai[1] >= 8f)
-            {
-                Projectile.ai[0] = StateRecovering;
-                Projectile.ai[1] = 0f;
-
-  
-                Projectile.velocity *= 0.45f;
-
-                Projectile.netUpdate = true;
-            }
+            FaceTarget(target);
+            RotateForMovement(AttackRotationFactor);
         }
 
-        private void RecoverAfterDash(Player player)
+        private Vector2 GetCombatPosition(Player owner, NPC target)
         {
-            Projectile.ai[1]++;
+            float sideFacingTarget = target.Center.X >= owner.Center.X ? 1f : -1f;
 
-            // Slow down after the dash.
-            Projectile.velocity *= 0.82f;
-
-            FaceMovementDirection();
-
-            Projectile.rotation = Projectile.velocity.X * 0.05f;
-
-            // Recovery lasts about 1/3 second.
-            if (Projectile.ai[1] >= 20f)
-            {
-                Projectile.ai[0] = StateIdle;
-                Projectile.ai[1] = 0f;
-                Projectile.netUpdate = true;
-            }
-
-            // If it drifted too far during recovery, gently pull it back toward the player.
-            float distanceFromPlayer = Vector2.Distance(Projectile.Center, player.Center);
-
-            if (distanceFromPlayer > 500f)
-            {
-                FollowPlayer(player);
-            }
+            return owner.Center + new Vector2(CombatOffsetX * sideFacingTarget, CombatOffsetY);
         }
 
-        private void FollowPlayer(Player player)
+        private void MoveToward(
+            Vector2 destination,
+            float normalSpeed,
+            float normalInertia,
+            float farSpeed,
+            float farInertia
+        )
         {
-            Vector2 idlePosition = player.Center + new Vector2(-48f * player.direction, -60f);
+            float distance = Vector2.Distance(Projectile.Center, destination);
 
-            float distanceToIdlePosition = Vector2.Distance(Projectile.Center, idlePosition);
-
-            if (distanceToIdlePosition > 2000f)
+            if (distance > TeleportDistance)
             {
-                Projectile.Center = player.Center;
-                Projectile.velocity = Vector2.Zero;
-                Projectile.netUpdate = true;
+                TeleportTo(destination);
                 return;
             }
 
-            float speed = 8f;
-            float inertia = 40f;
+            float speed = distance > FarDistance ? farSpeed : normalSpeed;
+            float inertia = distance > FarDistance ? farInertia : normalInertia;
 
-            if (distanceToIdlePosition > 600f)
+            if (distance > ArriveDistance)
             {
-                speed = 16f;
-                inertia = 60f;
-            }
+                Vector2 direction = destination - Projectile.Center;
+                direction = direction.SafeNormalize(Vector2.Zero);
 
-            if (distanceToIdlePosition > 20f)
-            {
-                Vector2 directionToIdlePosition = idlePosition - Projectile.Center;
-                directionToIdlePosition = directionToIdlePosition.SafeNormalize(Vector2.Zero);
-
-                Vector2 desiredVelocity = directionToIdlePosition * speed;
+                Vector2 desiredVelocity = direction * speed;
 
                 Projectile.velocity =
                     (Projectile.velocity * (inertia - 1f) + desiredVelocity) / inertia;
             }
             else
             {
-                Projectile.velocity *= 0.9f;
+                Projectile.velocity *= SlowdownWhenArrived;
             }
 
             FaceMovementDirection();
+        }
 
-            Projectile.rotation = Projectile.velocity.X * 0.05f;
+        private void TeleportTo(Vector2 destination)
+        {
+            Projectile.Center = destination;
+            Projectile.velocity = Vector2.Zero;
+            Projectile.netUpdate = true;
+        }
+
+        private void ShootAtTargetWhenReady(NPC target)
+        {
+            ShootTimer++;
+
+            if (ShootTimer < ShootCooldownTicks)
+            {
+                return;
+            }
+
+            if (!HasLineOfSightTo(target))
+            {
+                return;
+            }
+
+            ShootTimer = 0f;
+
+            // Projectile-spawning should only happen on the projectile owner's client.
+            if (Projectile.owner != Main.myPlayer)
+            {
+                return;
+            }
+
+            Vector2 shotDirection = target.Center - Projectile.Center;
+            shotDirection = shotDirection.SafeNormalize(Vector2.UnitX * Projectile.spriteDirection);
+
+            Vector2 shotVelocity = shotDirection * ShotSpeed;
+            Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
+
+            Projectile.NewProjectile(
+                Projectile.GetSource_FromThis(),
+                shotPosition,
+                shotVelocity,
+                ModContent.ProjectileType<NeuroCompanionShot>(),
+                Projectile.damage,
+                Projectile.knockBack,
+                Projectile.owner
+            );
+
+            Projectile.netUpdate = true;
         }
 
         private void FaceMovementDirection()
         {
-            if (Projectile.velocity.X > 0.1f)
+            if (Projectile.velocity.X > MinimumFacingVelocity)
             {
                 Projectile.spriteDirection = 1;
             }
-            else if (Projectile.velocity.X < -0.1f)
+            else if (Projectile.velocity.X < -MinimumFacingVelocity)
             {
                 Projectile.spriteDirection = -1;
             }
         }
 
-        private void AnimateProjectile()
+        private void FaceTarget(NPC target)
+        {
+            Projectile.spriteDirection = target.Center.X >= Projectile.Center.X ? 1 : -1;
+        }
+
+        private void RotateForMovement(float rotationFactor)
+        {
+            Projectile.rotation = Projectile.velocity.X * rotationFactor;
+        }
+
+        private void Animate()
         {
             Projectile.frameCounter++;
 
-            if (Projectile.frameCounter >= 8)
+            if (Projectile.frameCounter < AnimationFrameDurationTicks)
             {
-                Projectile.frameCounter = 0;
-                Projectile.frame++;
+                return;
+            }
 
-                if (Projectile.frame >= Main.projFrames[Projectile.type])
-                {
-                    Projectile.frame = 0;
-                }
+            Projectile.frameCounter = 0;
+            Projectile.frame++;
+
+            if (Projectile.frame >= Main.projFrames[Projectile.type])
+            {
+                Projectile.frame = 0;
             }
         }
 
         private void CreateVisualEffects()
         {
-            if (Projectile.ai[0] == StateDashing)
+            int dustChance = State == CompanionState.Attacking
+                ? AttackDustChance
+                : IdleDustChance;
+
+            if (Main.rand.NextBool(dustChance))
             {
-                // Dash trail.
-                if (Main.rand.NextBool(2))
-                {
-                    Dust.NewDust(
-                        Projectile.position,
-                        Projectile.width,
-                        Projectile.height,
-                        DustID.GemSapphire
-                    );
-                }
-            }
-            else if (Projectile.ai[0] == StateApproachingTarget)
-            {
-                if (Main.rand.NextBool(5))
-                {
-                    Dust.NewDust(
-                        Projectile.position,
-                        Projectile.width,
-                        Projectile.height,
-                        DustID.GemSapphire
-                    );
-                }
-            }
-            else
-            {
-                if (Main.rand.NextBool(12))
-                {
-                    Dust.NewDust(
-                        Projectile.position,
-                        Projectile.width,
-                        Projectile.height,
-                        DustID.GemSapphire
-                    );
-                }
+                Dust.NewDust(
+                    Projectile.position,
+                    Projectile.width,
+                    Projectile.height,
+                    DustID.GemSapphire
+                );
             }
         }
     }

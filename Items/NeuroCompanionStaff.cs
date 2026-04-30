@@ -10,40 +10,54 @@ namespace NeuroCompanion.Items
 {
     public class NeuroCompanionStaff : ModItem
     {
+        private const int ItemWidth = 32;
+        private const int ItemHeight = 32;
+        private const int MaxStack = 1;
+
+        private const int UseTimeTicks = 36;
+        private const int UseAnimationTicks = 36;
+
+        private const int ManaCost = 10;
+        private const int BaseDamage = 8;
+        private const float KnockBack = 2f;
+
+        private const int BuffDurationTicks = 2;
+
+        private const float ShootSpeed = 1f;
+
         // Temporary texture: vanilla Slime Staff.
         public override string Texture => $"Terraria/Images/Item_{ItemID.SlimeStaff}";
 
         public override void SetStaticDefaults()
         {
-            // This item summons one minion that uses one minion slot.
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 1;
         }
 
         public override void SetDefaults()
         {
-            Item.width = 32;
-            Item.height = 32;
-            Item.maxStack = 1;
+            Item.width = ItemWidth;
+            Item.height = ItemHeight;
+            Item.maxStack = MaxStack;
 
             Item.value = Item.buyPrice(silver: 50);
             Item.rare = ItemRarityID.Blue;
 
             Item.useStyle = ItemUseStyleID.Swing;
-            Item.useTime = 36;
-            Item.useAnimation = 36;
+            Item.useTime = UseTimeTicks;
+            Item.useAnimation = UseAnimationTicks;
             Item.UseSound = SoundID.Item44;
             Item.autoReuse = false;
 
             Item.noMelee = true;
 
-            Item.mana = 10;
+            Item.mana = ManaCost;
 
-            Item.damage = 8;
-            Item.knockBack = 2f;
+            Item.damage = BaseDamage;
+            Item.knockBack = KnockBack;
             Item.DamageType = DamageClass.Summon;
 
             Item.shoot = ModContent.ProjectileType<NeuroCompanionProjectile>();
-            Item.shootSpeed = 1f;
+            Item.shootSpeed = ShootSpeed;
 
             Item.buffType = ModContent.BuffType<NeuroCompanionBuff>();
         }
@@ -58,8 +72,19 @@ namespace NeuroCompanion.Items
             float knockback
         )
         {
-            // Remove any existing Neuro Companion owned by this player.
-            // This keeps the design rule: Neuro has one body, not many clones.
+            RemoveExistingCompanions(player);
+
+            player.AddBuff(Item.buffType, BuffDurationTicks);
+
+            SpawnCompanionAtMouseCursor(player, source, type, damage, knockback);
+
+            return false;
+        }
+
+        private static void RemoveExistingCompanions(Player player)
+        {
+            int companionProjectileType = ModContent.ProjectileType<NeuroCompanionProjectile>();
+
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 Projectile projectile = Main.projectile[i];
@@ -67,29 +92,31 @@ namespace NeuroCompanion.Items
                 if (
                     projectile.active &&
                     projectile.owner == player.whoAmI &&
-                    projectile.type == ModContent.ProjectileType<NeuroCompanionProjectile>()
+                    projectile.type == companionProjectileType
                 )
                 {
                     projectile.Kill();
                 }
             }
+        }
 
-            // Add the buff.
-            player.AddBuff(Item.buffType, 2);
-
-            // Spawn the companion at the mouse cursor.
+        private static void SpawnCompanionAtMouseCursor(
+            Player player,
+            EntitySource_ItemUse_WithAmmo source,
+            int projectileType,
+            int damage,
+            float knockback
+        )
+        {
             Projectile.NewProjectile(
                 source,
                 Main.MouseWorld,
                 Vector2.Zero,
-                type,
+                projectileType,
                 damage,
                 knockback,
                 player.whoAmI
             );
-
-            // Return false because we manually spawned the projectile above.
-            return false;
         }
 
         public override void AddRecipes()
