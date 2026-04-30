@@ -35,6 +35,12 @@ namespace NeuroCompanion.Systems
                 NeuroActionResult result =
                     NeuroActionExecutor.Execute(player, queuedCommand.Command);
 
+                NeuroRuntimeStatus.RecordExecutedCommand(
+                    queuedCommand.ActionId,
+                    queuedCommand.Command,
+                    result
+                );
+
                 NeuroClient.Instance.SendActionResult(
                     queuedCommand.ActionId,
                     result

@@ -163,6 +163,8 @@ namespace NeuroCompanion.Neuro
                 silent,
                 CancellationToken.None
             );
+
+            NeuroRuntimeStatus.RecordContextSent();
         }
 
         private async Task SendContextAsync(
@@ -225,6 +227,7 @@ namespace NeuroCompanion.Neuro
         {
             string actionId = data?["id"]?.GetValue<string>();
             string actionName = data?["name"]?.GetValue<string>();
+            NeuroRuntimeStatus.RecordReceivedAction(actionId, actionName);
 
             if (string.IsNullOrWhiteSpace(actionId))
             {
@@ -243,9 +246,12 @@ namespace NeuroCompanion.Neuro
                 return;
             }
 
-            NeuroCommandQueue.Enqueue(
-                new QueuedNeuroCommand(actionId, command)
-            );
+            QueuedNeuroCommand queuedCommand =
+                new QueuedNeuroCommand(actionId, command);
+
+            NeuroCommandQueue.Enqueue(queuedCommand);
+
+            NeuroRuntimeStatus.RecordQueuedCommand(actionId, command);
 
             LastStatus = $"Queued Neuro action: {actionName}";
         }
