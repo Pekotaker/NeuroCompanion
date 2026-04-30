@@ -19,34 +19,34 @@ namespace NeuroCompanion.Neuro
 
             switch (actionName)
             {
-                case "recall_companion":
+                case NeuroActionNames.RecallCompanion:
                     command = new NeuroCommand(NeuroCommandType.Recall);
                     return true;
 
-                case "follow":
+                case NeuroActionNames.Follow:
                     command = new NeuroCommand(NeuroCommandType.Follow);
                     return true;
 
-                case "attack_once":
+                case NeuroActionNames.AttackOnce:
                     command = new NeuroCommand(NeuroCommandType.AttackOnce);
                     return true;
 
-                case "autoattack":
+                case NeuroActionNames.AutoAttack:
                     command = new NeuroCommand(
                         NeuroCommandType.StartTimedAttack,
                         GetDurationSecondsFromActionData(data)
                     );
                     return true;
 
-                case "buff_player":
+                case NeuroActionNames.BuffPlayer:
                     command = new NeuroCommand(NeuroCommandType.BuffPlayer);
                     return true;
 
-                case "debuff_player":
+                case NeuroActionNames.DebuffPlayer:
                     command = new NeuroCommand(NeuroCommandType.DebuffPlayer);
                     return true;
 
-                case "debuff_enemy":
+                case NeuroActionNames.DebuffEnemy:
                     command = new NeuroCommand(NeuroCommandType.DebuffNearestEnemy);
                     return true;
 
