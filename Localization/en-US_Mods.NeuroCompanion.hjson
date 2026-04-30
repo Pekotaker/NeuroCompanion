@@ -8,11 +8,17 @@ Items: {
 Projectiles: {
 	NeuroCompanionProjectile.DisplayName: Neuro Companion
 	NeuroCompanionShot.DisplayName: Neuro Companion Fireball
+	NeuroCompanionTyphoon.DisplayName: Neuro Companion Typhoon
 }
 
 Buffs: {
 	NeuroCompanionBuff: {
 		DisplayName: Neuro Companion
 		Description: Neuro-sama is following you
+	}
+
+	NeuroCompanionAttackBuff: {
+		DisplayName: Neuro Attack Mode
+		Description: Neuro is automatically attacking nearby enemies
 	}
 }

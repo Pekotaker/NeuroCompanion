@@ -5,6 +5,8 @@ using NeuroCompanion.Players;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.Audio;
+using Terraria.GameContent;
 
 namespace NeuroCompanion.Projectiles
 {
@@ -36,9 +38,6 @@ namespace NeuroCompanion.Projectiles
         private const float CombatOffsetX = 64f;
         private const float CombatOffsetY = -70f;
 
-        private const float StayCloseOffsetX = 32f;
-        private const float StayCloseOffsetY = -50f;
-
         private const float TeleportDistance = 2000f;
         private const float FarDistance = 600f;
         private const float ArriveDistance = 20f;
@@ -61,7 +60,9 @@ namespace NeuroCompanion.Projectiles
         private const float SlowdownWhenArrived = 0.9f;
         private const float MinimumFacingVelocity = 0.1f;
 
-        // Temporary texture: vanilla Baby Slime projectile.
+        private const float TyphoonSoundVolume = 1f;
+        private const float TyphoonSoundPitchVariance = 0.1f;
+
         public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.BabySlime}";
 
         private CompanionState State
@@ -110,13 +111,11 @@ namespace NeuroCompanion.Projectiles
 
         public override bool MinionContactDamage()
         {
-            // Neuro's body should not damage by touching enemies.
             return false;
         }
 
         public override bool? CanDamage()
         {
-            // Damage comes from NeuroCompanionShot, not from the companion body.
             return false;
         }
 
@@ -132,8 +131,8 @@ namespace NeuroCompanion.Projectiles
             NeuroCompanionPlayer neuroPlayer =
                 owner.GetModPlayer<NeuroCompanionPlayer>();
 
-            ApplyPlayerCommands(owner, neuroPlayer);
-            RunModeBehavior(owner, neuroPlayer.CompanionMode);
+            ApplyRecallCommand(owner, neuroPlayer);
+            RunCommandedBehavior(owner, neuroPlayer);
 
             Animate();
             CreateVisualEffects();
@@ -157,7 +156,7 @@ namespace NeuroCompanion.Projectiles
             return false;
         }
 
-        private void ApplyPlayerCommands(
+        private void ApplyRecallCommand(
             Player owner,
             NeuroCompanionPlayer neuroPlayer
         )
@@ -174,29 +173,27 @@ namespace NeuroCompanion.Projectiles
             Projectile.netUpdate = true;
         }
 
-        private void RunModeBehavior(
+        private void RunCommandedBehavior(
             Player owner,
-            NeuroCompanionMode mode
+            NeuroCompanionPlayer neuroPlayer
         )
         {
-            switch (mode)
+            if (neuroPlayer.ConsumeSingleAttackRequest())
             {
-                case NeuroCompanionMode.FollowOnly:
-                    RunFollowOnlyMode(owner);
-                    break;
-
-                case NeuroCompanionMode.StayClose:
-                    RunStayCloseMode(owner);
-                    break;
-
-                case NeuroCompanionMode.AttackNearest:
-                default:
-                    RunAttackNearestMode(owner);
-                    break;
+                AttackOnce(owner);
+                return;
             }
+
+            if (neuroPlayer.CompanionMode == NeuroCompanionMode.TimedAttack)
+            {
+                RunTimedAttackMode(owner);
+                return;
+            }
+
+            RunFollowMode(owner);
         }
 
-        private void RunFollowOnlyMode(Player owner)
+        private void RunFollowMode(Player owner)
         {
             State = CompanionState.Idle;
             ShootTimer = 0f;
@@ -204,32 +201,30 @@ namespace NeuroCompanion.Projectiles
             FollowOwner(owner);
         }
 
-        private void RunStayCloseMode(Player owner)
+        private void AttackOnce(Player owner)
         {
             NPC target = FindTarget(owner);
 
             if (target == null)
             {
                 State = CompanionState.Idle;
-                ShootTimer = 0f;
                 FollowOwner(owner);
                 return;
             }
 
             State = CompanionState.Attacking;
 
-            HoverStayClose(owner, target);
-            ShootAtTargetWhenReady(owner, target);
+            HoverNearOwnerForCombat(owner, target);
+            ShootAtTargetImmediately(owner, target);
         }
 
-        private void RunAttackNearestMode(Player owner)
+        private void RunTimedAttackMode(Player owner)
         {
             NPC target = FindTarget(owner);
 
             if (target == null)
             {
                 State = CompanionState.Idle;
-                ShootTimer = 0f;
                 FollowOwner(owner);
                 return;
             }
@@ -398,30 +393,6 @@ namespace NeuroCompanion.Projectiles
             );
         }
 
-        private void HoverStayClose(Player owner, NPC target)
-        {
-            Vector2 stayClosePosition = GetStayClosePosition(owner);
-
-            MoveToward(
-                stayClosePosition,
-                IdleMoveSpeed,
-                IdleInertia,
-                FarMoveSpeed,
-                FarInertia
-            );
-
-            FaceTarget(target);
-            RotateForMovement(AttackRotationFactor);
-        }
-
-        private Vector2 GetStayClosePosition(Player owner)
-        {
-            return owner.Center + new Vector2(
-                -StayCloseOffsetX * owner.direction,
-                StayCloseOffsetY
-            );
-        }
-
         private void MoveToward(
             Vector2 destination,
             float normalSpeed,
@@ -475,6 +446,11 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
+            ShootAtTargetImmediately(owner, target);
+        }
+
+        private void ShootAtTargetImmediately(Player owner, NPC target)
+        {
             if (!CanShootTarget(target, owner))
             {
                 return;
@@ -495,17 +471,52 @@ namespace NeuroCompanion.Projectiles
             Vector2 shotVelocity = shotDirection * ShotSpeed;
             Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
 
-            Projectile.NewProjectile(
+            SoundEngine.PlaySound(
+                SoundID.Item84 with
+                {
+                    Volume = TyphoonSoundVolume,
+                    PitchVariance = TyphoonSoundPitchVariance
+                },
+                Projectile.Center
+            );
+
+            int typhoonDamage = GetRazorbladeTyphoonSummonDamage(owner);
+
+            int typhoonProjectileIndex = Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
                 shotPosition,
                 shotVelocity,
-                ModContent.ProjectileType<NeuroCompanionShot>(),
-                Projectile.damage,
+                ProjectileID.Typhoon,
+                typhoonDamage,
                 Projectile.knockBack,
                 Projectile.owner
             );
 
-            Projectile.netUpdate = true;
+            if (
+                typhoonProjectileIndex >= 0 &&
+                typhoonProjectileIndex < Main.maxProjectiles
+            )
+            {
+                Projectile typhoonProjectile = Main.projectile[typhoonProjectileIndex];
+
+                // Use the real vanilla Razorblade Typhoon projectile visually/behaviorally,
+                // but make its damage scale as summon damage for Neuro's companion.
+                typhoonProjectile.DamageType = DamageClass.Summon;
+                typhoonProjectile.originalDamage = typhoonDamage;
+                typhoonProjectile.netUpdate = true;
+            }
+        }
+
+        private static int GetRazorbladeTyphoonSummonDamage(Player owner)
+        {
+            int vanillaTyphoonDamage =
+                ContentSamples.ItemsByType[ItemID.RazorbladeTyphoon].damage;
+
+            int scaledDamage = (int)owner
+                .GetTotalDamage(DamageClass.Summon)
+                .ApplyTo(vanillaTyphoonDamage);
+
+            return scaledDamage < 1 ? 1 : scaledDamage;
         }
 
         private void FaceMovementDirection()

@@ -2,9 +2,8 @@
 {
     public enum NeuroCompanionMode
     {
-        AttackNearest,
-        FollowOnly,
-        StayClose
+        Follow,
+        TimedAttack
     }
 
     public static class NeuroCompanionModeExtensions
@@ -13,9 +12,8 @@
         {
             return mode switch
             {
-                NeuroCompanionMode.AttackNearest => "attack",
-                NeuroCompanionMode.FollowOnly => "follow",
-                NeuroCompanionMode.StayClose => "stayclose",
+                NeuroCompanionMode.Follow => "follow",
+                NeuroCompanionMode.TimedAttack => "attack",
                 _ => "unknown"
             };
         }
