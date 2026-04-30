@@ -27,64 +27,70 @@ Configs: {
 	NeuroCompanionConfig: {
 		DisplayName: Neuro Companion Config
 
+		Headers: {
+			Connection: Connection
+			Context: Context
+			ActionCooldowns: Action Cooldowns
+		}
+
 		RandyWebSocketUrl: {
-			Label: Randy Web Socket Url
-			Tooltip: ""
+			Label: Randy WebSocket URL
+			Tooltip: The WebSocket address used to connect to Randy. Default: ws://localhost:8000
 		}
 
 		AutoConnectOnWorldLoad: {
-			Label: Auto Connect On World Load
-			Tooltip: ""
+			Label: Auto-connect on world load
+			Tooltip: If enabled, the mod will automatically connect to Randy when a world loads.
 		}
 
 		PeriodicContextIntervalSeconds: {
-			Label: Periodic Context Interval Seconds
-			Tooltip: ""
+			Label: Periodic context interval
+			Tooltip: How often the mod sends full Terraria context to Randy, in seconds.
 		}
 
 		EnableEventContextMessages: {
-			Label: Enable Event Context Messages
-			Tooltip: ""
+			Label: Enable event context messages
+			Tooltip: If enabled, important Terraria events are sent to Randy immediately, such as companion summoned, low health, boss nearby, and autoattack started or ended.
 		}
 
 		LowHealthPercent: {
-			Label: Low Health Percent
-			Tooltip: ""
+			Label: Low health threshold
+			Tooltip: The player life percentage at or below which a low-health event is sent.
 		}
 
 		RecallCooldownSeconds: {
-			Label: Recall Cooldown Seconds
-			Tooltip: ""
+			Label: Recall cooldown
+			Tooltip: Cooldown for recall_companion, in seconds.
 		}
 
 		FollowCooldownSeconds: {
-			Label: Follow Cooldown Seconds
-			Tooltip: ""
+			Label: Follow cooldown
+			Tooltip: Cooldown for follow, in seconds.
 		}
 
 		AttackOnceCooldownSeconds: {
-			Label: Attack Once Cooldown Seconds
-			Tooltip: ""
+			Label: Attack once cooldown
+			Tooltip: Cooldown for attack_once, in seconds.
 		}
 
 		AutoAttackCooldownSeconds: {
-			Label: Auto Attack Cooldown Seconds
-			Tooltip: ""
+			Label: Autoattack cooldown
+			Tooltip: Cooldown for autoattack, in seconds.
 		}
 
 		BuffPlayerCooldownSeconds: {
-			Label: Buff Player Cooldown Seconds
-			Tooltip: ""
+			Label: Buff player cooldown
+			Tooltip: Cooldown for buff_player, in seconds.
 		}
 
 		DebuffPlayerCooldownSeconds: {
-			Label: Debuff Player Cooldown Seconds
-			Tooltip: ""
+			Label: Debuff player cooldown
+			Tooltip: Cooldown for debuff_player, in seconds.
 		}
 
 		DebuffEnemyCooldownSeconds: {
-			Label: Debuff Enemy Cooldown Seconds
-			Tooltip: ""
+			Label: Debuff enemy cooldown
+			Tooltip: Cooldown for debuff_enemy, in seconds.
 		}
 	}
 }
