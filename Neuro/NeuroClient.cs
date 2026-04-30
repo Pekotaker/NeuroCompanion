@@ -201,6 +201,20 @@ namespace NeuroCompanion.Neuro
             );
         }
 
+        public void SendContext(string message, bool silent = true)
+        {
+            if (!IsConnected)
+            {
+                return;
+            }
+
+            _ = SendContextAsync(
+                message,
+                silent,
+                CancellationToken.None
+            );
+        }
+
         private async Task SendContextAsync(
             string message,
             bool silent,
