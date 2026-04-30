@@ -25,9 +25,6 @@ namespace NeuroCompanion.Items
 
         private const float ShootSpeed = 1f;
 
-        // Temporary texture: vanilla Slime Staff.
-        public override string Texture => $"Terraria/Images/Item_{ItemID.SlimeStaff}";
-
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 1;
