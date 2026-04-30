@@ -1,4 +1,5 @@
 ﻿using NeuroCompanion.Neuro;
+using Terraria;
 using Terraria.ModLoader;
 
 namespace NeuroCompanion.Commands
@@ -9,7 +10,7 @@ namespace NeuroCompanion.Commands
 
         public override string Command => "neurows";
 
-        public override string Usage => "/neurows <connect|disconnect|status>";
+        public override string Usage => "/neurows <connect|disconnect|status|context|help>";
 
         public override string Description =>
             "Controls the Neuro Companion Randy websocket connection.";
@@ -38,10 +39,12 @@ namespace NeuroCompanion.Commands
                     break;
 
                 case "status":
-                    caller.Reply(
-                        $"Connected: {NeuroClient.Instance.IsConnected}"
-                    );
+                    caller.Reply($"Connected: {NeuroClient.Instance.IsConnected}");
                     caller.Reply(NeuroClient.Instance.LastStatus);
+                    break;
+
+                case "context":
+                    SendContextNow(caller);
                     break;
 
                 default:
@@ -51,12 +54,34 @@ namespace NeuroCompanion.Commands
             }
         }
 
+        private static void SendContextNow(CommandCaller caller)
+        {
+            if (!NeuroClient.Instance.IsConnected)
+            {
+                caller.Reply("Neuro websocket is not connected.");
+                return;
+            }
+
+            Player player = caller.Player ?? Main.LocalPlayer;
+
+            string context = NeuroContextBuilder.Build(player);
+
+            NeuroClient.Instance.SendContext(
+                context,
+                silent: false
+            );
+
+            caller.Reply("Sent current Terraria context to Randy.");
+        }
+
         private static void ReplyWithHelp(CommandCaller caller)
         {
             caller.Reply("Neuro websocket commands:");
             caller.Reply("/neurows connect");
             caller.Reply("/neurows disconnect");
             caller.Reply("/neurows status");
+            caller.Reply("/neurows context");
+            caller.Reply("/neurows help");
         }
     }
 }

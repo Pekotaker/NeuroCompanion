@@ -1,4 +1,5 @@
 ﻿using NeuroCompanion.Players;
+using NeuroCompanion.Projectiles;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -14,6 +15,13 @@ namespace NeuroCompanion.Neuro
 
         private const float DebuffEnemySearchRange = 700f;
 
+        private static bool HasCompanionSummoned(Player player)
+        {
+            return player.ownedProjectileCounts[
+                ModContent.ProjectileType<NeuroCompanionProjectile>()
+            ] > 0;
+        }
+
         public static NeuroActionResult Execute(
             Player player,
             NeuroCommand command
@@ -26,6 +34,20 @@ namespace NeuroCompanion.Neuro
 
             NeuroCompanionPlayer neuroPlayer =
                 player.GetModPlayer<NeuroCompanionPlayer>();
+
+            bool commandRequiresCompanion =
+                command.Type == NeuroCommandType.Recall ||
+                command.Type == NeuroCommandType.Follow ||
+                command.Type == NeuroCommandType.AttackOnce ||
+                command.Type == NeuroCommandType.StartTimedAttack;
+
+            if (commandRequiresCompanion && !HasCompanionSummoned(player))
+            {
+                return NeuroActionResult.Ok(
+                    "Neuro companion is not summoned, so the action was skipped. Use the Neuro Companion Staff first."
+                );
+            }
+
 
             switch (command.Type)
             {
