@@ -1,8 +1,10 @@
 ﻿using NeuroCompanion.Buffs;
 using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
+using NeuroCompanion.Configs;
 using Terraria;
 using Terraria.ModLoader;
+
 
 namespace NeuroCompanion.Neuro
 {
@@ -27,6 +29,14 @@ namespace NeuroCompanion.Neuro
 
         public void CheckAndSendEvents(Player player)
         {
+            NeuroCompanionConfig config =
+                ModContent.GetInstance<NeuroCompanionConfig>();
+
+            if (!config.EnableEventContextMessages)
+            {
+                return;
+            }
+
             if (!NeuroClient.Instance.IsConnected)
             {
                 return;
@@ -63,9 +73,22 @@ namespace NeuroCompanion.Neuro
 
         private void CheckLowHealthEvent(Player player)
         {
+            int lowHealthPercent =
+                ModContent.GetInstance<NeuroCompanionConfig>().LowHealthPercent;
+
+            if (lowHealthPercent < 1)
+            {
+                lowHealthPercent = 1;
+            }
+
+            if (lowHealthPercent > 100)
+            {
+                lowHealthPercent = 100;
+            }
+
             bool lowHealth =
                 player.statLifeMax2 > 0 &&
-                player.statLife <= player.statLifeMax2 * LowHealthRatio;
+                player.statLife * 100 <= player.statLifeMax2 * lowHealthPercent;
 
             if (lowHealth == previousLowHealth)
             {

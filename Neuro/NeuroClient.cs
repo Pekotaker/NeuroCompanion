@@ -7,12 +7,14 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
+using NeuroCompanion.Configs;
+using Terraria.ModLoader;
+
 namespace NeuroCompanion.Neuro
 {
     public sealed class NeuroClient
     {
         private const string GameName = "Terraria Neuro Companion";
-        private const string RandyWebsocketUrl = "ws://localhost:8000";
 
         private readonly SemaphoreSlim sendLock = new(1, 1);
 
@@ -81,10 +83,12 @@ namespace NeuroCompanion.Neuro
             {
                 websocket = new ClientWebSocket();
 
-                LastStatus = $"Connecting to {RandyWebsocketUrl}...";
+                string websocketUrl = GetWebSocketUrl();
+
+                LastStatus = $"Connecting to {websocketUrl}...";
 
                 await websocket.ConnectAsync(
-                    new Uri(RandyWebsocketUrl),
+                    new Uri(websocketUrl),
                     cancellationToken
                 );
 
@@ -341,6 +345,11 @@ namespace NeuroCompanion.Neuro
             }
 
             return Encoding.UTF8.GetString(messageStream.ToArray());
+        }
+
+        private static string GetWebSocketUrl()
+        {
+            return ModContent.GetInstance<NeuroCompanionConfig>().RandyWebSocketUrl;
         }
     }
 }

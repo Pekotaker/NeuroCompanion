@@ -2,11 +2,13 @@
 using Terraria;
 using Terraria.ModLoader;
 
+using NeuroCompanion.Configs;
+
 namespace NeuroCompanion.Systems
 {
     public class NeuroCompanionSystem : ModSystem
     {
-        private const int ContextIntervalTicks = 5 * 60;
+        private const int TicksPerSecond = 60;
 
         private readonly NeuroContextEvents contextEvents = new();
 
@@ -35,6 +37,17 @@ namespace NeuroCompanion.Systems
         public override void Unload()
         {
             NeuroClient.Instance.Stop();
+        }
+
+        public override void OnWorldLoad()
+        {
+            contextTimer = 0;
+            contextEvents.Reset();
+
+            if (ModContent.GetInstance<NeuroCompanionConfig>().AutoConnectOnWorldLoad)
+            {
+                NeuroClient.Instance.Start();
+            }
         }
 
         private static void ExecuteQueuedCommands(Player player)
@@ -67,7 +80,17 @@ namespace NeuroCompanion.Systems
 
             contextTimer++;
 
-            if (contextTimer < ContextIntervalTicks)
+            int intervalSeconds =
+                ModContent.GetInstance<NeuroCompanionConfig>().PeriodicContextIntervalSeconds;
+
+            if (intervalSeconds < 1)
+            {
+                intervalSeconds = 1;
+            }
+
+            int intervalTicks = intervalSeconds * TicksPerSecond;
+
+            if (contextTimer < intervalTicks)
             {
                 return;
             }

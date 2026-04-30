@@ -22,3 +22,69 @@ Buffs: {
 		Description: Neuro is automatically attacking nearby enemies
 	}
 }
+
+Configs: {
+	NeuroCompanionConfig: {
+		DisplayName: Neuro Companion Config
+
+		RandyWebSocketUrl: {
+			Label: Randy Web Socket Url
+			Tooltip: ""
+		}
+
+		AutoConnectOnWorldLoad: {
+			Label: Auto Connect On World Load
+			Tooltip: ""
+		}
+
+		PeriodicContextIntervalSeconds: {
+			Label: Periodic Context Interval Seconds
+			Tooltip: ""
+		}
+
+		EnableEventContextMessages: {
+			Label: Enable Event Context Messages
+			Tooltip: ""
+		}
+
+		LowHealthPercent: {
+			Label: Low Health Percent
+			Tooltip: ""
+		}
+
+		RecallCooldownSeconds: {
+			Label: Recall Cooldown Seconds
+			Tooltip: ""
+		}
+
+		FollowCooldownSeconds: {
+			Label: Follow Cooldown Seconds
+			Tooltip: ""
+		}
+
+		AttackOnceCooldownSeconds: {
+			Label: Attack Once Cooldown Seconds
+			Tooltip: ""
+		}
+
+		AutoAttackCooldownSeconds: {
+			Label: Auto Attack Cooldown Seconds
+			Tooltip: ""
+		}
+
+		BuffPlayerCooldownSeconds: {
+			Label: Buff Player Cooldown Seconds
+			Tooltip: ""
+		}
+
+		DebuffPlayerCooldownSeconds: {
+			Label: Debuff Player Cooldown Seconds
+			Tooltip: ""
+		}
+
+		DebuffEnemyCooldownSeconds: {
+			Label: Debuff Enemy Cooldown Seconds
+			Tooltip: ""
+		}
+	}
+}

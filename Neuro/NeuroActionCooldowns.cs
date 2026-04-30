@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using NeuroCompanion.Configs;
+using Terraria.ModLoader;
 
 namespace NeuroCompanion.Neuro
 {
@@ -69,17 +71,27 @@ namespace NeuroCompanion.Neuro
 
         private static TimeSpan GetCooldown(NeuroCommandType commandType)
         {
-            return commandType switch
+            NeuroCompanionConfig config =
+                ModContent.GetInstance<NeuroCompanionConfig>();
+
+            int seconds = commandType switch
             {
-                NeuroCommandType.Recall => TimeSpan.FromSeconds(2),
-                NeuroCommandType.Follow => TimeSpan.FromSeconds(1),
-                NeuroCommandType.AttackOnce => TimeSpan.FromSeconds(3),
-                NeuroCommandType.StartTimedAttack => TimeSpan.FromSeconds(5),
-                NeuroCommandType.BuffPlayer => TimeSpan.FromSeconds(60),
-                NeuroCommandType.DebuffPlayer => TimeSpan.FromSeconds(60),
-                NeuroCommandType.DebuffNearestEnemy => TimeSpan.FromSeconds(30),
-                _ => TimeSpan.Zero
+                NeuroCommandType.Recall => config.RecallCooldownSeconds,
+                NeuroCommandType.Follow => config.FollowCooldownSeconds,
+                NeuroCommandType.AttackOnce => config.AttackOnceCooldownSeconds,
+                NeuroCommandType.StartTimedAttack => config.AutoAttackCooldownSeconds,
+                NeuroCommandType.BuffPlayer => config.BuffPlayerCooldownSeconds,
+                NeuroCommandType.DebuffPlayer => config.DebuffPlayerCooldownSeconds,
+                NeuroCommandType.DebuffNearestEnemy => config.DebuffEnemyCooldownSeconds,
+                _ => 0
             };
+
+            if (seconds < 0)
+            {
+                seconds = 0;
+            }
+
+            return TimeSpan.FromSeconds(seconds);
         }
     }
 }
