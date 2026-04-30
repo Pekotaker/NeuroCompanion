@@ -1,0 +1,3 @@
+displayName = Neuro Companion
+author = Pekotaker
+version = 0.1
