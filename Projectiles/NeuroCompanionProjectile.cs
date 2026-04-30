@@ -16,13 +16,11 @@ namespace NeuroCompanion.Projectiles
             // Baby Slime uses an animation sheet.
             Main.projFrames[Projectile.type] = Main.projFrames[ProjectileID.BabySlime];
 
-            // Required for minion contact damage logic.
+            // Required for pet/minion contact-damage behavior.
             Main.projPet[Projectile.type] = true;
 
-            // Makes the minion work with vanilla minion slot replacement behavior.
+            // Standard minion behavior flags.
             ProjectileID.Sets.MinionSacrificable[Projectile.type] = true;
-
-            // Allows right-click minion targeting with compatible summon weapons.
             ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
         }
 
@@ -34,37 +32,42 @@ namespace NeuroCompanion.Projectiles
             Projectile.friendly = true;
             Projectile.hostile = false;
 
-            // This makes Terraria treat it as a minion.
             Projectile.minion = true;
-
-            // This makes it use one summon slot.
             Projectile.minionSlots = 1f;
 
             Projectile.DamageType = DamageClass.Summon;
 
-            // Infinite penetration: do not disappear after touching one enemy.
             Projectile.penetrate = -1;
-
-            // Minions should stay alive as long as their buff is maintained.
             Projectile.timeLeft = 18000;
 
-            // Minions should follow the player through terrain for now.
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
 
-            // Syncs this projectile better in multiplayer / joining worlds.
             Projectile.netImportant = true;
 
-            // Prevents the same minion from damaging the same NPC too rapidly.
             Projectile.usesLocalNPCImmunity = true;
             Projectile.localNPCHitCooldown = 20;
         }
 
         public override bool MinionContactDamage()
         {
-            // The minion can hurt enemies by touching them.
-            // Later we will replace this with better attack behavior.
             return true;
+        }
+
+        public override bool? CanDamage()
+        {
+            // ai[0] is our simple state:
+            // 0 = idle/following player
+            // 1 = attacking enemy
+            //
+            // This prevents the companion from accidentally damaging enemies
+            // while calmly floating near the player.
+            if (Projectile.ai[0] == 1f)
+            {
+                return null;
+            }
+
+            return false;
         }
 
         public override void AI()
@@ -76,7 +79,26 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            FollowPlayer(player);
+            float oldState = Projectile.ai[0];
+
+            NPC target = FindTarget(player);
+
+            if (target != null)
+            {
+                Projectile.ai[0] = 1f;
+                AttackTarget(target);
+            }
+            else
+            {
+                Projectile.ai[0] = 0f;
+                FollowPlayer(player);
+            }
+
+            if (Projectile.ai[0] != oldState)
+            {
+                Projectile.netUpdate = true;
+            }
+
             AnimateProjectile();
             CreateVisualEffects();
         }
@@ -100,6 +122,102 @@ namespace NeuroCompanion.Projectiles
             return false;
         }
 
+        private NPC FindTarget(Player player)
+        {
+            // First, respect the player's manually selected minion target.
+            if (player.HasMinionAttackTargetNPC)
+            {
+                NPC selectedTarget = Main.npc[player.MinionAttackTargetNPC];
+
+                if (IsValidTarget(selectedTarget, player, 1000f))
+                {
+                    return selectedTarget;
+                }
+            }
+
+            NPC closestTarget = null;
+            float closestDistance = 700f;
+
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+
+                if (!IsValidTarget(npc, player, 900f))
+                {
+                    continue;
+                }
+
+                float distanceToProjectile = Vector2.Distance(Projectile.Center, npc.Center);
+
+                if (distanceToProjectile < closestDistance)
+                {
+                    closestDistance = distanceToProjectile;
+                    closestTarget = npc;
+                }
+            }
+
+            return closestTarget;
+        }
+
+        private bool IsValidTarget(NPC npc, Player player, float maxDistanceFromPlayer)
+        {
+            if (!npc.active)
+            {
+                return false;
+            }
+
+            if (!npc.CanBeChasedBy(this))
+            {
+                return false;
+            }
+
+            float distanceFromPlayer = Vector2.Distance(player.Center, npc.Center);
+
+            if (distanceFromPlayer > maxDistanceFromPlayer)
+            {
+                return false;
+            }
+
+            // This prevents the minion from targeting enemies through solid walls.
+            bool hasLineOfSight = Collision.CanHitLine(
+                Projectile.position,
+                Projectile.width,
+                Projectile.height,
+                npc.position,
+                npc.width,
+                npc.height
+            );
+
+            return hasLineOfSight;
+        }
+
+        private void AttackTarget(NPC target)
+        {
+            Vector2 directionToTarget = target.Center - Projectile.Center;
+            float distanceToTarget = directionToTarget.Length();
+
+            directionToTarget = directionToTarget.SafeNormalize(Vector2.Zero);
+
+            float speed = 10f;
+            float inertia = 18f;
+
+            if (distanceToTarget > 300f)
+            {
+                speed = 14f;
+                inertia = 24f;
+            }
+
+            Vector2 desiredVelocity = directionToTarget * speed;
+
+            Projectile.velocity =
+                (Projectile.velocity * (inertia - 1f) + desiredVelocity) / inertia;
+
+            FaceMovementDirection();
+
+            // A slightly more aggressive rotation while attacking.
+            Projectile.rotation = Projectile.velocity.X * 0.08f;
+        }
+
         private void FollowPlayer(Player player)
         {
             // Idle position: slightly behind and above the player.
@@ -119,7 +237,6 @@ namespace NeuroCompanion.Projectiles
             float speed = 8f;
             float inertia = 40f;
 
-            // If far away, move faster.
             if (distanceToIdlePosition > 600f)
             {
                 speed = 16f;
@@ -138,11 +255,16 @@ namespace NeuroCompanion.Projectiles
             }
             else
             {
-                // Slow down when already near the idle position.
                 Projectile.velocity *= 0.9f;
             }
 
-            // Face movement direction.
+            FaceMovementDirection();
+
+            Projectile.rotation = Projectile.velocity.X * 0.05f;
+        }
+
+        private void FaceMovementDirection()
+        {
             if (Projectile.velocity.X > 0.1f)
             {
                 Projectile.spriteDirection = 1;
@@ -151,8 +273,6 @@ namespace NeuroCompanion.Projectiles
             {
                 Projectile.spriteDirection = -1;
             }
-
-            Projectile.rotation = Projectile.velocity.X * 0.05f;
         }
 
         private void AnimateProjectile()
@@ -173,14 +293,31 @@ namespace NeuroCompanion.Projectiles
 
         private void CreateVisualEffects()
         {
-            if (Main.rand.NextBool(10))
+            if (Projectile.ai[0] == 1f)
             {
-                Dust.NewDust(
-                    Projectile.position,
-                    Projectile.width,
-                    Projectile.height,
-                    DustID.GemSapphire
-                );
+                // More dust while attacking.
+                if (Main.rand.NextBool(4))
+                {
+                    Dust.NewDust(
+                        Projectile.position,
+                        Projectile.width,
+                        Projectile.height,
+                        DustID.GemSapphire
+                    );
+                }
+            }
+            else
+            {
+                // Less dust while idle.
+                if (Main.rand.NextBool(12))
+                {
+                    Dust.NewDust(
+                        Projectile.position,
+                        Projectile.width,
+                        Projectile.height,
+                        DustID.GemSapphire
+                    );
+                }
             }
         }
     }
