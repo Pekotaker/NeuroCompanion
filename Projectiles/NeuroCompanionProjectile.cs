@@ -56,6 +56,11 @@ namespace NeuroCompanion.Projectiles
         private const float SlowdownWhenArrived = 0.9f;
         private const float MinimumFacingVelocity = 0.1f;
 
+        private const float TargetSearchRangeFromPlayer = 700f;
+        private const float ManualTargetSearchRangeFromPlayer = 1200f;
+        private const float TargetForgetRangeFromPlayer = 1000f;
+
+
         // Temporary texture: vanilla Baby Slime projectile.
         public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.BabySlime}";
 
@@ -105,14 +110,11 @@ namespace NeuroCompanion.Projectiles
 
         public override bool MinionContactDamage()
         {
-            // Neuro's body should not damage by touching enemies.
-            // Damage comes from NeuroCompanionShot instead.
             return false;
         }
 
         public override bool? CanDamage()
         {
-            // Completely disable contact damage from the companion body.
             return false;
         }
 
@@ -171,7 +173,7 @@ namespace NeuroCompanion.Projectiles
                 return manualTarget;
             }
 
-            return FindClosestTarget(owner);
+            return FindClosestTargetToPlayer(owner);
         }
 
         private NPC FindManualTarget(Player owner)
@@ -183,13 +185,40 @@ namespace NeuroCompanion.Projectiles
 
             NPC selectedTarget = Main.npc[owner.MinionAttackTargetNPC];
 
-            if (IsValidTarget(selectedTarget, owner, ManualTargetSearchRange))
+            if (IsValidTarget(selectedTarget, owner, ManualTargetSearchRangeFromPlayer))
             {
                 return selectedTarget;
             }
 
             return null;
         }
+
+        private NPC FindClosestTargetToPlayer(Player owner)
+        {
+            NPC bestTarget = null;
+            float bestDistanceFromPlayer = TargetSearchRangeFromPlayer;
+
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                NPC npc = Main.npc[i];
+
+                if (!IsValidTarget(npc, owner, TargetForgetRangeFromPlayer))
+                {
+                    continue;
+                }
+
+                float distanceFromPlayer = Vector2.Distance(owner.Center, npc.Center);
+
+                if (distanceFromPlayer < bestDistanceFromPlayer)
+                {
+                    bestDistanceFromPlayer = distanceFromPlayer;
+                    bestTarget = npc;
+                }
+            }
+
+            return bestTarget;
+        }
+
 
         private NPC FindClosestTarget(Player owner)
         {
@@ -236,7 +265,38 @@ namespace NeuroCompanion.Projectiles
                 return false;
             }
 
-            return HasLineOfSightTo(npc);
+            return CanShootTarget(npc, owner);
+        }
+
+        private bool CanShootTarget(NPC npc, Player owner)
+        {
+            // Prefer line of sight from the companion's body to the enemy.
+            bool companionCanSeeTarget = Collision.CanHitLine(
+                Projectile.position,
+                Projectile.width,
+                Projectile.height,
+                npc.position,
+                npc.width,
+                npc.height
+            );
+
+            if (companionCanSeeTarget)
+            {
+                return true;
+            }
+
+            // Fallback: if the player can see the enemy, allow targeting.
+            // This makes the minion less stupid when it is slightly behind a wall or corner.
+            bool ownerCanSeeTarget = Collision.CanHitLine(
+                owner.position,
+                owner.width,
+                owner.height,
+                npc.position,
+                npc.width,
+                npc.height
+            );
+
+            return ownerCanSeeTarget;
         }
 
         private bool HasLineOfSightTo(NPC npc)
@@ -332,7 +392,7 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            if (!HasLineOfSightTo(target))
+            if (!CanShootTarget(target, Main.player[Projectile.owner]))
             {
                 return;
             }
