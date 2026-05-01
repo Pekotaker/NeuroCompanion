@@ -15,8 +15,8 @@ namespace NeuroCompanion.Projectiles
             Attacking = 1
         }
 
-        private const int ProjectileWidth = 26;
-        private const int ProjectileHeight = 20;
+        private const int ProjectileWidth = 24;
+        private const int ProjectileHeight = 28;
 
         private const int MinionLifetimeTicks = 18000;
         private const int BuffRefreshTimeTicks = 2;
@@ -61,7 +61,6 @@ namespace NeuroCompanion.Projectiles
         private const float TyphoonSoundVolume = 1f;
         private const float TyphoonSoundPitchVariance = 0.1f;
 
-        public override string Texture => $"Terraria/Images/Projectile_{ProjectileID.BabySlime}";
 
         private CompanionState State
         {
@@ -77,7 +76,7 @@ namespace NeuroCompanion.Projectiles
 
         public override void SetStaticDefaults()
         {
-            Main.projFrames[Projectile.type] = Main.projFrames[ProjectileID.BabySlime];
+            Main.projFrames[Projectile.type] = 6;
 
             Main.projPet[Projectile.type] = true;
 

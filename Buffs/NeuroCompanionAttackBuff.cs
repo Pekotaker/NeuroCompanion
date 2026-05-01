@@ -6,7 +6,6 @@ namespace NeuroCompanion.Buffs
 {
     public class NeuroCompanionAttackBuff : ModBuff
     {
-        public override string Texture => $"Terraria/Images/Buff_{BuffID.MagicPower}";
 
         public override void SetStaticDefaults()
         {

@@ -7,10 +7,6 @@ namespace NeuroCompanion.Buffs
 {
     public class NeuroCompanionBuff : ModBuff
     {
-        // Temporary texture: use the vanilla Baby Slime buff icon.
-        // Without this, tModLoader expects us to provide our own image at:
-        // Buffs/NeuroCompanionBuff.png
-        public override string Texture => $"Terraria/Images/Buff_{BuffID.BabySlime}";
 
         public override void SetStaticDefaults()
         {
