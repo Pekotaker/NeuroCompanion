@@ -171,5 +171,70 @@ namespace NeuroCompanion.Neuro
         {
             return Main.mouseItem != null && !Main.mouseItem.IsAir;
         }
+
+        public static NeuroActionResult SwapMouseItemWithNeuroSlot(Player player)
+        {
+            NeuroCompanionPlayer neuroPlayer =
+                player.GetModPlayer<NeuroCompanionPlayer>();
+
+            if (Main.mouseItem == null)
+            {
+                Main.mouseItem = new Item();
+                Main.mouseItem.TurnToAir();
+            }
+
+            // Mouse cursor is empty:
+            // pick Neuro's weapon back up onto the cursor.
+            if (Main.mouseItem.IsAir)
+            {
+                if (!neuroPlayer.HasNeuroWeapon())
+                {
+                    return NeuroActionResult.Ok("Neuro weapon slot is empty.");
+                }
+
+                Item pickedUpWeapon = neuroPlayer.NeuroWeapon.Clone();
+
+                Main.mouseItem = pickedUpWeapon;
+                neuroPlayer.ClearNeuroWeapon();
+
+                return NeuroActionResult.Ok(
+                    $"Picked up {pickedUpWeapon.HoverName} from Neuro's weapon slot."
+                );
+            }
+
+            // Mouse cursor has an item:
+            // try to equip it into Neuro's slot.
+            Item cursorItem = Main.mouseItem;
+
+            if (!NeuroWeaponValidator.IsValidNeuroWeapon(cursorItem, out string reason))
+            {
+                return NeuroActionResult.Ok($"Action skipped: {reason}");
+            }
+
+            Item newWeapon = cursorItem.Clone();
+
+            // Neuro already has a weapon:
+            // swap current mouse item with Neuro's current weapon.
+            if (neuroPlayer.HasNeuroWeapon())
+            {
+                Item oldWeapon = neuroPlayer.NeuroWeapon.Clone();
+
+                neuroPlayer.SetNeuroWeapon(newWeapon);
+                Main.mouseItem = oldWeapon;
+
+                return NeuroActionResult.Ok(
+                    $"Neuro equipped {newWeapon.HoverName}."
+                );
+            }
+
+            // Neuro slot is empty:
+            // move cursor item into Neuro's slot.
+            neuroPlayer.SetNeuroWeapon(newWeapon);
+            Main.mouseItem.TurnToAir();
+
+            return NeuroActionResult.Ok(
+                $"Neuro equipped {newWeapon.HoverName}."
+            );
+        }
     }
 }
