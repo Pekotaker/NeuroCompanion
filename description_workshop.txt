@@ -1,1 +1,74 @@
-This description will show up on the steam page, check out https://steamcommunity.com/comment/Guide/formattinghelp.
+[b]Neuro Companion[/b]
+
+Neuro Companion is a tModLoader mod that adds a command-controlled summon companion to Terraria.
+
+The companion works as a normal summon, but can also be controlled directly through Terraria chat commands. Randy/Neuro integration is optional.
+
+[b]Features[/b]
+
+[list]
+[*]Summon a Neuro companion minion
+[*]Switch between follow mode and timed autoattack mode
+[*]Attack enemies on command
+[*]Equip Neuro with her own magic weapon
+[*]Use a custom Neuro weapon slot in the inventory UI
+[*]Let Neuro take a valid magic weapon from the player inventory
+[*]Apply random Red Potion-style buffs to the player
+[*]Apply random Red Potion-style debuffs to the player or nearby enemies
+[*]Optional Randy websocket integration for Neuro SDK testing
+[/list]
+
+[b]Standalone Use[/b]
+
+This mod does not require Neuro, Randy, or the Neuro SDK for normal gameplay.
+
+You can use the companion with commands such as:
+
+[list]
+[*]/neuro help
+[*]/neuro status
+[*]/neuro follow
+[*]/neuro attack
+[*]/neuro autoattack 30
+[*]/neuro weapon status
+[*]/neuro weapon inspect
+[*]/neuro weapon set
+[*]/neuro weapon take
+[*]/neuro weapon return
+[/list]
+
+[b]Weapon System[/b]
+
+Neuro has her own magic weapon slot.
+
+She currently accepts direct-fire magic weapons, controllable magic weapons, and some channeling magic weapons.
+
+Unsupported support/stationary/persistent-field weapons are rejected.
+
+Examples:
+
+[list]
+[*]Wand of Sparking - accepted
+[*]Water Bolt - accepted
+[*]Demon Scythe - accepted
+[*]Magic Missile - accepted
+[*]Flamelash - accepted
+[*]Rainbow Rod - accepted
+[*]Laser Machinegun - rejected
+[*]Nimbus Rod - rejected
+[*]Clinger Staff - rejected
+[*]Magnet Sphere - rejected
+[*]Last Prism - rejected for now
+[/list]
+
+[b]Optional Randy/Neuro Integration[/b]
+
+The mod can optionally connect to Randy from the VedalAI Neuro SDK through websocket.
+
+When connected, the mod sends Terraria context and lets Randy/Neuro choose high-level actions. Neuro does not directly control the player or press low-level inputs.
+
+Randy integration is optional and disabled by default.
+
+[b]Repository[/b]
+
+https://github.com/Pekotaker/NeuroCompanion

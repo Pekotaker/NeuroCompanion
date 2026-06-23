@@ -251,18 +251,14 @@ You can equip a weapon by dragging it into the slot or by using commands.
 
 Neuro currently accepts:
 
-* Direct-fire magic weapons
-* Controllable magic weapons, treated like normal attacks
-* Some channeling magic weapons
+* Direct-fire magic weapons (e.g., Wand of Sparking, Water Bolt, Demon Scythe, Razorblade Typhoon)
+* Controllable magic weapons, treated like normal attacks (e.g., Magic Missile, Flamelash, Rainbow Rod)
 
 Neuro rejects:
 
 * Non-magic weapons
-* Items with no damage
-* Items with no mana cost
-* Items that do not shoot projectiles
-* Support/stationary/persistent-field magic weapons
-* Held beam weapons that need custom support
+* Support magic weapons
+* Channeling magic weapons that require the player to hold the attack button
 
 Examples:
 
@@ -273,14 +269,14 @@ Demon Scythe         -> accepted
 Magic Missile        -> accepted
 Flamelash            -> accepted
 Rainbow Rod          -> accepted
-Laser Machinegun     -> accepted
+Laser Machinegun     -> rejected
 Nimbus Rod           -> rejected
 Clinger Staff        -> rejected
 Magnet Sphere        -> rejected
-Last Prism           -> rejected for now
+Last Prism           -> rejected
 ```
 
-Last Prism-style held beam weapons are not supported yet because they need custom beam behavior attached to the companion body instead of the player.
+Last Prism, Laser Machinegun and other handheld weapons are not supported yet because they need custom beam behavior attached to the companion body instead of the player.
 
 ## Optional Neuro/Randy Integration
 

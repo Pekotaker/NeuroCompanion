@@ -1,1 +1,7 @@
-Modify this file with a description of your mod.
+Neuro Companion adds a command-controlled summon companion to Terraria.
+
+The companion can follow the player, recall, attack, autoattack, use an equipped magic weapon, and apply buffs or debuffs through chat commands.
+
+The mod works standalone without Neuro/Randy.
+
+Optional Randy websocket integration is included for local Neuro SDK testing, but it is disabled by default.
