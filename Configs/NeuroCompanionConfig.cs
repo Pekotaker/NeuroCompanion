@@ -49,6 +49,24 @@ namespace NeuroCompanion.Configs
         [DefaultValue(5)]
         public int AutoAttackCooldownSeconds { get; set; }
 
+
+        [Range(0, 60)]
+        [Slider]
+        [DefaultValue(0)]
+        public int WeaponStatusCooldownSeconds { get; set; }
+
+
+        [Range(0, 60)]
+        [Slider]
+        [DefaultValue(5)]
+        public int EquipWeaponFromInventoryCooldownSeconds { get; set; }
+
+
+        [Range(0, 60)]
+        [Slider]
+        [DefaultValue(2)]
+        public int ReturnWeaponToPlayerCooldownSeconds { get; set; }
+
         [Range(0, 300)]
         [Slider]
         [DefaultValue(60)]

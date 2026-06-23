@@ -120,6 +120,23 @@ namespace NeuroCompanion.Neuro
                         DebuffNearestEnemy(player)
                     );
 
+                case NeuroCommandType.WeaponStatus:
+                    return NeuroActionResult.Ok(
+                        NeuroWeaponService.GetStatusText(player)
+                    );
+
+                case NeuroCommandType.EquipWeaponFromInventory:
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroWeaponService.TakeStrongestFromInventory(player)
+                    );
+
+                case NeuroCommandType.ReturnWeaponToPlayer:
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroWeaponService.ReturnWeaponToInventory(player)
+                    );
+
                 default:
                     return NeuroActionResult.Fail($"Unknown Neuro command: {command.Type}");
             }

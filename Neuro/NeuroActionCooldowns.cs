@@ -83,6 +83,9 @@ namespace NeuroCompanion.Neuro
                 NeuroCommandType.BuffPlayer => config.BuffPlayerCooldownSeconds,
                 NeuroCommandType.DebuffPlayer => config.DebuffPlayerCooldownSeconds,
                 NeuroCommandType.DebuffNearestEnemy => config.DebuffEnemyCooldownSeconds,
+                NeuroCommandType.EquipWeaponFromInventory => config.EquipWeaponFromInventoryCooldownSeconds,
+                NeuroCommandType.ReturnWeaponToPlayer => config.ReturnWeaponToPlayerCooldownSeconds,
+                NeuroCommandType.WeaponStatus => config.WeaponStatusCooldownSeconds,
                 _ => 0
             };
 

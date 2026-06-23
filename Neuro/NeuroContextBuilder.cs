@@ -173,7 +173,6 @@ namespace NeuroCompanion.Neuro
 
             if (!companionSummoned)
             {
-                builder.AppendLine("  recall_companion: skipped because the companion is not summoned.");
                 builder.AppendLine("  follow: skipped because the companion is not summoned.");
                 builder.AppendLine("  attack_once: skipped because the companion is not summoned.");
                 builder.AppendLine("  autoattack: skipped because the companion is not summoned.");
@@ -181,9 +180,11 @@ namespace NeuroCompanion.Neuro
                 return;
             }
 
-            builder.AppendLine("  recall_companion: teleports the companion back near the player.");
             builder.AppendLine("  follow: deactivates autoattack mode and makes the companion follow the player.");
             builder.AppendLine("  attack_once: makes the companion fire one equipped magic weapon attack.");
+            builder.AppendLine("  weapon_status: checks what magic weapon Neuro currently has equipped.");
+            builder.AppendLine("  equip_weapon_from_inventory: moves the strongest valid magic weapon from the player's inventory into Neuro's weapon slot.");
+            builder.AppendLine("  return_weapon_to_player: returns Neuro's equipped weapon to the player's inventory.");
 
             if (validEnemyAvailable)
             {

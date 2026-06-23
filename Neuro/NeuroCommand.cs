@@ -8,7 +8,10 @@
         StartTimedAttack,
         BuffPlayer,
         DebuffPlayer,
-        DebuffNearestEnemy
+        DebuffNearestEnemy,
+        WeaponStatus,
+        EquipWeaponFromInventory,
+        ReturnWeaponToPlayer,
     }
 
     public class NeuroCommand

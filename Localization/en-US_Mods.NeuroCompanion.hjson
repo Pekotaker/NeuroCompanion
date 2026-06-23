@@ -78,6 +78,21 @@ Configs: {
 			Tooltip: Cooldown for autoattack, in seconds.
 		}
 
+		WeaponStatusCooldownSeconds: {
+			Label: Weapon status cooldown
+			Tooltip: Cooldown for weapon_status, in seconds.
+		}
+
+		EquipWeaponFromInventoryCooldownSeconds: {
+			Label: Equip weapon from inventory cooldown
+			Tooltip: Cooldown for equip_weapon_from_inventory, in seconds.
+		}
+
+		ReturnWeaponToPlayerCooldownSeconds: {
+			Label: Return weapon to player cooldown
+			Tooltip: Cooldown for return_weapon_to_player, in seconds.
+		}
+
 		BuffPlayerCooldownSeconds: {
 			Label: Buff player cooldown
 			Tooltip: Cooldown for buff_player, in seconds.

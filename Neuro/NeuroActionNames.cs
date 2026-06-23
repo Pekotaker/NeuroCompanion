@@ -9,5 +9,8 @@
         public const string BuffPlayer = "buff_player";
         public const string DebuffPlayer = "debuff_player";
         public const string DebuffEnemy = "debuff_enemy";
+        public const string WeaponStatus = "weapon_status";
+        public const string EquipWeaponFromInventory = "equip_weapon_from_inventory";
+        public const string ReturnWeaponToPlayer = "return_weapon_to_player";
     }
 }

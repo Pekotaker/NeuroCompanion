@@ -42,6 +42,21 @@
                 },
                 new
                 {
+                    name = NeuroActionNames.WeaponStatus,
+                    description = "Check what magic weapon Neuro currently has equipped."
+                },
+                new
+                {
+                    name = NeuroActionNames.EquipWeaponFromInventory,
+                    description = "Let Neuro choose the strongest valid direct-fire magic weapon from the player's inventory. The selected weapon is moved into Neuro's weapon slot. If Neuro already has a weapon, the old weapon is automatically swapped back into the inventory slot the new weapon came from."
+                },
+                new
+                {
+                    name = NeuroActionNames.ReturnWeaponToPlayer,
+                    description = "Return Neuro's equipped magic weapon to the player's inventory."
+                },
+                new
+                {
                     name = NeuroActionNames.BuffPlayer,
                     description = "Apply 3 random Red Potion-style positive buffs to the player."
                 },

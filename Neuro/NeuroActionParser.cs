@@ -50,6 +50,18 @@ namespace NeuroCompanion.Neuro
                     command = new NeuroCommand(NeuroCommandType.DebuffNearestEnemy);
                     return true;
 
+                case NeuroActionNames.WeaponStatus:
+                    command = new NeuroCommand(NeuroCommandType.WeaponStatus);
+                    return true;
+
+                case NeuroActionNames.EquipWeaponFromInventory:
+                    command = new NeuroCommand(NeuroCommandType.EquipWeaponFromInventory);
+                    return true;
+
+                case NeuroActionNames.ReturnWeaponToPlayer:
+                    command = new NeuroCommand(NeuroCommandType.ReturnWeaponToPlayer);
+                    return true;
+
                 default:
                     error = $"Unknown Neuro action: {actionName}";
                     return false;

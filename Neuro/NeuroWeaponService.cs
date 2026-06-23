@@ -25,8 +25,8 @@ namespace NeuroCompanion.Neuro
         {
             if (PlayerIsHoldingMouseItem())
             {
-                return NeuroActionResult.Fail(
-                    "Put away the item on your cursor before assigning a weapon to Neuro."
+                return NeuroActionResult.Ok(
+                    "Action skipped: put away the item on your cursor before assigning a weapon to Neuro."
                 );
             }
 
@@ -34,7 +34,9 @@ namespace NeuroCompanion.Neuro
 
             if (selectedSlot < 0 || selectedSlot >= player.inventory.Length)
             {
-                return NeuroActionResult.Fail("Could not find the selected inventory slot.");
+                return NeuroActionResult.Ok(
+                    "Action skipped: could not find the selected inventory slot."
+                );
             }
 
             return MoveInventoryItemToNeuroSlot(player, selectedSlot);
@@ -44,8 +46,8 @@ namespace NeuroCompanion.Neuro
         {
             if (PlayerIsHoldingMouseItem())
             {
-                return NeuroActionResult.Fail(
-                    "Put away the item on your cursor before letting Neuro take a weapon."
+                return NeuroActionResult.Ok(
+                    "Action skipped: put away the item on your cursor before letting Neuro take a weapon."
                 );
             }
 
@@ -79,8 +81,8 @@ namespace NeuroCompanion.Neuro
 
             if (bestSlot == -1)
             {
-                return NeuroActionResult.Fail(
-                    "No valid magic weapon found in the inventory."
+                return NeuroActionResult.Ok(
+                    "Action skipped: no valid magic weapon found in the inventory."
                 );
             }
 
@@ -101,8 +103,8 @@ namespace NeuroCompanion.Neuro
 
             if (emptySlot == -1)
             {
-                return NeuroActionResult.Fail(
-                    "Could not return Neuro's weapon because the inventory is full."
+                return NeuroActionResult.Ok(
+                    "Action skipped: could not return Neuro's weapon because the inventory is full."
                 );
             }
 
@@ -124,22 +126,28 @@ namespace NeuroCompanion.Neuro
             NeuroCompanionPlayer neuroPlayer =
                 player.GetModPlayer<NeuroCompanionPlayer>();
 
+            Item sourceItem = player.inventory[inventorySlot];
+
+            if (!NeuroWeaponValidator.IsValidNeuroWeapon(sourceItem, out string reason))
+            {
+                return NeuroActionResult.Ok($"Action skipped: {reason}");
+            }
+
+            Item newWeapon = sourceItem.Clone();
+
             if (neuroPlayer.HasNeuroWeapon())
             {
-                return NeuroActionResult.Fail(
-                    $"Neuro already has {neuroPlayer.NeuroWeapon.HoverName}. Use /neuro weapon return first."
-                );
+                Item oldWeapon = neuroPlayer.NeuroWeapon.Clone();
+
+                neuroPlayer.SetNeuroWeapon(newWeapon);
+
+                player.inventory[inventorySlot] = oldWeapon;
             }
-
-            Item item = player.inventory[inventorySlot];
-
-            if (!NeuroWeaponValidator.IsValidNeuroWeapon(item, out string reason))
+            else
             {
-                return NeuroActionResult.Fail(reason);
+                neuroPlayer.SetNeuroWeapon(newWeapon);
+                sourceItem.TurnToAir();
             }
-
-            neuroPlayer.SetNeuroWeapon(item);
-            item.TurnToAir();
 
             return NeuroActionResult.Ok(
                 $"Neuro equipped {neuroPlayer.NeuroWeapon.HoverName}."
