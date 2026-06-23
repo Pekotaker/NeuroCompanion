@@ -282,6 +282,10 @@ Last Prism, Laser Machinegun and other handheld weapons are not supported yet be
 
 The mod can optionally connect to Randy from the VedalAI Neuro SDK.
 
+```text
+https://github.com/VedalAI/neuro-sdk
+```
+
 When connected, the mod can send Terraria context to Randy/Neuro, including:
 
 * Player health
@@ -381,8 +385,8 @@ Terraria mod:
 https://github.com/Pekotaker/NeuroCompanion
 ```
 
-Randy test app:
+NeuroSDK:
 
 ```text
-https://github.com/Pekotaker/NeuroRandyTest
+https://github.com/VedalAI/neuro-sdk
 ```
