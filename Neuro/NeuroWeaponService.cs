@@ -242,5 +242,51 @@ namespace NeuroCompanion.Neuro
                 $"Neuro equipped {newWeapon.HoverName}."
             );
         }
+
+        public static string InspectSelectedItem(Player player)
+        {
+            if (player == null || !player.active)
+            {
+                return "No active player found.";
+            }
+
+            int selectedSlot = player.selectedItem;
+
+            if (selectedSlot < 0 || selectedSlot >= player.inventory.Length)
+            {
+                return "Could not find the selected inventory slot.";
+            }
+
+            Item item = player.inventory[selectedSlot];
+
+            NeuroWeaponClassification classification =
+                NeuroWeaponClassifier.Classify(item);
+
+            string kindName =
+                NeuroWeaponClassifier.GetKindDisplayName(classification.Kind);
+
+            string acceptedText = classification.IsAccepted ? "Yes" : "No";
+
+            if (item == null || item.IsAir)
+            {
+                return
+                    "Selected item: Empty\n" +
+                    $"Classification: {kindName}\n" +
+                    $"Accepted: {acceptedText}\n" +
+                    $"Reason: {classification.Reason}";
+            }
+
+            return
+                $"Selected item: {item.HoverName}\n" +
+                $"Classification: {kindName}\n" +
+                $"Accepted: {acceptedText}\n" +
+                $"Damage: {item.damage}\n" +
+                $"Mana: {item.mana}\n" +
+                $"Shoot projectile ID: {item.shoot}\n" +
+                $"Shoot speed: {item.shootSpeed}\n" +
+                $"Use time: {item.useTime}\n" +
+                $"Channel: {item.channel}\n" +
+                $"Reason: {classification.Reason}";
+        }
     }
 }

@@ -212,6 +212,10 @@ namespace NeuroCompanion.Commands
                     caller.Reply(result.Message);
                     return;
 
+                case "inspect":
+                    caller.Reply(NeuroWeaponService.InspectSelectedItem(player));
+                    return;
+
                 default:
                     caller.Reply($"Unknown weapon command: {weaponCommand}");
                     ReplyWithWeaponHelp(caller);
@@ -226,6 +230,7 @@ namespace NeuroCompanion.Commands
             caller.Reply("/neuro weapon set");
             caller.Reply("/neuro weapon take");
             caller.Reply("/neuro weapon return");
+            caller.Reply("/neuro weapon inspect");
         }
 
         private static void ReplyWithHelp(CommandCaller caller)
