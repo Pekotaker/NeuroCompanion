@@ -1,311 +1,392 @@
 # Neuro Companion
 
-Neuro Companion is a tModLoader mod for Terraria that adds a summon companion intended to act as Neuro-sama’s in-game body.
+Neuro Companion is a tModLoader mod for Terraria that adds a summon companion with command-based behavior.
 
-Neuro can work like a normal Terraria summon, but she can also connect to Randy from the VedalAI Neuro SDK for local action testing.
+The companion works as a normal Terraria summon, but it can also be controlled through in-game commands. It can follow the player, attack enemies, use an equipped magic weapon, apply buffs/debuffs, and switch between follow and autoattack modes.
 
-Neuro does not directly control the player. Instead, the mod exposes high-level actions such as:
+The mod can be used in two ways:
 
-- Recall the companion
-- Follow the player
-- Attack once
-- Autoattack for a limited time
-- Buff the player
-- Debuff the player or a nearby enemy
+* **Standalone command mode**: control the companion directly with Terraria chat commands
+* **Optional Neuro/Randy mode**: connect the mod to Randy from the VedalAI Neuro SDK so Neuro can choose actions through websocket
+
+Neuro/Randy is optional. The mod works without it.
 
 ## Table of Contents
 
-- [Setup](#setup)
-  - [1. Install requirements](#1-install-requirements)
-  - [2. Enable the mod](#2-enable-the-mod)
-  - [3. Start Randy](#3-start-randy)
-  - [4. Connect Terraria to Randy](#4-connect-terraria-to-randy)
-- [Commands](#commands)
-  - [Companion commands](#companion-commands)
-  - [Websocket commands](#websocket-commands)
-  - [Debug command](#debug-command)
-- [Troubleshooting](#troubleshooting)
+* [Features](#features)
+* [Setup](#setup)
+
+  * [Standalone Setup](#standalone-setup)
+  * [Optional Randy Setup](#optional-randy-setup)
+* [Commands](#commands)
+
+  * [Companion Commands](#companion-commands)
+  * [Weapon Commands](#weapon-commands)
+  * [Websocket Commands](#websocket-commands)
+  * [Debug Command](#debug-command)
+* [Weapon System](#weapon-system)
+* [Optional Neuro/Randy Integration](#optional-neurorandy-integration)
+* [Troubleshooting](#troubleshooting)
+* [Repository](#repository)
+
+## Features
+
+* Adds the **Neuro Companion Staff**
+* Summons a Neuro companion minion
+* Companion follows the player
+* Companion can attack once on command
+* Companion can autoattack for a limited time
+* Companion can use an equipped magic weapon
+* Adds a Neuro weapon equipment slot in the inventory UI
+* Player can manually assign a weapon to Neuro
+* Neuro can take a valid weapon from the player inventory
+* Supports direct-fire magic weapons
+* Supports controllable magic weapons by treating them like normal attacks
+* Supports some channeling magic weapons
+* Rejects unsupported support/stationary/persistent-field magic weapons
+* Can apply Red Potion-style buffs to the player
+* Can apply Red Potion-style debuffs to the player or a nearby enemy
+* Can optionally connect to Randy through websocket
+* Can optionally send Terraria context to Randy/Neuro
 
 ## Setup
 
-### 1. Install requirements
+### Standalone Setup
 
-You need:
+You only need:
 
-- Terraria on Steam
-- tModLoader
-- Node.js and npm
-- VedalAI Neuro SDK
+* Terraria
+* tModLoader
 
-Links:
+In tModLoader:
 
-- tModLoader: https://www.tmodloader.net/
-- Neuro SDK: https://github.com/VedalAI/neuro-sdk
-- Randy README: https://github.com/VedalAI/neuro-sdk/blob/main/Randy/README.md
+1. Open **Workshop**
+2. Open **Develop Mods**
+3. Build the mod
+4. Enable **Neuro Companion**
+5. Reload mods
+6. Enter a world
+7. Obtain or craft the Neuro Companion Staff
 
-### 2. Enable the mod
+After that, you can control the companion with `/neuro` commands.
 
-1. Launch tModLoader.
-2. Enable `NeuroCompanion`.
-3. Load a world.
-4. Craft or obtain the `Neuro Companion Staff`.
-5. Use the staff to summon the companion.
+Randy is not required for standalone use.
 
-Current test recipe:
+### Optional Randy Setup
 
-```text
-10 Wood at a Work Bench
-```
+You only need this if you want to test Neuro/Randy control.
 
-### 3. Start Randy
+Start Randy locally.
 
-Clone the Neuro SDK:
-
-```powershell
-git clone https://github.com/VedalAI/neuro-sdk.git
-```
-
-Go to Randy:
-
-```powershell
-cd "D:\Work\Neuro SDK\neuro-sdk\Randy"
-```
-
-Install dependencies:
-
-```powershell
-npm install
-```
-
-Start Randy:
-
-```powershell
-npm start
-```
-
-Randy should run at:
+By default, the mod expects Randy to be running at:
 
 ```text
-WebSocket: ws://localhost:8000
-HTTP:      http://localhost:1337
+ws://localhost:8000
 ```
 
-### 4. Connect Terraria to Randy
+This can be changed in the mod config.
 
-In Terraria chat:
+Then, in Terraria chat, run:
 
 ```text
 /neurows connect
 ```
 
-Check connection:
+To check the connection:
 
 ```text
 /neurows status
 ```
 
-Disconnect:
-
-```text
-/neurows disconnect
-```
-
 ## Commands
 
-## Companion commands
-
-### Show help
+### Companion Commands
 
 ```text
 /neuro help
 ```
 
-### Show companion status
+Shows the Neuro command list.
 
 ```text
 /neuro status
 ```
 
-### Follow
+Shows companion status, current mode, autoattack timer, cooldowns, and weapon status.
+
 
 ```text
 /neuro follow
 ```
 
-Stops autoattack and makes Neuro follow the player.
-
-### Attack once
+Stops autoattack mode and makes the companion follow the player.
 
 ```text
 /neuro attack
 ```
 
-Makes Neuro fire one equipped magic weapon attack.
+Makes the companion fire one attack with Neuro’s equipped magic weapon.
 
-If an enemy is nearby, she attacks the enemy.  
-If no enemy is nearby, she fires toward the cursor.
+If a valid enemy is nearby, the attack targets that enemy.
 
-### Autoattack
+If no valid enemy is nearby, the attack fires toward the player’s cursor.
 
 ```text
 /neuro autoattack
 ```
 
-Starts autoattack for the default duration.
+Starts timed autoattack mode for the default duration.
 
 ```text
 /neuro autoattack 30
 ```
 
-Starts autoattack for 30 seconds.
-
-The current maximum duration is 180 seconds.
-
-### Buff player
+Starts timed autoattack mode for 30 seconds.
 
 ```text
 /neuro buff
 ```
 
-Neuro will apply 3 random Red Potion-style positive buffs to the player.
-
-### Debuff player
+Applies random positive Red Potion-style buffs to the player.
 
 ```text
 /neuro debuff player
 ```
 
-Neuro will apply Red Potion-style debuffs to the player.
-
-### Debuff nearest enemy
+Applies random Red Potion-style debuffs to the player.
 
 ```text
 /neuro debuff enemy
 ```
 
-Neuro will apply Red Potion-style debuffs to the nearest valid enemy.
+Applies random Red Potion-style debuffs to the nearest valid enemy.
 
-## Websocket commands
-
-### Show websocket help
+### Weapon Commands
 
 ```text
-/neurows help
+/neuro weapon status
 ```
 
-### Connect to Randy
+Shows Neuro’s currently equipped weapon.
+
+```text
+/neuro weapon inspect
+```
+
+Inspects the player’s currently selected item and shows whether Neuro can use it.
+
+```text
+/neuro weapon set
+```
+
+Moves the player’s currently selected hotbar item into Neuro’s weapon slot if it is valid.
+
+If Neuro already has a weapon, the old weapon is automatically swapped back.
+
+```text
+/neuro weapon take
+```
+
+Lets Neuro take the strongest valid magic weapon from the player’s inventory.
+
+The selected hotbar item is ignored so Neuro does not take what the player is currently holding.
+
+If Neuro already has a weapon, the old weapon is automatically swapped back.
+
+```text
+/neuro weapon return
+```
+
+Returns Neuro’s equipped weapon to the player inventory.
+
+### Websocket Commands
+
+These commands are only needed for Randy/Neuro testing.
 
 ```text
 /neurows connect
 ```
 
-### Disconnect from Randy
-
-```text
-/neurows disconnect
-```
-
-### Show connection status
+Connects the mod to Randy.
 
 ```text
 /neurows status
 ```
 
-### Send current game context
+Shows websocket connection status.
 
 ```text
 /neurows context
 ```
 
-## Debug command
+Manually sends current Terraria context to Randy.
+
+```text
+/neurows disconnect
+```
+
+Disconnects from Randy.
+
+```text
+/neurows help
+```
+
+Shows websocket command help.
+
+### Debug Command
 
 ```text
 /neurodebug
 ```
 
-Shows useful debug information, such as:
+Shows detailed debug information, including connection status, summoned status, companion mode, cooldowns, last received action, queued command, executed command, last action result, and last context sent.
 
-- Whether Randy is connected
-- Whether the companion is summoned
-- Current companion mode
-- Autoattack time remaining
-- Action cooldowns
-- Last received action
-- Last action result
+## Weapon System
+
+Neuro has her own magic weapon slot.
+
+The slot appears in the inventory UI during normal inventory use. It is hidden when shops, chests, reforging, or guide crafting are open.
+
+You can equip a weapon by dragging it into the slot or by using commands.
+
+Neuro currently accepts:
+
+* Direct-fire magic weapons
+* Controllable magic weapons, treated like normal attacks
+* Some channeling magic weapons
+
+Neuro rejects:
+
+* Non-magic weapons
+* Items with no damage
+* Items with no mana cost
+* Items that do not shoot projectiles
+* Support/stationary/persistent-field magic weapons
+* Held beam weapons that need custom support
+
+Examples:
+
+```text
+Wand of Sparking     -> accepted
+Water Bolt           -> accepted
+Demon Scythe         -> accepted
+Magic Missile        -> accepted
+Flamelash            -> accepted
+Rainbow Rod          -> accepted
+Laser Machinegun     -> accepted
+Nimbus Rod           -> rejected
+Clinger Staff        -> rejected
+Magnet Sphere        -> rejected
+Last Prism           -> rejected for now
+```
+
+Last Prism-style held beam weapons are not supported yet because they need custom beam behavior attached to the companion body instead of the player.
+
+## Optional Neuro/Randy Integration
+
+The mod can optionally connect to Randy from the VedalAI Neuro SDK.
+
+When connected, the mod can send Terraria context to Randy/Neuro, including:
+
+* Player health
+* Companion status
+* Companion mode
+* Equipped weapon
+* Nearby enemies
+* Boss status
+* Cooldowns
+* Recent action results
+
+Randy/Neuro can then choose high-level actions such as:
+
+* Follow player
+* Attack once
+* Start autoattack
+* Buff player
+* Debuff player
+* Debuff enemy
+* Equip weapon from inventory
+* Return weapon to player
+* Check weapon status
+
+Neuro does not directly control the player or press low-level inputs. The mod validates each action and executes it safely through Terraria logic.
+
+This integration is optional. The same companion actions can be tested manually with `/neuro` commands.
 
 ## Troubleshooting
 
-### `/neurows status` says disconnected
+### The companion does not attack
 
-Make sure Randy is running:
+Check that:
 
-```powershell
-cd "D:\Work\Neuro SDK\neuro-sdk\Randy"
-npm start
-```
-
-Then reconnect in Terraria:
-
-```text
-/neurows connect
-```
-
-### The companion does not respond
-
-Make sure the companion is summoned with the `Neuro Companion Staff`.
-
-These actions require the companion to be summoned:
-
-```text
-/neuro recall
-/neuro follow
-/neuro attack
-/neuro autoattack
-```
-
-### Randy sends an action but nothing happens
+* The companion is summoned
+* Neuro has a valid magic weapon equipped
+* There is a valid enemy nearby
+* The action is not on cooldown
 
 Use:
 
 ```text
-/neurodebug
+/neuro status
+/neuro weapon status
 ```
 
-Check whether:
+### Neuro cannot equip a weapon
 
-- Randy is connected
-- The companion is summoned
-- The action is on cooldown
-- The last action result says it was skipped
-
-### Actions are skipped because of cooldown
-
-Wait a few seconds and try again.
-
-Default cooldowns:
+Use:
 
 ```text
-recall: 2 seconds
-follow: 1 second
-attack once: 3 seconds
-autoattack: 5 seconds
-buff player: 60 seconds
-debuff player: 60 seconds
-debuff enemy: 30 seconds
+/neuro weapon inspect
 ```
 
-### Randy keeps retrying an action
+This will show why the selected item is accepted or rejected.
 
-Usually this means Randy received a failed action result.
+### The weapon slot is missing
 
-Normal skipped actions, such as cooldowns or missing companion, should be treated as skipped rather than failed. Check `/neurodebug` to see the last action result.
+Open the normal player inventory.
 
-### The mod connects to the wrong Randy address
+The slot is intentionally hidden during:
 
-Open the mod config menu in tModLoader and check the Randy WebSocket URL.
+* Chest UI
+* Shop UI
+* Reforge UI
+* Guide crafting UI
+
+### Randy does not connect
+
+Randy is optional. You do not need it for normal command-based use.
+
+If you are testing Randy integration, make sure Randy is running, then use:
+
+```text
+/neurows connect
+/neurows status
+```
+
+Also check that the websocket URL in the config matches Randy’s address.
 
 Default:
 
 ```text
 ws://localhost:8000
+```
+
+### Randy keeps trying actions when the companion is missing
+
+The mod treats missing-companion actions as skipped instead of hard failures, so Randy should not repeatedly retry them.
+
+Summon the companion with the Neuro Companion Staff before testing combat actions.
+
+## Repository
+
+Terraria mod:
+
+```text
+https://github.com/Pekotaker/NeuroCompanion
+```
+
+Randy test app:
+
+```text
+https://github.com/Pekotaker/NeuroRandyTest
 ```
