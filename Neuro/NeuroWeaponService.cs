@@ -18,7 +18,13 @@ namespace NeuroCompanion.Neuro
 
             Item weapon = neuroPlayer.NeuroWeapon;
 
-            return $"Neuro weapon: {weapon.HoverName} | Damage: {weapon.damage} | Mana: {weapon.mana}";
+            NeuroWeaponClassification classification =
+                NeuroWeaponClassifier.Classify(weapon);
+
+            string kindName =
+                NeuroWeaponClassifier.GetKindDisplayName(classification.Kind);
+
+            return $"Neuro weapon: {weapon.HoverName} | Type: {kindName} | Damage: {weapon.damage} | Mana: {weapon.mana}";
         }
 
         public static NeuroActionResult SetFromSelectedItem(Player player)

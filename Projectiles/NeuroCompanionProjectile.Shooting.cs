@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using NeuroCompanion.Neuro;
 using NeuroCompanion.Players;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace NeuroCompanion.Projectiles
@@ -11,9 +11,32 @@ namespace NeuroCompanion.Projectiles
     {
         private void ShootWeaponAtTargetWhenReady(Player owner, NPC target)
         {
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            if (!neuroPlayer.HasNeuroWeapon())
+            {
+                return;
+            }
+
+            Item weapon = neuroPlayer.NeuroWeapon;
+
+            NeuroWeaponClassification classification =
+                NeuroWeaponClassifier.Classify(weapon);
+
+            if (!classification.IsAccepted)
+            {
+                return;
+            }
+
             ShootTimer++;
 
-            if (ShootTimer < ShootCooldownTicks)
+            int cooldownTicks = GetWeaponCooldownTicks(
+                weapon,
+                classification
+            );
+
+            if (ShootTimer < cooldownTicks)
             {
                 return;
             }
@@ -57,7 +80,10 @@ namespace NeuroCompanion.Projectiles
 
             Item weapon = neuroPlayer.NeuroWeapon;
 
-            if (!Neuro.NeuroWeaponValidator.IsValidNeuroWeapon(weapon, out _))
+            NeuroWeaponClassification classification =
+                NeuroWeaponClassifier.Classify(weapon);
+
+            if (!classification.IsAccepted)
             {
                 return;
             }
@@ -159,6 +185,49 @@ namespace NeuroCompanion.Projectiles
             return owner
                 .GetTotalKnockback(DamageClass.Magic)
                 .ApplyTo(weapon.knockBack);
+        }
+
+        private static int GetWeaponCooldownTicks(
+            Item weapon,
+            NeuroWeaponClassification classification
+        )
+        {
+            if (
+                classification.Kind == NeuroWeaponKind.DirectFire ||
+                classification.Kind == NeuroWeaponKind.Controlled
+            )
+            {
+                return ShootCooldownTicks;
+            }
+
+            if (classification.Kind == NeuroWeaponKind.Channeling)
+            {
+                int useTime = weapon.useTime;
+
+                if (useTime <= 0)
+                {
+                    useTime = 1;
+                }
+
+                return ClampInt(useTime, 1, 10);
+            }
+
+            return ShootCooldownTicks;
+        }
+
+        private static int ClampInt(int value, int min, int max)
+        {
+            if (value < min)
+            {
+                return min;
+            }
+
+            if (value > max)
+            {
+                return max;
+            }
+
+            return value;
         }
     }
 }
