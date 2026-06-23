@@ -37,14 +37,9 @@ namespace NeuroCompanion.Systems
 
         private bool DrawNeuroWeaponSlot()
         {
-            if (Main.gameMenu || !Main.playerInventory)
-            {
-                return true;
-            }
-
             Player player = Main.LocalPlayer;
 
-            if (player == null || !player.active)
+            if (!ShouldDrawNeuroWeaponSlot(player))
             {
                 return true;
             }
@@ -146,6 +141,45 @@ namespace NeuroCompanion.Systems
             {
                 Main.NewText(result.Message);
             }
+        }
+
+        private static bool ShouldDrawNeuroWeaponSlot(Player player)
+        {
+            if (Main.gameMenu || !Main.playerInventory)
+            {
+                return false;
+            }
+
+            if (player == null || !player.active)
+            {
+                return false;
+            }
+
+            // A chest, piggy bank, safe, defender's forge, void vault, etc. is open.
+            if (player.chest != -1)
+            {
+                return false;
+            }
+
+            // An NPC shop is open.
+            if (Main.npcShop > 0)
+            {
+                return false;
+            }
+
+            // Goblin Tinkerer reforge UI.
+            if (Main.InReforgeMenu)
+            {
+                return false;
+            }
+
+            // Guide crafting UI.
+            if (Main.InGuideCraftMenu)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
