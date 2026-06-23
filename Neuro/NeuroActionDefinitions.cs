@@ -19,12 +19,12 @@
                 new
                 {
                     name = NeuroActionNames.AttackOnce,
-                    description = "Make Neuro's companion fire one Razorblade Typhoon attack. If a valid enemy is nearby, the attack targets that enemy. If no valid enemy is nearby, the attack fires toward the player's cursor. If the companion is not summoned, the action is skipped."
+                    description = "Make Neuro's companion fire one shot from her equipped magic weapon. If a valid enemy is nearby, the attack targets that enemy. If no valid enemy is nearby, the attack fires toward the player's cursor. If the companion is not summoned or Neuro has no equipped weapon, the action is skipped."
                 },
                 new
                 {
                     name = NeuroActionNames.AutoAttack,
-                    description = "Activate timed autoattack mode. During autoattack mode, Neuro's companion automatically fires Razorblade Typhoon attacks at nearby valid enemies. When the duration ends, the companion returns to follow mode. If the companion is not summoned, the action is skipped.",
+                    description = "Activate timed autoattack mode. During autoattack mode, Neuro's companion automatically fires her equipped magic weapon at nearby valid enemies. When the duration ends, the companion returns to follow mode. If the companion is not summoned or Neuro has no equipped weapon, the action is skipped.",
                     schema = new
                     {
                         type = "object",

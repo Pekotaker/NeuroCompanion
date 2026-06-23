@@ -58,9 +58,6 @@ namespace NeuroCompanion.Projectiles
         private const float SlowdownWhenArrived = 0.9f;
         private const float MinimumFacingVelocity = 0.1f;
 
-        private const float TyphoonSoundVolume = 1f;
-        private const float TyphoonSoundPitchVariance = 0.1f;
-
 
         private CompanionState State
         {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using NeuroCompanion.Players;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,7 +9,7 @@ namespace NeuroCompanion.Projectiles
 {
     public partial class NeuroCompanionProjectile
     {
-        private void ShootTyphoonAtTargetWhenReady(Player owner, NPC target)
+        private void ShootWeaponAtTargetWhenReady(Player owner, NPC target)
         {
             ShootTimer++;
 
@@ -18,10 +18,10 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            ShootTyphoonAtTarget(owner, target);
+            ShootWeaponAtTarget(owner, target);
         }
 
-        private void ShootTyphoonAtTarget(Player owner, NPC target)
+        private void ShootWeaponAtTarget(Player owner, NPC target)
         {
             if (!CanShootTarget(target, owner))
             {
@@ -30,19 +30,34 @@ namespace NeuroCompanion.Projectiles
 
             Vector2 shotDirection = target.Center - Projectile.Center;
 
-            ShootTyphoonInDirection(owner, shotDirection);
+            ShootWeaponInDirection(owner, shotDirection);
         }
 
-        private void ShootTyphoonTowardCursor(Player owner)
+        private void ShootWeaponTowardCursor(Player owner)
         {
             Vector2 shotDirection = Main.MouseWorld - Projectile.Center;
 
-            ShootTyphoonInDirection(owner, shotDirection);
+            ShootWeaponInDirection(owner, shotDirection);
         }
 
-        private void ShootTyphoonInDirection(Player owner, Vector2 rawDirection)
+        private void ShootWeaponInDirection(Player owner, Vector2 rawDirection)
         {
             if (Projectile.owner != Main.myPlayer)
+            {
+                return;
+            }
+
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            if (!neuroPlayer.HasNeuroWeapon())
+            {
+                return;
+            }
+
+            Item weapon = neuroPlayer.NeuroWeapon;
+
+            if (!Neuro.NeuroWeaponValidator.IsValidNeuroWeapon(weapon, out _))
             {
                 return;
             }
@@ -50,11 +65,13 @@ namespace NeuroCompanion.Projectiles
             ShootTimer = 0f;
 
             Vector2 shotDirection = NormalizeShotDirection(rawDirection, owner);
-            Vector2 shotVelocity = shotDirection * ShotSpeed;
+
+            float shotSpeed = GetWeaponShootSpeed(weapon);
+            Vector2 shotVelocity = shotDirection * shotSpeed;
             Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
 
-            PlayTyphoonSound();
-            SpawnTyphoonProjectile(owner, shotPosition, shotVelocity);
+            PlayWeaponSound(weapon);
+            SpawnWeaponProjectile(owner, weapon, shotPosition, shotVelocity);
         }
 
         private Vector2 NormalizeShotDirection(
@@ -70,61 +87,78 @@ namespace NeuroCompanion.Projectiles
             return rawDirection.SafeNormalize(Vector2.UnitX * owner.direction);
         }
 
-        private void PlayTyphoonSound()
+        private static float GetWeaponShootSpeed(Item weapon)
         {
+            if (weapon.shootSpeed > 0f)
+            {
+                return weapon.shootSpeed;
+            }
+
+            return ShotSpeed;
+        }
+
+        private void PlayWeaponSound(Item weapon)
+        {
+            if (!weapon.UseSound.HasValue)
+            {
+                return;
+            }
+
             SoundEngine.PlaySound(
-                SoundID.Item84 with
-                {
-                    Volume = TyphoonSoundVolume,
-                    PitchVariance = TyphoonSoundPitchVariance
-                },
+                weapon.UseSound.Value,
                 Projectile.Center
             );
         }
 
-        private void SpawnTyphoonProjectile(
+        private void SpawnWeaponProjectile(
             Player owner,
+            Item weapon,
             Vector2 shotPosition,
             Vector2 shotVelocity
         )
         {
-            int typhoonDamage = GetRazorbladeTyphoonSummonDamage(owner);
+            int damage = GetMagicWeaponDamage(owner, weapon);
+            float knockBack = GetMagicWeaponKnockBack(owner, weapon);
 
-            int typhoonProjectileIndex = Projectile.NewProjectile(
+            int projectileIndex = Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
                 shotPosition,
                 shotVelocity,
-                ProjectileID.Typhoon,
-                typhoonDamage,
-                Projectile.knockBack,
+                weapon.shoot,
+                damage,
+                knockBack,
                 Projectile.owner
             );
 
             if (
-                typhoonProjectileIndex < 0 ||
-                typhoonProjectileIndex >= Main.maxProjectiles
+                projectileIndex < 0 ||
+                projectileIndex >= Main.maxProjectiles
             )
             {
                 return;
             }
 
-            Projectile typhoonProjectile = Main.projectile[typhoonProjectileIndex];
+            Projectile spawnedProjectile = Main.projectile[projectileIndex];
 
-            typhoonProjectile.DamageType = DamageClass.Summon;
-            typhoonProjectile.originalDamage = typhoonDamage;
-            typhoonProjectile.netUpdate = true;
+            spawnedProjectile.DamageType = DamageClass.Magic;
+            spawnedProjectile.originalDamage = damage;
+            spawnedProjectile.netUpdate = true;
         }
 
-        private static int GetRazorbladeTyphoonSummonDamage(Player owner)
+        private static int GetMagicWeaponDamage(Player owner, Item weapon)
         {
-            int vanillaTyphoonDamage =
-                ContentSamples.ItemsByType[ItemID.RazorbladeTyphoon].damage;
-
             int scaledDamage = (int)owner
-                .GetTotalDamage(DamageClass.Summon)
-                .ApplyTo(vanillaTyphoonDamage);
+                .GetTotalDamage(DamageClass.Magic)
+                .ApplyTo(weapon.damage);
 
             return scaledDamage < 1 ? 1 : scaledDamage;
+        }
+
+        private static float GetMagicWeaponKnockBack(Player owner, Item weapon)
+        {
+            return owner
+                .GetTotalKnockback(DamageClass.Magic)
+                .ApplyTo(weapon.knockBack);
         }
     }
 }

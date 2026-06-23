@@ -140,7 +140,7 @@ Stops autoattack and makes Neuro follow the player.
 /neuro attack
 ```
 
-Makes Neuro fire one Razorblade Typhoon-style attack.
+Makes Neuro fire one equipped magic weapon attack.
 
 If an enemy is nearby, she attacks the enemy.  
 If no enemy is nearby, she fires toward the cursor.

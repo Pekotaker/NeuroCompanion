@@ -37,9 +37,11 @@ namespace NeuroCompanion.Neuro
             builder.AppendLine($"- Player position: X={player.Center.X:0}, Y={player.Center.Y:0}");
             builder.AppendLine($"- Companion summoned: {companionSummoned}");
             builder.AppendLine($"- Companion mode: {neuroPlayer.CompanionMode.ToCommandName()}");
+            builder.AppendLine($"- {NeuroWeaponService.GetStatusText(player)}");
             builder.AppendLine($"- Autoattack remaining: {autoAttackSecondsRemaining} seconds");
             builder.AppendLine($"- {NeuroActionCooldowns.GetCooldownStatusText()}");
             builder.AppendLine($"- Valid enemy target available: {validEnemyAvailable}");
+
 
             AppendNearestEnemy(builder, player, nearestEnemy);
             AppendNearbyEnemies(builder, player);
@@ -181,7 +183,7 @@ namespace NeuroCompanion.Neuro
 
             builder.AppendLine("  recall_companion: teleports the companion back near the player.");
             builder.AppendLine("  follow: deactivates autoattack mode and makes the companion follow the player.");
-            builder.AppendLine("  attack_once: makes the companion fire one Razorblade Typhoon attack.");
+            builder.AppendLine("  attack_once: makes the companion fire one equipped magic weapon attack.");
 
             if (validEnemyAvailable)
             {

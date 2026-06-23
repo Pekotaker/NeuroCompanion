@@ -55,6 +55,16 @@ namespace NeuroCompanion.Neuro
                     "Neuro companion is not summoned, so the action was skipped. Use the Neuro Companion Staff first."
                 );
             }
+            bool commandRequiresWeapon =
+                command.Type == NeuroCommandType.AttackOnce ||
+                command.Type == NeuroCommandType.StartTimedAttack;
+
+            if (commandRequiresWeapon && !HasUsableNeuroWeapon(player, out string weaponReason))
+            {
+                return NeuroActionResult.Ok(
+                    $"Action skipped: {weaponReason}"
+                );
+            }
 
 
             switch (command.Type)
@@ -210,6 +220,27 @@ namespace NeuroCompanion.Neuro
             }
 
             return result;
+        }
+
+        private static bool HasUsableNeuroWeapon(Player player, out string reason)
+        {
+            NeuroCompanionPlayer neuroPlayer =
+                player.GetModPlayer<NeuroCompanionPlayer>();
+
+            if (!neuroPlayer.HasNeuroWeapon())
+            {
+                reason = "Neuro has no magic weapon equipped. Use /neuro weapon set or /neuro weapon take first.";
+                return false;
+            }
+
+            if (!NeuroWeaponValidator.IsValidNeuroWeapon(neuroPlayer.NeuroWeapon, out reason))
+            {
+                reason = $"Neuro's equipped weapon is no longer valid: {reason}";
+                return false;
+            }
+
+            reason = string.Empty;
+            return true;
         }
     }
 }

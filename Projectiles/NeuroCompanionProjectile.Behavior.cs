@@ -59,12 +59,12 @@ namespace NeuroCompanion.Projectiles
             if (target == null)
             {
                 FollowOwner(owner);
-                ShootTyphoonTowardCursor(owner);
+                ShootWeaponTowardCursor(owner);
                 return;
             }
 
             HoverNearOwnerForCombat(owner, target);
-            ShootTyphoonAtTarget(owner, target);
+            ShootWeaponAtTarget(owner, target);
         }
 
         private void RunTimedAttackMode(Player owner)
@@ -81,7 +81,7 @@ namespace NeuroCompanion.Projectiles
             State = CompanionState.Attacking;
 
             HoverNearOwnerForCombat(owner, target);
-            ShootTyphoonAtTargetWhenReady(owner, target);
+            ShootWeaponAtTargetWhenReady(owner, target);
         }
     }
 }
