@@ -45,6 +45,12 @@ namespace NeuroCompanion.Commands
                 return;
             }
 
+            if (subcommand == "weapon")
+            {
+                HandleWeaponCommand(caller, player, args);
+                return;
+            }
+
             NeuroCommand command;
 
             if (!TryCreateCommand(args, out command))
@@ -169,6 +175,59 @@ namespace NeuroCompanion.Commands
             }
         }
 
+        private static void HandleWeaponCommand(
+            CommandCaller caller,
+            Player player,
+            string[] args
+        )
+        {
+            if (args.Length < 2)
+            {
+                ReplyWithWeaponHelp(caller);
+                return;
+            }
+
+            string weaponCommand = args[1].ToLowerInvariant();
+
+            NeuroActionResult result;
+
+            switch (weaponCommand)
+            {
+                case "status":
+                    caller.Reply(NeuroWeaponService.GetStatusText(player));
+                    return;
+
+                case "set":
+                    result = NeuroWeaponService.SetFromSelectedItem(player);
+                    caller.Reply(result.Message);
+                    return;
+
+                case "take":
+                    result = NeuroWeaponService.TakeStrongestFromInventory(player);
+                    caller.Reply(result.Message);
+                    return;
+
+                case "return":
+                    result = NeuroWeaponService.ReturnWeaponToInventory(player);
+                    caller.Reply(result.Message);
+                    return;
+
+                default:
+                    caller.Reply($"Unknown weapon command: {weaponCommand}");
+                    ReplyWithWeaponHelp(caller);
+                    return;
+            }
+        }
+
+        private static void ReplyWithWeaponHelp(CommandCaller caller)
+        {
+            caller.Reply("Neuro weapon commands:");
+            caller.Reply("/neuro weapon status");
+            caller.Reply("/neuro weapon set");
+            caller.Reply("/neuro weapon take");
+            caller.Reply("/neuro weapon return");
+        }
+
         private static void ReplyWithHelp(CommandCaller caller)
         {
             caller.Reply("Neuro Companion commands:");
@@ -181,6 +240,10 @@ namespace NeuroCompanion.Commands
             caller.Reply("/neuro buff");
             caller.Reply("/neuro debuff player");
             caller.Reply("/neuro debuff enemy");
+            caller.Reply("/neuro weapon status");
+            caller.Reply("/neuro weapon set");
+            caller.Reply("/neuro weapon take");
+            caller.Reply("/neuro weapon return");
         }
     }
 }

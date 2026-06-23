@@ -1,4 +1,6 @@
-﻿using NeuroCompanion.Buffs;
+﻿using Terraria;
+using Terraria.ModLoader.IO;
+using NeuroCompanion.Buffs;
 using NeuroCompanion.Neuro;
 using Terraria.ModLoader;
 
@@ -8,6 +10,8 @@ namespace NeuroCompanion.Players
     {
         private bool recallRequested;
         private bool singleAttackRequested;
+
+        public Item NeuroWeapon { get; private set; }
 
         public NeuroCompanionMode CompanionMode
         {
@@ -26,6 +30,26 @@ namespace NeuroCompanion.Players
         {
             recallRequested = false;
             singleAttackRequested = false;
+
+
+            NeuroWeapon = new Item();
+            NeuroWeapon.TurnToAir();
+        }
+
+        public bool HasNeuroWeapon()
+        {
+            return NeuroWeapon != null && !NeuroWeapon.IsAir;
+        }
+
+        public void SetNeuroWeapon(Item item)
+        {
+            NeuroWeapon = item.Clone();
+        }
+
+        public void ClearNeuroWeapon()
+        {
+            NeuroWeapon = new Item();
+            NeuroWeapon.TurnToAir();
         }
 
         public void RequestRecall()
@@ -97,6 +121,26 @@ namespace NeuroCompanion.Players
             }
 
             return ticksRemaining / ticksPerSecond;
+        }
+
+        public override void SaveData(TagCompound tag)
+        {
+            if (HasNeuroWeapon())
+            {
+                tag["NeuroWeapon"] = ItemIO.Save(NeuroWeapon);
+            }
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            if (tag.ContainsKey("NeuroWeapon"))
+            {
+                NeuroWeapon = ItemIO.Load(tag.GetCompound("NeuroWeapon"));
+            }
+            else
+            {
+                ClearNeuroWeapon();
+            }
         }
     }
 }
