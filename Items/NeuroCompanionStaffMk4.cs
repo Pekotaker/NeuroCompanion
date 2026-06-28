@@ -6,6 +6,8 @@ namespace NeuroCompanion.Items
 {
     public class NeuroCompanionStaffMk4 : NeuroCompanionStaff
     {
+        public override string Texture => "NeuroCompanion/Items/NeuroCompanionStaffMk4";
+
         protected override int StaffShootCooldownTicks => 1;
 
         protected override int StaffRarity => ItemRarityID.Red;
