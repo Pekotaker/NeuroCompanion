@@ -1,4 +1,5 @@
-﻿using NeuroCompanion.Players;
+﻿using NeuroCompanion.Configs;
+using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
 using System;
 using Terraria;
@@ -12,7 +13,6 @@ namespace NeuroCompanion.Neuro
 
         private const int DefaultAttackDurationSeconds = 10;
         private const int MinimumAttackDurationSeconds = 1;
-        private const int MaximumAttackDurationSeconds = 180;
 
         private const float DebuffEnemySearchRange = 700f;
 
@@ -148,16 +148,18 @@ namespace NeuroCompanion.Neuro
                 seconds = DefaultAttackDurationSeconds;
             }
 
+            int maximumAttackDurationSeconds = GetMaximumAttackDurationSeconds();
+
             seconds = Clamp(
                 seconds,
                 MinimumAttackDurationSeconds,
-                MaximumAttackDurationSeconds
+                maximumAttackDurationSeconds
             );
 
             neuroPlayer.StartTimedAttack(seconds * TicksPerSecond);
 
             return NeuroActionResult.Ok(
-                $"Neuro companion will attack for {seconds} seconds."
+                $"Neuro companion will attack for {seconds} seconds. Current maximum is {maximumAttackDurationSeconds} seconds."
             );
         }
 
@@ -319,6 +321,26 @@ namespace NeuroCompanion.Neuro
 
             reason = string.Empty;
             return true;
+        }
+
+        private static int GetMaximumAttackDurationSeconds()
+        {
+            NeuroCompanionConfig config =
+                ModContent.GetInstance<NeuroCompanionConfig>();
+
+            int maximumSeconds = config.MaxAutoAttackDurationSeconds;
+
+            if (maximumSeconds < MinimumAttackDurationSeconds)
+            {
+                return MinimumAttackDurationSeconds;
+            }
+
+            if (maximumSeconds > 600)
+            {
+                return 600;
+            }
+
+            return maximumSeconds;
         }
     }
 }

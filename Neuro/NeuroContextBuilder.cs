@@ -4,6 +4,7 @@ using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
 using Terraria;
 using Terraria.ModLoader;
+using NeuroCompanion.Configs;
 
 namespace NeuroCompanion.Neuro
 {
@@ -22,6 +23,9 @@ namespace NeuroCompanion.Neuro
             NeuroCompanionPlayer neuroPlayer =
                 player.GetModPlayer<NeuroCompanionPlayer>();
 
+            NeuroCompanionConfig config =
+                ModContent.GetInstance<NeuroCompanionConfig>();
+
             bool companionSummoned = IsCompanionSummoned(player);
             int autoAttackSecondsRemaining =
                 neuroPlayer.GetTimedAttackSecondsRemaining();
@@ -39,6 +43,9 @@ namespace NeuroCompanion.Neuro
             builder.AppendLine($"- Companion mode: {neuroPlayer.CompanionMode.ToCommandName()}");
             builder.AppendLine($"- {NeuroWeaponService.GetStatusText(player)}");
             builder.AppendLine($"- Autoattack remaining: {autoAttackSecondsRemaining} seconds");
+            builder.AppendLine(
+                $"- Maximum autoattack duration: {config.MaxAutoAttackDurationSeconds} seconds"
+            );
             builder.AppendLine($"- {NeuroActionCooldowns.GetCooldownStatusText()}");
             builder.AppendLine($"- Valid enemy target available: {validEnemyAvailable}");
 

@@ -28,6 +28,12 @@ namespace NeuroCompanion.Configs
         [DefaultValue(35)]
         public int LowHealthPercent { get; set; }
 
+        [Header("ActionLimits")]
+        [Range(1, 600)]
+        [Slider]
+        [DefaultValue(180)]
+        public int MaxAutoAttackDurationSeconds { get; set; }
+
         [Header("ActionCooldowns")]
         [Range(0, 30)]
         [Slider]

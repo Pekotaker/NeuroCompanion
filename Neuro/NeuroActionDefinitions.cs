@@ -24,7 +24,7 @@
                 new
                 {
                     name = NeuroActionNames.AutoAttack,
-                    description = "Activate timed autoattack mode. During autoattack mode, Neuro's companion automatically fires her equipped magic weapon at nearby valid enemies. When the duration ends, the companion returns to follow mode. If the companion is not summoned or Neuro has no equipped weapon, the action is skipped.",
+                    description = "Activate timed autoattack mode. During autoattack mode, Neuro's companion automatically fires her equipped magic weapon at nearby valid enemies. When the duration ends, the companion returns to follow mode. The requested duration is clamped by the player's configured maximum autoattack duration. If the companion is not summoned or Neuro has no equipped weapon, the action is skipped.",
                     schema = new
                     {
                         type = "object",
@@ -34,7 +34,7 @@
                             {
                                 type = "integer",
                                 minimum = 1,
-                                maximum = 180
+                                maximum = 600
                             }
                         }
                     }
