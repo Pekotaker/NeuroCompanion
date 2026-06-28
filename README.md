@@ -37,7 +37,6 @@ Neuro/Randy is optional. The mod works without it.
 * Adds the **Neuro Companion Staff**
 * Summons a Neuro companion minion
 * Companion follows the player by default
-* Companion can recall near the player
 * Companion can attack once on command
 * Companion can autoattack for a limited time
 * Maximum autoattack duration is configurable, up to 10 minutes
@@ -51,8 +50,6 @@ Neuro/Randy is optional. The mod works without it.
 * Supports direct-fire magic weapons
 * Supports controllable magic weapons by treating them like normal attacks
 * Supports some simple channeling magic weapons
-* Rejects unsupported support/stationary/persistent-field magic weapons
-* Rejects held beam and handheld channeling weapons that need custom player-held behavior
 * Can apply positive buffs to the player
 * Can apply specific allowed buffs by name or buff ID
 * Can apply debuffs to the player or a nearby enemy
@@ -124,12 +121,6 @@ Shows the Neuro command list.
 ```
 
 Shows companion status, current mode, autoattack timer, and active action cooldowns.
-
-```text
-/neuro recall
-```
-
-Teleports the companion back near the player.
 
 ```text
 /neuro follow
