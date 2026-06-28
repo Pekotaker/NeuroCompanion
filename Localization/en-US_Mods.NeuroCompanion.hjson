@@ -46,6 +46,7 @@ Configs: {
 			Connection: Connection
 			Context: Context
 			ActionCooldowns: Action Cooldowns
+			ActionLimits: Action Limits Header
 		}
 
 		RandyWebSocketUrl: {
@@ -121,6 +122,11 @@ Configs: {
 		DebuffEnemyCooldownSeconds: {
 			Label: Debuff enemy cooldown
 			Tooltip: Cooldown for debuff_enemy, in seconds.
+		}
+
+		MaxAutoAttackDurationSeconds: {
+			Label: Max Auto Attack Duration Seconds
+			Tooltip: ""
 		}
 	}
 }
