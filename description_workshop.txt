@@ -69,6 +69,17 @@ When connected, the mod sends Terraria context and lets Randy/Neuro choose high-
 
 Randy integration is optional and disabled by default.
 
+[b]Update 0.2.0[/b]
+
+[list]
+[*]Added specific buff and debuff commands.
+[*]Added Randy/Neuro support for choosing specific buffs and debuffs.
+[*]Added Neuro weapon damage, crit chance, and fire interval display to the Neuro Companion Staff tooltip.
+[*]Added upgraded staff tiers: Mk2, Mk3, and Mk4.
+[*]Added configurable maximum autoattack duration, up to 10 minutes.
+[*]/neuro buff now prioritizes buffs the player does not already have.
+[/list]
+
 [b]Repository[/b]
 
 https://github.com/Pekotaker/NeuroCompanion

@@ -1,0 +1,40 @@
+# Changelog
+
+## 0.2.0
+
+### Added
+
+* Added specific positive buff commands:
+
+  * `/neuro buff`
+  * `/neuro buff <buff name or buff ID>`
+* Added specific debuff commands:
+
+  * `/neuro debuff player`
+  * `/neuro debuff player <debuff name or debuff ID>`
+  * `/neuro debuff enemy`
+  * `/neuro debuff enemy <debuff name or debuff ID>`
+* Added Randy/Neuro support for choosing specific buffs and debuffs.
+* Added allowed buff/debuff lists to Randy context.
+* Added Neuro weapon damage display to the Neuro Companion Staff tooltip.
+* Added Neuro weapon crit chance display to the Neuro Companion Staff tooltip.
+* Added Neuro fire interval display to the Neuro Companion Staff tooltip.
+* Added staff prefix bonuses to Neuro’s weapon damage, knockback, crit chance, and firing interval where applicable.
+* Added upgraded staff tiers:
+
+  * Neuro Companion Staff Mk2
+  * Neuro Companion Staff Mk3
+  * Neuro Companion Staff Mk4
+* Added configurable maximum autoattack duration in the mod config menu, up to 10 minutes.
+
+### Changed
+
+* `/neuro buff` now prioritizes positive buffs the player does not already have.
+* Autoattack duration is now clamped by the configured maximum duration instead of a fixed hardcoded limit.
+* Neuro Companion Staff now acts more like Neuro’s controller item, showing the damage of Neuro’s equipped weapon instead of a misleading summon damage value.
+* Neuro Companion Staff reforges are limited to universal combat prefixes instead of class-specific prefixes.
+
+### Fixed
+
+* Fixed repeated/random buff behavior where Neuro could waste buff rolls on effects the player already had.
+* Fixed Randy action descriptions/context to better explain available buff and debuff choices.
