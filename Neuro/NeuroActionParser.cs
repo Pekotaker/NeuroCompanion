@@ -39,16 +39,27 @@ namespace NeuroCompanion.Neuro
                     return true;
 
                 case NeuroActionNames.BuffPlayer:
-                    command = new NeuroCommand(NeuroCommandType.BuffPlayer);
-                    return true;
+                    return TryCreateBuffPlayerCommand(
+                        data,
+                        out command,
+                        out error
+                    );
 
                 case NeuroActionNames.DebuffPlayer:
-                    command = new NeuroCommand(NeuroCommandType.DebuffPlayer);
-                    return true;
+                    return TryCreateDebuffCommand(
+                        data,
+                        NeuroCommandType.DebuffPlayer,
+                        out command,
+                        out error
+                    );
 
                 case NeuroActionNames.DebuffEnemy:
-                    command = new NeuroCommand(NeuroCommandType.DebuffNearestEnemy);
-                    return true;
+                    return TryCreateDebuffCommand(
+                        data,
+                        NeuroCommandType.DebuffNearestEnemy,
+                        out command,
+                        out error
+                    );
 
                 case NeuroActionNames.WeaponStatus:
                     command = new NeuroCommand(NeuroCommandType.WeaponStatus);
@@ -68,27 +79,142 @@ namespace NeuroCompanion.Neuro
             }
         }
 
+        private static bool TryCreateBuffPlayerCommand(
+            JsonNode data,
+            out NeuroCommand command,
+            out string error
+        )
+        {
+            command = null;
+            error = null;
+
+            string buffInput = GetOptionalActionString(data, "buff");
+
+            if (string.IsNullOrWhiteSpace(buffInput))
+            {
+                command = new NeuroCommand(NeuroCommandType.BuffPlayer);
+                return true;
+            }
+
+            if (!NeuroPotionEffects.TryFindPositiveBuff(
+                    buffInput,
+                    out int buffId,
+                    out error
+                ))
+            {
+                return false;
+            }
+
+            command = new NeuroCommand(
+                NeuroCommandType.BuffPlayer,
+                effectBuffId: buffId
+            );
+
+            return true;
+        }
+
+        private static bool TryCreateDebuffCommand(
+            JsonNode data,
+            NeuroCommandType commandType,
+            out NeuroCommand command,
+            out string error
+        )
+        {
+            command = null;
+            error = null;
+
+            string debuffInput = GetOptionalActionString(data, "debuff");
+
+            if (string.IsNullOrWhiteSpace(debuffInput))
+            {
+                command = new NeuroCommand(commandType);
+                return true;
+            }
+
+            if (!NeuroPotionEffects.TryFindDebuff(
+                    debuffInput,
+                    out int debuffId,
+                    out error
+                ))
+            {
+                return false;
+            }
+
+            command = new NeuroCommand(
+                commandType,
+                effectBuffId: debuffId
+            );
+
+            return true;
+        }
+
         private static int GetDurationSecondsFromActionData(JsonNode data)
+        {
+            JsonNode actionData = ParseActionData(data);
+
+            if (actionData == null)
+            {
+                return DefaultAutoAttackDurationSeconds;
+            }
+
+            int? durationSeconds =
+                actionData["duration_seconds"]?.GetValue<int>();
+
+            return durationSeconds ?? DefaultAutoAttackDurationSeconds;
+        }
+
+        private static string GetOptionalActionString(
+            JsonNode data,
+            string propertyName
+        )
+        {
+            JsonNode actionData = ParseActionData(data);
+
+            if (actionData == null)
+            {
+                return null;
+            }
+
+            JsonNode valueNode = actionData[propertyName];
+
+            if (valueNode == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                return valueNode.GetValue<string>();
+            }
+            catch
+            {
+                try
+                {
+                    return valueNode.GetValue<int>().ToString();
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
+
+        private static JsonNode ParseActionData(JsonNode data)
         {
             string actionDataJson = data?["data"]?.GetValue<string>();
 
             if (string.IsNullOrWhiteSpace(actionDataJson))
             {
-                return DefaultAutoAttackDurationSeconds;
+                return null;
             }
 
             try
             {
-                JsonNode actionData = JsonNode.Parse(actionDataJson);
-
-                int? durationSeconds =
-                    actionData?["duration_seconds"]?.GetValue<int>();
-
-                return durationSeconds ?? DefaultAutoAttackDurationSeconds;
+                return JsonNode.Parse(actionDataJson);
             }
             catch
             {
-                return DefaultAutoAttackDurationSeconds;
+                return null;
             }
         }
     }

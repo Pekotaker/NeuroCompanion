@@ -8,7 +8,7 @@
             {
                 new
                 {
-                    name = NeuroActionNames.AttackOnce,
+                    name = NeuroActionNames.RecallCompanion,
                     description = "Teleport Neuro's Terraria companion body back near the player. If the companion is not summoned, the action is skipped."
                 },
                 new
@@ -33,7 +33,6 @@
                             duration_seconds = new
                             {
                                 type = "integer",
-                                description = "How long autoattack mode should last, in seconds. Minimum 1 second. Maximum 180 seconds. If omitted, the default duration is 10 seconds.",
                                 minimum = 1,
                                 maximum = 180
                             }
@@ -48,7 +47,7 @@
                 new
                 {
                     name = NeuroActionNames.EquipWeaponFromInventory,
-                    description = "Let Neuro choose the strongest valid direct-fire magic weapon from the player's inventory. The selected weapon is moved into Neuro's weapon slot. If Neuro already has a weapon, the old weapon is automatically swapped back into the inventory slot the new weapon came from."
+                    description = "Let Neuro choose the strongest valid magic weapon from the player's inventory. The selected weapon is moved into Neuro's weapon slot. If Neuro already has a weapon, the old weapon is automatically swapped back into the inventory slot the new weapon came from. The player's selected hotbar item is ignored."
                 },
                 new
                 {
@@ -58,17 +57,50 @@
                 new
                 {
                     name = NeuroActionNames.BuffPlayer,
-                    description = "Apply 3 random Red Potion-style positive buffs to the player."
+                    description = "Apply positive buffs to the player. If no buff is specified, Neuro applies up to 3 Red Potion-style positive buffs, prioritizing buffs the player does not already have. If buff is specified, it must be one of the allowed positive buff names or IDs from the current Terraria context.",
+                    schema = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            buff = new
+                            {
+                                type = "string"
+                            }
+                        }
+                    }
                 },
                 new
                 {
                     name = NeuroActionNames.DebuffPlayer,
-                    description = "Apply Red Potion-style debuffs to the player."
+                    description = "Apply debuffs to the player. If no debuff is specified, Neuro applies Red Potion-style debuffs. If debuff is specified, it must be one of the allowed debuff names or IDs from the current Terraria context.",
+                    schema = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            debuff = new
+                            {
+                                type = "string"
+                            }
+                        }
+                    }
                 },
                 new
                 {
                     name = NeuroActionNames.DebuffEnemy,
-                    description = "Apply Red Potion-style debuffs to the nearest valid enemy."
+                    description = "Apply debuffs to the nearest valid enemy. If no debuff is specified, Neuro applies Red Potion-style debuffs. If debuff is specified, it must be one of the allowed debuff names or IDs from the current Terraria context.",
+                    schema = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            debuff = new
+                            {
+                                type = "string"
+                            }
+                        }
+                    }
                 }
             };
         }

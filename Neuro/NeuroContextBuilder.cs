@@ -167,9 +167,17 @@ namespace NeuroCompanion.Neuro
         {
             builder.AppendLine("- Available Neuro actions:");
 
-            builder.AppendLine("  buff_player: applies 3 random Red Potion-style positive buffs to the player.");
-            builder.AppendLine("  debuff_player: applies Red Potion-style debuffs to the player.");
-            builder.AppendLine("  debuff_enemy: applies Red Potion-style debuffs to the nearest valid enemy.");
+            builder.AppendLine("  buff_player: applies positive buffs to the player. Optional field: buff.");
+            builder.AppendLine("  debuff_player: applies debuffs to the player. Optional field: debuff.");
+            builder.AppendLine("  debuff_enemy: applies debuffs to the nearest valid enemy. Optional field: debuff.");
+
+            builder.AppendLine(
+                $"  Allowed positive buffs for buff_player: {NeuroPotionEffects.GetAllowedPositiveBuffListText()}"
+            );
+
+            builder.AppendLine(
+                $"  Allowed debuffs for debuff_player and debuff_enemy: {NeuroPotionEffects.GetAllowedDebuffListText()}"
+            );
 
             if (!companionSummoned)
             {
