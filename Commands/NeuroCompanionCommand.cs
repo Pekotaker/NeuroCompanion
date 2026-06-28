@@ -11,7 +11,7 @@ namespace NeuroCompanion.Commands
 
         public override string Command => "neuro";
         public override string Usage =>
-            "/neuro <help|recall|status|follow|attack|autoattack [seconds]|buff|debuff player|debuff enemy>";
+            "/neuro <help|recall|status|follow|attack|autoattack [seconds]|buff [buff name/id]|debuff player/enemy [debuff name/id]>";
 
         public override string Description =>
             "Controls the Neuro Companion test state.";
@@ -111,8 +111,7 @@ namespace NeuroCompanion.Commands
                     return true;
 
                 case "buff":
-                    command = new NeuroCommand(NeuroCommandType.BuffPlayer);
-                    return true;
+                    return TryCreateBuffCommand(args, out command);
 
                 case "debuff":
                     return TryCreateDebuffCommand(args, out command);
@@ -145,6 +144,39 @@ namespace NeuroCompanion.Commands
             );
         }
 
+
+        private static bool TryCreateBuffCommand(
+            string[] args,
+            out NeuroCommand command
+        )
+        {
+            command = null;
+
+            if (args.Length < 2)
+            {
+                command = new NeuroCommand(NeuroCommandType.BuffPlayer);
+                return true;
+            }
+
+            string buffInput = JoinArgs(args, 1);
+
+            if (!NeuroPotionEffects.TryFindPositiveBuff(
+                    buffInput,
+                    out int buffId,
+                    out _
+                ))
+            {
+                return false;
+            }
+
+            command = new NeuroCommand(
+                NeuroCommandType.BuffPlayer,
+                effectBuffId: buffId
+            );
+
+            return true;
+        }
+
         private static bool TryCreateDebuffCommand(
             string[] args,
             out NeuroCommand command
@@ -158,21 +190,63 @@ namespace NeuroCompanion.Commands
             }
 
             string target = args[1].ToLowerInvariant();
+            NeuroCommandType commandType;
 
             switch (target)
             {
                 case "player":
                 case "self":
-                    command = new NeuroCommand(NeuroCommandType.DebuffPlayer);
-                    return true;
+                    commandType = NeuroCommandType.DebuffPlayer;
+                    break;
 
                 case "enemy":
-                    command = new NeuroCommand(NeuroCommandType.DebuffNearestEnemy);
-                    return true;
+                    commandType = NeuroCommandType.DebuffNearestEnemy;
+                    break;
 
                 default:
                     return false;
             }
+
+            if (args.Length < 3)
+            {
+                command = new NeuroCommand(commandType);
+                return true;
+            }
+
+            string debuffInput = JoinArgs(args, 2);
+
+            if (!NeuroPotionEffects.TryFindDebuff(
+                    debuffInput,
+                    out int debuffId,
+                    out _
+                ))
+            {
+                return false;
+            }
+
+            command = new NeuroCommand(
+                commandType,
+                effectBuffId: debuffId
+            );
+
+            return true;
+        }
+
+        private static string JoinArgs(string[] args, int startIndex)
+        {
+            string result = string.Empty;
+
+            for (int i = startIndex; i < args.Length; i++)
+            {
+                if (i > startIndex)
+                {
+                    result += " ";
+                }
+
+                result += args[i];
+            }
+
+            return result;
         }
 
         private static void HandleWeaponCommand(
@@ -242,9 +316,9 @@ namespace NeuroCompanion.Commands
             caller.Reply("/neuro follow");
             caller.Reply("/neuro attack");
             caller.Reply("/neuro autoattack [seconds]");
-            caller.Reply("/neuro buff");
-            caller.Reply("/neuro debuff player");
-            caller.Reply("/neuro debuff enemy");
+            caller.Reply("/neuro buff [buff name/id]");
+            caller.Reply("/neuro debuff player [debuff name/id]");
+            caller.Reply("/neuro debuff enemy [debuff name/id]");
             caller.Reply("/neuro weapon status");
             caller.Reply("/neuro weapon set");
             caller.Reply("/neuro weapon take");
