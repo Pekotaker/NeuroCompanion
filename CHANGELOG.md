@@ -38,3 +38,27 @@
 
 * Fixed repeated/random buff behavior where Neuro could waste buff rolls on effects the player already had.
 * Fixed Randy action descriptions/context to better explain available buff and debuff choices.
+
+
+## 0.2.1
+
+### Added
+
+* Added unique sprites for Neuro Companion Staff Mk2, Mk3, and Mk4.
+* Added support for targeted-area magic weapons such as Resonance Scepter.
+* Added endgame Mk4 behavior: Neuro’s projectiles can pass through solid blocks.
+
+### Changed
+
+* Rebalanced Neuro Companion Staff upgrade tiers:
+
+  * Mk1: 50-tick fire limit.
+  * Mk2: 30-tick fire limit.
+  * Mk3: fires as fast as the equipped weapon allows.
+  * Mk4: fires as fast as the equipped weapon allows and can fire through blocks.
+* Neuro can no longer fire weapons faster than the equipped weapon’s own use time allows.
+* Updated staff behavior so higher tiers improve consistency and utility instead of simply doubling fire speed every tier.
+
+### Fixed
+
+* Fixed Resonance Scepter firing as a traveling projectile instead of placing its attack at the target position.
