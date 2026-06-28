@@ -5,6 +5,10 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using System.Collections.Generic;
+using NeuroCompanion.Neuro;
+using NeuroCompanion.Players;
+using Terraria.Utilities;
 
 namespace NeuroCompanion.Items
 {
@@ -69,6 +73,8 @@ namespace NeuroCompanion.Items
             float knockback
         )
         {
+            player.GetModPlayer<NeuroCompanionPlayer>().NeuroStaffPrefix = Item.prefix;
+
             RemoveExistingCompanions(player);
 
             player.AddBuff(Item.buffType, BuffDurationTicks);
@@ -124,6 +130,68 @@ namespace NeuroCompanion.Items
             recipe.AddTile(TileID.WorkBenches);
 
             recipe.Register();
+        }
+
+        public override int ChoosePrefix(UnifiedRandom rand)
+        {
+            return NeuroDamageService.ChooseRandomUniversalPrefix(rand);
+        }
+
+        public override bool AllowPrefix(int pre)
+        {
+            return NeuroDamageService.IsAllowedUniversalPrefix(pre);
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            Player player = Main.LocalPlayer;
+
+            if (player == null || !player.active)
+            {
+                return;
+            }
+
+            NeuroCompanionPlayer neuroPlayer =
+                player.GetModPlayer<NeuroCompanionPlayer>();
+
+            int neuroWeaponDamage = 0;
+
+            if (neuroPlayer.HasNeuroWeapon())
+            {
+                neuroWeaponDamage = NeuroDamageService.GetNeuroWeaponDamage(
+                    player,
+                    neuroPlayer.NeuroWeapon,
+                    Item.prefix
+                );
+            }
+
+            int damageLineIndex = tooltips.FindIndex(
+                line => line.Mod == "Terraria" && line.Name == "Damage"
+            );
+
+            if (damageLineIndex >= 0)
+            {
+                tooltips[damageLineIndex].Text =
+                    $"Neuro weapon damage: {neuroWeaponDamage}";
+            }
+            else
+            {
+                tooltips.Add(
+                    new TooltipLine(
+                        Mod,
+                        "NeuroWeaponDamage",
+                        $"Neuro weapon damage: {neuroWeaponDamage}"
+                    )
+                );
+            }
+
+            TooltipLine explanationLine = new TooltipLine(
+                Mod,
+                "NeuroWeaponDamageExplanation",
+                "Uses Neuro's equipped magic weapon, player magic bonuses, and this staff's universal prefix."
+            );
+
+            tooltips.Add(explanationLine);
         }
     }
 }

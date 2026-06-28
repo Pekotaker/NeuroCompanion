@@ -12,6 +12,7 @@ namespace NeuroCompanion.Players
         private bool singleAttackRequested;
 
         public Item NeuroWeapon { get; private set; }
+        public int NeuroStaffPrefix { get; set; }
 
         public NeuroCompanionMode CompanionMode
         {
@@ -31,6 +32,7 @@ namespace NeuroCompanion.Players
             recallRequested = false;
             singleAttackRequested = false;
 
+            NeuroStaffPrefix = 0;
 
             NeuroWeapon = new Item();
             NeuroWeapon.TurnToAir();

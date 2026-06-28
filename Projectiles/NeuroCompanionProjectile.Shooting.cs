@@ -143,8 +143,20 @@ namespace NeuroCompanion.Projectiles
             Vector2 shotVelocity
         )
         {
-            int damage = GetMagicWeaponDamage(owner, weapon);
-            float knockBack = GetMagicWeaponKnockBack(owner, weapon);
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            int damage = NeuroDamageService.GetNeuroWeaponDamage(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
+
+            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
 
             int projectileIndex = Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
@@ -169,22 +181,6 @@ namespace NeuroCompanion.Projectiles
             spawnedProjectile.DamageType = DamageClass.Magic;
             spawnedProjectile.originalDamage = damage;
             spawnedProjectile.netUpdate = true;
-        }
-
-        private static int GetMagicWeaponDamage(Player owner, Item weapon)
-        {
-            int scaledDamage = (int)owner
-                .GetTotalDamage(DamageClass.Magic)
-                .ApplyTo(weapon.damage);
-
-            return scaledDamage < 1 ? 1 : scaledDamage;
-        }
-
-        private static float GetMagicWeaponKnockBack(Player owner, Item weapon)
-        {
-            return owner
-                .GetTotalKnockback(DamageClass.Magic)
-                .ApplyTo(weapon.knockBack);
         }
 
         private static int GetWeaponCooldownTicks(
