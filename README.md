@@ -29,7 +29,6 @@ Neuro/Randy is optional. The mod works without it.
 * [Mod Config](#mod-config)
 * [Optional Neuro/Randy Integration](#optional-neurorandy-integration)
 * [Troubleshooting](#troubleshooting)
-* [Latest Update](#latest-update)
 * [Repository](#repository)
 
 ## Features
@@ -525,20 +524,6 @@ ws://localhost:8000
 The mod treats missing-companion actions as skipped instead of hard failures, so Randy should not repeatedly retry them.
 
 Summon the companion with the Neuro Companion Staff before testing combat actions.
-
-## Latest Update
-
-Version 0.2.0
-
-* Added specific buff/debuff commands
-* Added Randy support for specific buff/debuff choices
-* Added allowed buff/debuff lists to Randy context
-* Added Neuro Companion Staff damage, crit chance, and fire interval tooltip display
-* Added universal staff prefix support for Neuro attacks
-* Added upgraded staff tiers: Mk2, Mk3, and Mk4
-* Added configurable maximum autoattack duration, up to 10 minutes
-* Changed `/neuro buff` to prioritize buffs the player does not already have
-* Limited Neuro Companion Staff reforges to universal combat prefixes
 
 ## Repository
 
