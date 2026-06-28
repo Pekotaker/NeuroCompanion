@@ -3,6 +3,21 @@ Items: {
 		DisplayName: Neuro Companion Staff
 		Tooltip: Summons Neuro-sama
 	}
+
+	NeuroCompanionStaffMk2: {
+		DisplayName: Neuro Companion Staff Mk2
+		Tooltip: ""
+	}
+
+	NeuroCompanionStaffMk3: {
+		DisplayName: Neuro Companion Staff Mk3
+		Tooltip: ""
+	}
+
+	NeuroCompanionStaffMk4: {
+		DisplayName: Neuro Companion Staff Mk4
+		Tooltip: ""
+	}
 }
 
 Projectiles: {

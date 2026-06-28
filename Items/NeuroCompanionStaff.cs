@@ -1,13 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using NeuroCompanion.Buffs;
+using NeuroCompanion.Neuro;
+using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System.Collections.Generic;
-using NeuroCompanion.Neuro;
-using NeuroCompanion.Players;
 using Terraria.Utilities;
 
 namespace NeuroCompanion.Items
@@ -29,6 +29,17 @@ namespace NeuroCompanion.Items
 
         private const float ShootSpeed = 1f;
 
+        public override string Texture =>
+            "NeuroCompanion/Items/NeuroCompanionStaff";
+
+        protected virtual int StaffShootCooldownTicks =>
+            NeuroCompanionPlayer.DefaultNeuroStaffShootCooldownTicks;
+
+        protected virtual int StaffRarity => ItemRarityID.Blue;
+
+        protected virtual int StaffValue =>
+            Terraria.Item.buyPrice(silver: 50);
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 1;
@@ -40,8 +51,8 @@ namespace NeuroCompanion.Items
             Item.height = ItemHeight;
             Item.maxStack = MaxStack;
 
-            Item.value = Item.buyPrice(silver: 50);
-            Item.rare = ItemRarityID.Blue;
+            Item.value = StaffValue;
+            Item.rare = StaffRarity;
 
             Item.useStyle = ItemUseStyleID.Swing;
             Item.useTime = UseTimeTicks;
@@ -63,6 +74,98 @@ namespace NeuroCompanion.Items
             Item.buffType = ModContent.BuffType<NeuroCompanionBuff>();
         }
 
+        public override int ChoosePrefix(UnifiedRandom rand)
+        {
+            return NeuroDamageService.ChooseRandomUniversalPrefix(rand);
+        }
+
+        public override bool AllowPrefix(int pre)
+        {
+            return NeuroDamageService.IsAllowedUniversalPrefix(pre);
+        }
+
+        public override void ModifyTooltips(List<TooltipLine> tooltips)
+        {
+            Player player = Main.LocalPlayer;
+
+            if (player == null || !player.active)
+            {
+                return;
+            }
+
+            NeuroCompanionPlayer neuroPlayer =
+                player.GetModPlayer<NeuroCompanionPlayer>();
+
+            int neuroWeaponDamage = 0;
+            int neuroWeaponCritChance = 0;
+
+            if (neuroPlayer.HasNeuroWeapon())
+            {
+                neuroWeaponDamage = NeuroDamageService.GetNeuroWeaponDamage(
+                    player,
+                    neuroPlayer.NeuroWeapon,
+                    Item.prefix
+                );
+
+                neuroWeaponCritChance =
+                    NeuroDamageService.GetNeuroWeaponCritChance(
+                        player,
+                        neuroPlayer.NeuroWeapon,
+                        Item.prefix
+                    );
+            }
+
+            int fireIntervalTicks =
+                NeuroDamageService.GetStaffPrefixShootCooldownTicks(
+                    StaffShootCooldownTicks,
+                    Item.prefix
+                );
+
+            int damageLineIndex = tooltips.FindIndex(
+                line => line.Mod == "Terraria" && line.Name == "Damage"
+            );
+
+            if (damageLineIndex >= 0)
+            {
+                tooltips[damageLineIndex].Text =
+                    $"Neuro weapon damage: {neuroWeaponDamage}";
+            }
+            else
+            {
+                tooltips.Add(
+                    new TooltipLine(
+                        Mod,
+                        "NeuroWeaponDamage",
+                        $"Neuro weapon damage: {neuroWeaponDamage}"
+                    )
+                );
+            }
+
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "NeuroWeaponCritChance",
+                    $"Neuro weapon crit chance: {neuroWeaponCritChance}%"
+                )
+            );
+
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "NeuroFireInterval",
+                    $"Neuro fire interval: {fireIntervalTicks} ticks"
+                )
+            );
+
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "NeuroWeaponDamageExplanation",
+                    "Uses Neuro's equipped magic weapon, player magic bonuses, and this staff's universal prefix."
+                )
+            );
+        }
+
         public override bool Shoot(
             Player player,
             EntitySource_ItemUse_WithAmmo source,
@@ -73,7 +176,11 @@ namespace NeuroCompanion.Items
             float knockback
         )
         {
-            player.GetModPlayer<NeuroCompanionPlayer>().NeuroStaffPrefix = Item.prefix;
+            NeuroCompanionPlayer neuroPlayer =
+                player.GetModPlayer<NeuroCompanionPlayer>();
+
+            neuroPlayer.NeuroStaffPrefix = Item.prefix;
+            neuroPlayer.NeuroStaffShootCooldownTicks = StaffShootCooldownTicks;
 
             RemoveExistingCompanions(player);
 
@@ -86,7 +193,8 @@ namespace NeuroCompanion.Items
 
         private static void RemoveExistingCompanions(Player player)
         {
-            int companionProjectileType = ModContent.ProjectileType<NeuroCompanionProjectile>();
+            int companionProjectileType =
+                ModContent.ProjectileType<NeuroCompanionProjectile>();
 
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
@@ -130,83 +238,6 @@ namespace NeuroCompanion.Items
             recipe.AddTile(TileID.WorkBenches);
 
             recipe.Register();
-        }
-
-        public override int ChoosePrefix(UnifiedRandom rand)
-        {
-            return NeuroDamageService.ChooseRandomUniversalPrefix(rand);
-        }
-
-        public override bool AllowPrefix(int pre)
-        {
-            return NeuroDamageService.IsAllowedUniversalPrefix(pre);
-        }
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
-        {
-            Player player = Main.LocalPlayer;
-
-            if (player == null || !player.active)
-            {
-                return;
-            }
-
-            NeuroCompanionPlayer neuroPlayer =
-                player.GetModPlayer<NeuroCompanionPlayer>();
-
-            int neuroWeaponDamage = 0;
-            int neuroWeaponCritChance = 0;
-
-            if (neuroPlayer.HasNeuroWeapon())
-            {
-                neuroWeaponDamage = NeuroDamageService.GetNeuroWeaponDamage(
-                    player,
-                    neuroPlayer.NeuroWeapon,
-                    Item.prefix
-                );
-
-                neuroWeaponCritChance = NeuroDamageService.GetNeuroWeaponCritChance(
-                    player,
-                    neuroPlayer.NeuroWeapon,
-                    Item.prefix
-                );
-            }
-
-            int damageLineIndex = tooltips.FindIndex(
-                line => line.Mod == "Terraria" && line.Name == "Damage"
-            );
-
-            if (damageLineIndex >= 0)
-            {
-                tooltips[damageLineIndex].Text =
-                    $"Neuro weapon damage: {neuroWeaponDamage}";
-            }
-            else
-            {
-                tooltips.Add(
-                    new TooltipLine(
-                        Mod,
-                        "NeuroWeaponDamage",
-                        $"Neuro weapon damage: {neuroWeaponDamage}"
-                    )
-                );
-            }
-
-            tooltips.Add(
-                new TooltipLine(
-                    Mod,
-                    "NeuroWeaponCritChance",
-                    $"Neuro weapon crit chance: {neuroWeaponCritChance}%"
-                )
-            );
-
-            TooltipLine explanationLine = new TooltipLine(
-                Mod,
-                "NeuroWeaponDamageExplanation",
-                "Uses Neuro's equipped magic weapon, player magic bonuses, and this staff's universal prefix."
-            );
-
-            tooltips.Add(explanationLine);
         }
     }
 }

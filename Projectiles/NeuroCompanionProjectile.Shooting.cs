@@ -32,6 +32,7 @@ namespace NeuroCompanion.Projectiles
             ShootTimer++;
 
             int cooldownTicks = GetWeaponCooldownTicks(
+                owner,
                 weapon,
                 classification
             );
@@ -189,16 +190,26 @@ namespace NeuroCompanion.Projectiles
         }
 
         private static int GetWeaponCooldownTicks(
+            Player owner,
             Item weapon,
             NeuroWeaponClassification classification
         )
         {
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            int staffCooldownTicks =
+                NeuroDamageService.GetStaffPrefixShootCooldownTicks(
+                    neuroPlayer.NeuroStaffShootCooldownTicks,
+                    neuroPlayer.NeuroStaffPrefix
+                );
+
             if (
                 classification.Kind == NeuroWeaponKind.DirectFire ||
                 classification.Kind == NeuroWeaponKind.Controlled
             )
             {
-                return ShootCooldownTicks;
+                return staffCooldownTicks;
             }
 
             if (classification.Kind == NeuroWeaponKind.Channeling)
@@ -210,10 +221,17 @@ namespace NeuroCompanion.Projectiles
                     useTime = 1;
                 }
 
-                return ClampInt(useTime, 1, 10);
+                int channelCooldownTicks = ClampInt(useTime, 1, 10);
+
+                if (staffCooldownTicks < channelCooldownTicks)
+                {
+                    return staffCooldownTicks;
+                }
+
+                return channelCooldownTicks;
             }
 
-            return ShootCooldownTicks;
+            return staffCooldownTicks;
         }
 
         private static int ClampInt(int value, int min, int max)

@@ -11,8 +11,12 @@ namespace NeuroCompanion.Players
         private bool recallRequested;
         private bool singleAttackRequested;
 
+        public const int DefaultNeuroStaffShootCooldownTicks = 50;
+
         public Item NeuroWeapon { get; private set; }
         public int NeuroStaffPrefix { get; set; }
+
+        public int NeuroStaffShootCooldownTicks { get; set; }
 
         public NeuroCompanionMode CompanionMode
         {
@@ -33,6 +37,7 @@ namespace NeuroCompanion.Players
             singleAttackRequested = false;
 
             NeuroStaffPrefix = 0;
+            NeuroStaffShootCooldownTicks = DefaultNeuroStaffShootCooldownTicks;
 
             NeuroWeapon = new Item();
             NeuroWeapon.TurnToAir();

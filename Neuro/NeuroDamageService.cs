@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeuroCompanion.Players;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -75,6 +76,7 @@ namespace NeuroCompanion.Neuro
                 case PrefixID.Godly:
                 case PrefixID.Demonic:
                 case PrefixID.Zealous:
+                case PrefixID.Frenzying:
                     return true;
 
                 default:
@@ -99,7 +101,8 @@ namespace NeuroCompanion.Neuro
                 PrefixID.Ruthless,
                 PrefixID.Godly,
                 PrefixID.Demonic,
-                PrefixID.Zealous
+                PrefixID.Zealous,
+                PrefixID.Frenzying
             };
 
             return allowedPrefixes[rand.Next(allowedPrefixes.Length)];
@@ -126,6 +129,23 @@ namespace NeuroCompanion.Neuro
             }
 
             return critChance;
+        }
+
+        public static int GetStaffPrefixShootCooldownTicks(
+            int baseCooldownTicks,
+            int staffPrefix
+        )
+        {
+            if (baseCooldownTicks < 1)
+            {
+                baseCooldownTicks = NeuroCompanionPlayer.DefaultNeuroStaffShootCooldownTicks;
+            }
+
+            float multiplier = GetStaffPrefixUseTimeMultiplier(staffPrefix);
+
+            int finalCooldown = (int)Math.Round(baseCooldownTicks * multiplier);
+
+            return finalCooldown < 1 ? 1 : finalCooldown;
         }
 
         private static float GetStaffPrefixDamageMultiplier(int prefix)
@@ -221,6 +241,18 @@ namespace NeuroCompanion.Neuro
 
                 default:
                     return 0;
+            }
+        }
+
+        private static float GetStaffPrefixUseTimeMultiplier(int prefix)
+        {
+            switch (prefix)
+            {
+                case PrefixID.Frenzying:
+                    return 0.90f;
+
+                default:
+                    return 1f;
             }
         }
     }
