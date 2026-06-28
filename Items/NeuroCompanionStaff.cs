@@ -155,10 +155,17 @@ namespace NeuroCompanion.Items
                 player.GetModPlayer<NeuroCompanionPlayer>();
 
             int neuroWeaponDamage = 0;
+            int neuroWeaponCritChance = 0;
 
             if (neuroPlayer.HasNeuroWeapon())
             {
                 neuroWeaponDamage = NeuroDamageService.GetNeuroWeaponDamage(
+                    player,
+                    neuroPlayer.NeuroWeapon,
+                    Item.prefix
+                );
+
+                neuroWeaponCritChance = NeuroDamageService.GetNeuroWeaponCritChance(
                     player,
                     neuroPlayer.NeuroWeapon,
                     Item.prefix
@@ -184,6 +191,14 @@ namespace NeuroCompanion.Items
                     )
                 );
             }
+
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "NeuroWeaponCritChance",
+                    $"Neuro weapon crit chance: {neuroWeaponCritChance}%"
+                )
+            );
 
             TooltipLine explanationLine = new TooltipLine(
                 Mod,

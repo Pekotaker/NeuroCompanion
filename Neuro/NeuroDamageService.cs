@@ -105,6 +105,29 @@ namespace NeuroCompanion.Neuro
             return allowedPrefixes[rand.Next(allowedPrefixes.Length)];
         }
 
+        public static int GetNeuroWeaponCritChance(
+            Player owner,
+            Item weapon,
+            int staffPrefix
+        )
+        {
+            if (owner == null || weapon == null || weapon.IsAir)
+            {
+                return 0;
+            }
+
+            int critChance = owner.GetWeaponCrit(weapon);
+
+            critChance += GetStaffPrefixCritBonus(staffPrefix);
+
+            if (critChance < 0)
+            {
+                return 0;
+            }
+
+            return critChance;
+        }
+
         private static float GetStaffPrefixDamageMultiplier(int prefix)
         {
             switch (prefix)
@@ -174,6 +197,30 @@ namespace NeuroCompanion.Neuro
 
                 default:
                     return 1f;
+            }
+        }
+
+        private static int GetStaffPrefixCritBonus(int prefix)
+        {
+            switch (prefix)
+            {
+                case PrefixID.Keen:
+                    return 3;
+
+                case PrefixID.Superior:
+                    return 3;
+
+                case PrefixID.Godly:
+                    return 5;
+
+                case PrefixID.Demonic:
+                    return 5;
+
+                case PrefixID.Zealous:
+                    return 5;
+
+                default:
+                    return 0;
             }
         }
     }

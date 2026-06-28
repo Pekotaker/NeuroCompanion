@@ -180,6 +180,11 @@ namespace NeuroCompanion.Projectiles
 
             spawnedProjectile.DamageType = DamageClass.Magic;
             spawnedProjectile.originalDamage = damage;
+            spawnedProjectile.CritChance = NeuroDamageService.GetNeuroWeaponCritChance(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
             spawnedProjectile.netUpdate = true;
         }
 
