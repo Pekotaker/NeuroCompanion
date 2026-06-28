@@ -50,6 +50,14 @@ namespace NeuroCompanion.Neuro
                 );
             }
 
+            if (item.type == ItemID.PrincessWeapon)
+            {
+                return new NeuroWeaponClassification(
+                    NeuroWeaponKind.TargetedArea,
+                    "Accepted targeted-area magic weapon."
+                );
+            }
+
             if (IsControlledProjectileWeapon(projectile))
             {
                 return new NeuroWeaponClassification(

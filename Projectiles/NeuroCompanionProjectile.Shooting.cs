@@ -55,6 +55,30 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            if (!neuroPlayer.HasNeuroWeapon())
+            {
+                return;
+            }
+
+            Item weapon = neuroPlayer.NeuroWeapon;
+
+            NeuroWeaponClassification classification =
+                NeuroWeaponClassifier.Classify(weapon);
+
+            if (!classification.IsAccepted)
+            {
+                return;
+            }
+
+            if (classification.Kind == NeuroWeaponKind.TargetedArea)
+            {
+                ShootWeaponAtWorldPosition(owner, target.Center);
+                return;
+            }
+
             Vector2 shotDirection = target.Center - Projectile.Center;
 
             ShootWeaponInDirection(owner, shotDirection);
@@ -62,6 +86,30 @@ namespace NeuroCompanion.Projectiles
 
         private void ShootWeaponTowardCursor(Player owner)
         {
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            if (!neuroPlayer.HasNeuroWeapon())
+            {
+                return;
+            }
+
+            Item weapon = neuroPlayer.NeuroWeapon;
+
+            NeuroWeaponClassification classification =
+                NeuroWeaponClassifier.Classify(weapon);
+
+            if (!classification.IsAccepted)
+            {
+                return;
+            }
+
+            if (classification.Kind == NeuroWeaponKind.TargetedArea)
+            {
+                ShootWeaponAtWorldPosition(owner, Main.MouseWorld);
+                return;
+            }
+
             Vector2 shotDirection = Main.MouseWorld - Projectile.Center;
 
             ShootWeaponInDirection(owner, shotDirection);
@@ -225,6 +273,43 @@ namespace NeuroCompanion.Projectiles
             }
 
             return value;
+        }
+
+        private void ShootWeaponAtWorldPosition(Player owner, Vector2 worldPosition)
+        {
+            if (Projectile.owner != Main.myPlayer)
+            {
+                return;
+            }
+
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            if (!neuroPlayer.HasNeuroWeapon())
+            {
+                return;
+            }
+
+            Item weapon = neuroPlayer.NeuroWeapon;
+
+            NeuroWeaponClassification classification =
+                NeuroWeaponClassifier.Classify(weapon);
+
+            if (!classification.IsAccepted)
+            {
+                return;
+            }
+
+            ShootTimer = 0f;
+
+            PlayWeaponSound(weapon);
+
+            SpawnWeaponProjectile(
+                owner,
+                weapon,
+                worldPosition,
+                Vector2.Zero
+            );
         }
     }
 }
