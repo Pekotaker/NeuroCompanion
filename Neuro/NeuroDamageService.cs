@@ -148,6 +148,44 @@ namespace NeuroCompanion.Neuro
             return finalCooldown < 1 ? 1 : finalCooldown;
         }
 
+        public static int GetWeaponInherentShootCooldownTicks(Item weapon)
+        {
+            if (weapon == null || weapon.IsAir)
+            {
+                return 1;
+            }
+
+            int useTime = weapon.useTime;
+
+            if (useTime <= 0)
+            {
+                useTime = 1;
+            }
+
+            return useTime;
+        }
+
+        public static int GetEffectiveNeuroShootCooldownTicks(
+            Item weapon,
+            int staffBaseCooldownTicks,
+            int staffPrefix
+        )
+        {
+            int staffCooldownTicks = GetStaffPrefixShootCooldownTicks(
+                staffBaseCooldownTicks,
+                staffPrefix
+            );
+
+            int weaponCooldownTicks = GetWeaponInherentShootCooldownTicks(weapon);
+
+            if (staffCooldownTicks > weaponCooldownTicks)
+            {
+                return staffCooldownTicks;
+            }
+
+            return weaponCooldownTicks;
+        }
+
         private static float GetStaffPrefixDamageMultiplier(int prefix)
         {
             switch (prefix)

@@ -13,6 +13,8 @@ namespace NeuroCompanion.Items
         protected override int StaffValue =>
             Item.buyPrice(gold: 20);
 
+        protected override bool StaffCanDetectThroughBlocks => true;
+
         public override void AddRecipes()
         {
             Recipe recipe = CreateRecipe();

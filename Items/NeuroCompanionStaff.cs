@@ -40,6 +40,8 @@ namespace NeuroCompanion.Items
         protected virtual int StaffValue =>
             Terraria.Item.buyPrice(silver: 50);
 
+        protected virtual bool StaffCanDetectThroughBlocks => false;
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 1;
@@ -115,11 +117,23 @@ namespace NeuroCompanion.Items
                     );
             }
 
-            int fireIntervalTicks =
+            int staffFireLimitTicks =
                 NeuroDamageService.GetStaffPrefixShootCooldownTicks(
                     StaffShootCooldownTicks,
                     Item.prefix
                 );
+
+            int effectiveFireIntervalTicks = staffFireLimitTicks;
+
+            if (neuroPlayer.HasNeuroWeapon())
+            {
+                effectiveFireIntervalTicks =
+                    NeuroDamageService.GetEffectiveNeuroShootCooldownTicks(
+                        neuroPlayer.NeuroWeapon,
+                        StaffShootCooldownTicks,
+                        Item.prefix
+                    );
+            }
 
             int damageLineIndex = tooltips.FindIndex(
                 line => line.Mod == "Terraria" && line.Name == "Damage"
@@ -152,10 +166,50 @@ namespace NeuroCompanion.Items
             tooltips.Add(
                 new TooltipLine(
                     Mod,
-                    "NeuroFireInterval",
-                    $"Neuro fire interval: {fireIntervalTicks} ticks"
+                    "NeuroStaffFireLimit",
+                    $"Neuro staff fire limit: {staffFireLimitTicks} ticks"
                 )
             );
+
+            if (neuroPlayer.HasNeuroWeapon())
+            {
+                tooltips.Add(
+                    new TooltipLine(
+                        Mod,
+                        "NeuroEffectiveFireInterval",
+                        $"Neuro effective fire interval: {effectiveFireIntervalTicks} ticks"
+                    )
+                );
+            }
+            else
+            {
+                tooltips.Add(
+                    new TooltipLine(
+                        Mod,
+                        "NeuroEffectiveFireInterval",
+                        "Neuro effective fire interval: no weapon equipped"
+                    )
+                );
+            }
+
+            tooltips.Add(
+                new TooltipLine(
+                    Mod,
+                    "NeuroWeaponUseTimeLimit",
+                    "Neuro cannot fire faster than the equipped weapon's use time."
+                )
+            );
+
+            if (StaffCanDetectThroughBlocks)
+            {
+                tooltips.Add(
+                    new TooltipLine(
+                        Mod,
+                        "NeuroBlockDetection",
+                        "Neuro can detect enemies through blocks."
+                    )
+                );
+            }
 
             tooltips.Add(
                 new TooltipLine(
@@ -181,6 +235,7 @@ namespace NeuroCompanion.Items
 
             neuroPlayer.NeuroStaffPrefix = Item.prefix;
             neuroPlayer.NeuroStaffShootCooldownTicks = StaffShootCooldownTicks;
+            neuroPlayer.NeuroStaffCanDetectThroughBlocks = StaffCanDetectThroughBlocks;
 
             RemoveExistingCompanions(player);
 

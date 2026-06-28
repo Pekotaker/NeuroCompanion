@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using NeuroCompanion.Players;
 
 namespace NeuroCompanion.Projectiles
 {
@@ -83,6 +84,11 @@ namespace NeuroCompanion.Projectiles
                 return false;
             }
 
+            if (CanDetectTargetsThroughBlocks(owner))
+            {
+                return true;
+            }
+
             return CanShootTarget(npc, owner);
         }
 
@@ -112,6 +118,18 @@ namespace NeuroCompanion.Projectiles
             );
 
             return ownerCanSeeTarget;
+        }
+
+        private static bool CanDetectTargetsThroughBlocks(Player owner)
+        {
+            if (owner == null || !owner.active)
+            {
+                return false;
+            }
+
+            return owner
+                .GetModPlayer<NeuroCompanionPlayer>()
+                .NeuroStaffCanDetectThroughBlocks;
         }
     }
 }

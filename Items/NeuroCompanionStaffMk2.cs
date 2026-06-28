@@ -6,7 +6,7 @@ namespace NeuroCompanion.Items
 {
     public class NeuroCompanionStaffMk2 : NeuroCompanionStaff
     {
-        protected override int StaffShootCooldownTicks => 25;
+        protected override int StaffShootCooldownTicks => 30;
 
         protected override int StaffRarity => ItemRarityID.Orange;
 

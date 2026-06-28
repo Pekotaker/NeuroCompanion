@@ -16,6 +16,8 @@ namespace NeuroCompanion.Players
         public Item NeuroWeapon { get; private set; }
         public int NeuroStaffPrefix { get; set; }
 
+        public bool NeuroStaffCanDetectThroughBlocks { get; set; }
+
         public int NeuroStaffShootCooldownTicks { get; set; }
 
         public NeuroCompanionMode CompanionMode
@@ -38,6 +40,7 @@ namespace NeuroCompanion.Players
 
             NeuroStaffPrefix = 0;
             NeuroStaffShootCooldownTicks = DefaultNeuroStaffShootCooldownTicks;
+            NeuroStaffCanDetectThroughBlocks = false;
 
             NeuroWeapon = new Item();
             NeuroWeapon.TurnToAir();

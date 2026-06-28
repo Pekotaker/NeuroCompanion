@@ -47,7 +47,10 @@ namespace NeuroCompanion.Projectiles
 
         private void ShootWeaponAtTarget(Player owner, NPC target)
         {
-            if (!CanShootTarget(target, owner))
+            if (
+                !CanDetectTargetsThroughBlocks(owner) &&
+                !CanShootTarget(target, owner)
+            )
             {
                 return;
             }
@@ -188,7 +191,6 @@ namespace NeuroCompanion.Projectiles
             );
             spawnedProjectile.netUpdate = true;
         }
-
         private static int GetWeaponCooldownTicks(
             Player owner,
             Item weapon,
@@ -198,40 +200,16 @@ namespace NeuroCompanion.Projectiles
             NeuroCompanionPlayer neuroPlayer =
                 owner.GetModPlayer<NeuroCompanionPlayer>();
 
-            int staffCooldownTicks =
-                NeuroDamageService.GetStaffPrefixShootCooldownTicks(
-                    neuroPlayer.NeuroStaffShootCooldownTicks,
-                    neuroPlayer.NeuroStaffPrefix
-                );
-
-            if (
-                classification.Kind == NeuroWeaponKind.DirectFire ||
-                classification.Kind == NeuroWeaponKind.Controlled
-            )
+            if (!classification.IsAccepted)
             {
-                return staffCooldownTicks;
+                return NeuroCompanionPlayer.DefaultNeuroStaffShootCooldownTicks;
             }
 
-            if (classification.Kind == NeuroWeaponKind.Channeling)
-            {
-                int useTime = weapon.useTime;
-
-                if (useTime <= 0)
-                {
-                    useTime = 1;
-                }
-
-                int channelCooldownTicks = ClampInt(useTime, 1, 10);
-
-                if (staffCooldownTicks < channelCooldownTicks)
-                {
-                    return staffCooldownTicks;
-                }
-
-                return channelCooldownTicks;
-            }
-
-            return staffCooldownTicks;
+            return NeuroDamageService.GetEffectiveNeuroShootCooldownTicks(
+                weapon,
+                neuroPlayer.NeuroStaffShootCooldownTicks,
+                neuroPlayer.NeuroStaffPrefix
+            );
         }
 
         private static int ClampInt(int value, int min, int max)
