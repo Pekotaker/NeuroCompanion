@@ -50,13 +50,14 @@ namespace NeuroCompanion.Neuro
                 );
             }
 
-            if (item.type == ItemID.PrincessWeapon)
+            if (IsTargetAreaWeapon(item))
             {
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.TargetedArea,
                     "Accepted targeted-area magic weapon."
                 );
             }
+
 
             if (IsControlledProjectileWeapon(projectile))
             {
@@ -154,6 +155,17 @@ namespace NeuroCompanion.Neuro
         {
             return projectile.aiStyle == ProjAIStyleID.ThickLaser ||
                    projectile.aiStyle == ProjAIStyleID.HeldProjectile;
+        }
+
+        private static bool IsTargetAreaWeapon(Item item)
+        {
+            switch (item.type)
+            {
+                case ItemID.PrincessWeapon:
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ using NeuroCompanion.Neuro;
 using NeuroCompanion.Players;
 using Terraria;
 using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace NeuroCompanion.Projectiles
@@ -73,6 +74,7 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
+
             if (classification.Kind == NeuroWeaponKind.TargetedArea)
             {
                 ShootWeaponAtWorldPosition(owner, target.Center);
@@ -103,6 +105,7 @@ namespace NeuroCompanion.Projectiles
             {
                 return;
             }
+
 
             if (classification.Kind == NeuroWeaponKind.TargetedArea)
             {
@@ -232,6 +235,9 @@ namespace NeuroCompanion.Projectiles
 
             spawnedProjectile.DamageType = DamageClass.Magic;
             spawnedProjectile.originalDamage = damage;
+
+            ApplyNeuroStaffProjectileBehavior(neuroPlayer, spawnedProjectile);
+
             spawnedProjectile.CritChance = NeuroDamageService.GetNeuroWeaponCritChance(
                 owner,
                 weapon,
@@ -310,6 +316,29 @@ namespace NeuroCompanion.Projectiles
                 worldPosition,
                 Vector2.Zero
             );
+        }
+
+
+        private static void ApplyNeuroStaffProjectileBehavior(
+            NeuroCompanionPlayer neuroPlayer,
+            Projectile spawnedProjectile
+        )
+        {
+            if (neuroPlayer == null || spawnedProjectile == null)
+            {
+                return;
+            }
+
+            if (!neuroPlayer.NeuroStaffCanDetectThroughBlocks)
+            {
+                return;
+            }
+
+            spawnedProjectile.tileCollide = false;
+
+            spawnedProjectile
+                .GetGlobalProjectile<NeuroMk4ProjectileGlobal>()
+                .IgnoreTilesForNeuroMk4 = true;
         }
     }
 }

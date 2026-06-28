@@ -206,7 +206,7 @@ namespace NeuroCompanion.Items
                     new TooltipLine(
                         Mod,
                         "NeuroBlockDetection",
-                        "Neuro can detect enemies through blocks."
+                        "Neuro can detect enemies and fire projectiles through blocks."
                     )
                 );
             }
