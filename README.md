@@ -2,7 +2,7 @@
 
 Neuro Companion is a tModLoader mod for Terraria that adds a summon companion with command-based behavior.
 
-The companion works as a normal Terraria summon, but it can also be controlled through in-game commands. It can follow the player, recall to the player, attack enemies, use an equipped magic weapon, apply buffs/debuffs, and switch between follow and autoattack modes.
+The companion works as a normal Terraria summon, but it can also be controlled through in-game commands. It can follow the player, attack enemies, use an equipped magic weapon, apply buffs/debuffs, and switch between follow and autoattack modes.
 
 The mod can be used in two ways:
 
@@ -421,7 +421,6 @@ When connected, the mod can send Terraria context to Randy/Neuro, including:
 
 Randy/Neuro can then choose high-level actions such as:
 
-* Recall companion
 * Follow player
 * Attack once
 * Start autoattack
