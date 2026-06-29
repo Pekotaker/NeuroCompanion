@@ -23,6 +23,11 @@
                 },
                 new
                 {
+                    name = NeuroActionNames.AttackPlayer,
+                    description = "Make Evil Neuro attack the player. If Neuro has a valid magic weapon equipped, she fires that weapon at the player. If Neuro has no valid weapon equipped, she fires a fallback evil bolt. If the companion is not summoned, the action is skipped."
+                },
+                new
+                {
                     name = NeuroActionNames.AutoAttack,
                     description = "Activate timed autoattack mode. During autoattack mode, Neuro's companion automatically fires her equipped magic weapon at nearby valid enemies. When the duration ends, the companion returns to follow mode. The requested duration is clamped by the player's configured maximum autoattack duration. If the companion is not summoned or Neuro has no equipped weapon, the action is skipped.",
                     schema = new

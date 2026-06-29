@@ -31,6 +31,10 @@ namespace NeuroCompanion.Neuro
                     command = new NeuroCommand(NeuroCommandType.AttackOnce);
                     return true;
 
+                case NeuroActionNames.AttackPlayer:
+                    command = new NeuroCommand(NeuroCommandType.AttackPlayer);
+                    return true;
+
                 case NeuroActionNames.AutoAttack:
                     command = new NeuroCommand(
                         NeuroCommandType.StartTimedAttack,

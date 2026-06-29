@@ -46,6 +46,9 @@ namespace NeuroCompanion.Neuro
             builder.AppendLine(
                 $"- Maximum autoattack duration: {config.MaxAutoAttackDurationSeconds} seconds"
             );
+            builder.AppendLine(
+                $"- Evil Neuro player attack cooldown: {config.EvilAttackPlayerCooldownSeconds} seconds"
+            );
             builder.AppendLine($"- {NeuroActionCooldowns.GetCooldownStatusText()}");
             builder.AppendLine($"- Valid enemy target available: {validEnemyAvailable}");
 
@@ -190,6 +193,7 @@ namespace NeuroCompanion.Neuro
             {
                 builder.AppendLine("  follow: skipped because the companion is not summoned.");
                 builder.AppendLine("  attack_once: skipped because the companion is not summoned.");
+                builder.AppendLine("  attack_player: skipped because the companion is not summoned.");
                 builder.AppendLine("  autoattack: skipped because the companion is not summoned.");
                 builder.AppendLine("  The player must summon Neuro Companion with the staff before companion actions can run.");
                 return;
@@ -197,6 +201,7 @@ namespace NeuroCompanion.Neuro
 
             builder.AppendLine("  follow: deactivates autoattack mode and makes the companion follow the player.");
             builder.AppendLine("  attack_once: makes the companion fire one equipped magic weapon attack.");
+            builder.AppendLine("  attack_player: makes Evil Neuro attack the player. If Neuro has a valid magic weapon equipped, she fires that weapon at the player. Otherwise, she fires a fallback evil bolt.");
             builder.AppendLine("  weapon_status: checks what magic weapon Neuro currently has equipped.");
             builder.AppendLine("  equip_weapon_from_inventory: moves the strongest valid magic weapon from the player's inventory into Neuro's weapon slot.");
             builder.AppendLine("  return_weapon_to_player: returns Neuro's equipped weapon to the player's inventory.");
