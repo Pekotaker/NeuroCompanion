@@ -89,6 +89,7 @@ Examples:
 [*]Added targeted-area weapon support, currently including Resonance Scepter.
 [*]Added Mk4 endgame utility: enemy detection through blocks and Neuro-fired projectiles passing through blocks.
 [*]Fixed Resonance Scepter behavior so its attack is placed at the target position instead of fired as a traveling projectile.
+[*]Fixed targeted-area weapon inspection/status text so it displays as targeted-area instead of invalid.
 [/list]
 
 [b]Optional Randy/Neuro Integration[/b]
