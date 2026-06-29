@@ -69,16 +69,32 @@ When connected, the mod sends Terraria context and lets Randy/Neuro choose high-
 
 Randy integration is optional and disabled by default.
 
-[b]Update 0.2.0[/b]
+[b]Update 0.2.1[/b]
 
 [list]
-[*]Added specific buff and debuff commands.
-[*]Added Randy/Neuro support for choosing specific buffs and debuffs.
-[*]Added Neuro weapon damage, crit chance, and fire interval display to the Neuro Companion Staff tooltip.
-[*]Added upgraded staff tiers: Mk2, Mk3, and Mk4.
-[*]Added configurable maximum autoattack duration, up to 10 minutes.
-[*]/neuro buff now prioritizes buffs the player does not already have.
+[*]Added unique sprites for Neuro Companion Staff Mk2, Mk3, and Mk4.
+[*]Rebalanced staff tiers around clear fire limits and equipped weapon use time.
+[*]Added targeted-area weapon support, currently including Resonance Scepter.
+[*]Added Mk4 endgame utility: enemy detection through blocks and Neuro-fired projectiles passing through blocks.
+[*]Fixed Resonance Scepter behavior so its attack is placed at the target position instead of fired as a traveling projectile.
+[*]Fixed targeted-area weapon inspection/status text so it displays as targeted-area instead of invalid.
 [/list]
+
+[b]Staff Upgrade Behavior[/b]
+
+[list]
+[*]Neuro Companion Staff: 50-tick staff fire limit
+[*]Neuro Companion Staff Mk2: 30-tick staff fire limit
+[*]Neuro Companion Staff Mk3: as fast as the weapon
+[*]Neuro Companion Staff Mk4: as fast as the weapon, Neuro can detect enemies and fire through blocks.
+[/list]
+
+
+[b]Weapon Support[/b]
+
+Neuro currently accepts direct-fire magic weapons, controllable magic weapons, some channeling magic weapons, and targeted-area magic weapons such as Resonance Scepter.
+
+Unsupported support/stationary/persistent-field weapons and held beam weapons are rejected for now.
 
 [b]Repository[/b]
 
