@@ -93,15 +93,16 @@ Examples:
 [*]Last Prism - rejected
 [/list]
 
-[b]Update 0.2.1[/b]
+[b]Update 0.2.2[/b]
 
 [list]
-[*]Added unique sprites for Neuro Companion Staff Mk2, Mk3, and Mk4.
-[*]Rebalanced staff upgrade tiers.
-[*]Added support for Resonance Scepter and similar weapons that place attacks at a target position.
-[*]Added Mk4 behavior that lets Neuro detect enemies and fire through blocks.
-[*]Fixed Resonance Scepter so its attack is placed at the target position.
-[*]Fixed weapon status text for weapons like Resonance Scepter.
+[*]Added Evil Neuro.
+[*]Added /neuro attack player.
+[*]Added an Evil Neuro sprite for harmful actions.
+[*]Evil Neuro can attack the player with her equipped magic weapon.
+[*]If no valid weapon is equipped, Evil Neuro uses a fallback evil bolt.
+[*]Added staff tier and world difficulty scaling for the fallback evil bolt.
+[*]Added a separate config option for Evil Neuro's player attack cooldown.
 [/list]
 
 [b]Optional Randy/Neuro Integration[/b]

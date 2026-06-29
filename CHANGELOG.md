@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.2.2
+
+### Added
+
+* Added Evil Neuro.
+* Added `/neuro attack player`.
+* Added an Evil Neuro sprite that appears when Neuro does something harmful to the player.
+* Added player attack behavior for Evil Neuro.
+* Evil Neuro can attack the player with Neuro's equipped magic weapon.
+* If Neuro has no valid magic weapon equipped, Evil Neuro fires a fallback evil bolt.
+* Added fallback evil bolt damage scaling based on staff tier and world difficulty:
+  * Mk1: 100 base damage
+  * Mk2: 150 base damage
+  * Mk3: 200 base damage
+  * Mk4: 400 base damage
+  * Classic: 1.00x
+  * Expert: 1.33x
+  * Master: 1.66x
+  * Legendary: 1.99x
+* Added a separate config option for Evil Neuro's player attack cooldown.
+
 ## 0.2.1
 
 ### Added
