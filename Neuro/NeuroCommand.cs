@@ -5,6 +5,7 @@
         Recall,
         Follow,
         AttackOnce,
+        AttackPlayer,
         StartTimedAttack,
         BuffPlayer,
         DebuffPlayer,

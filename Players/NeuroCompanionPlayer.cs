@@ -10,8 +10,11 @@ namespace NeuroCompanion.Players
     {
         private bool recallRequested;
         private bool singleAttackRequested;
+        private bool attackPlayerRequested;
+        private int evilVisualTicksRemaining;
 
         public const int DefaultNeuroStaffShootCooldownTicks = 50;
+        public const int EvilVisualDurationTicks = 180;
 
         public Item NeuroWeapon { get; private set; }
         public int NeuroStaffPrefix { get; set; }
@@ -37,6 +40,9 @@ namespace NeuroCompanion.Players
         {
             recallRequested = false;
             singleAttackRequested = false;
+
+            attackPlayerRequested = false;
+            evilVisualTicksRemaining = 0;
 
             NeuroStaffPrefix = 0;
             NeuroStaffShootCooldownTicks = DefaultNeuroStaffShootCooldownTicks;
@@ -131,6 +137,40 @@ namespace NeuroCompanion.Players
             }
 
             return ticksRemaining / ticksPerSecond;
+        }
+
+        public void RequestAttackPlayer()
+        {
+            attackPlayerRequested = true;
+        }
+
+        public bool ConsumeAttackPlayerRequest()
+        {
+            if (!attackPlayerRequested)
+            {
+                return false;
+            }
+
+            attackPlayerRequested = false;
+            return true;
+        }
+
+        public void TriggerEvilVisual()
+        {
+            evilVisualTicksRemaining = EvilVisualDurationTicks;
+        }
+
+        public bool ShouldUseEvilSprite()
+        {
+            return evilVisualTicksRemaining > 0;
+        }
+
+        public override void PostUpdate()
+        {
+            if (evilVisualTicksRemaining > 0)
+            {
+                evilVisualTicksRemaining--;
+            }
         }
 
         public override void SaveData(TagCompound tag)

@@ -40,6 +40,25 @@ namespace NeuroCompanion.Projectiles
             RotateForMovement(AttackRotationFactor);
         }
 
+        private void HoverNearOwnerForEvilAttack(Player owner)
+        {
+            MoveToward(
+                GetIdlePosition(owner),
+                IdleMoveSpeed,
+                IdleInertia,
+                FarMoveSpeed,
+                FarInertia
+            );
+
+            FaceOwner(owner);
+            RotateForMovement(AttackRotationFactor);
+        }
+
+        private void FaceOwner(Player owner)
+        {
+            Projectile.spriteDirection = owner.Center.X >= Projectile.Center.X ? 1 : -1;
+        }
+
         private Vector2 GetCombatPosition(Player owner, NPC target)
         {
             float sideFacingTarget = target.Center.X >= owner.Center.X ? 1f : -1f;

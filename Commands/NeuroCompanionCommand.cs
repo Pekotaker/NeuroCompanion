@@ -11,7 +11,7 @@ namespace NeuroCompanion.Commands
 
         public override string Command => "neuro";
         public override string Usage =>
-            "/neuro <help|recall|status|follow|attack|autoattack [seconds]|buff [buff name/id]|debuff player/enemy [debuff name/id]>";
+            "/neuro <help|status|follow|attack [player]|autoattack [seconds]|buff [buff name/id]|debuff player/enemy [debuff name/id]>";
 
         public override string Description =>
             "Controls the Neuro Companion test state.";
@@ -102,7 +102,7 @@ namespace NeuroCompanion.Commands
                     return true;
 
                 case "attack":
-                    command = new NeuroCommand(NeuroCommandType.AttackOnce);
+                    command = CreateAttackCommand(args);
                     return true;
 
                 case "autoattack":
@@ -119,6 +119,21 @@ namespace NeuroCompanion.Commands
                 default:
                     return false;
             }
+        }
+
+        private static NeuroCommand CreateAttackCommand(string[] args)
+        {
+            if (args.Length >= 2)
+            {
+                string target = args[1].ToLowerInvariant();
+
+                if (target == "player" || target == "self")
+                {
+                    return new NeuroCommand(NeuroCommandType.AttackPlayer);
+                }
+            }
+
+            return new NeuroCommand(NeuroCommandType.AttackOnce);
         }
 
         private static NeuroCommand CreateTimedAttackCommand(string[] args)
@@ -311,10 +326,10 @@ namespace NeuroCompanion.Commands
         {
             caller.Reply("Neuro Companion commands:");
             caller.Reply("/neuro help");
-            caller.Reply("/neuro recall");
             caller.Reply("/neuro status");
             caller.Reply("/neuro follow");
             caller.Reply("/neuro attack");
+            caller.Reply("/neuro attack player");
             caller.Reply("/neuro autoattack [seconds]");
             caller.Reply("/neuro buff [buff name/id]");
             caller.Reply("/neuro debuff player [debuff name/id]");

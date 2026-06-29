@@ -50,6 +50,11 @@ namespace NeuroCompanion.Configs
         [DefaultValue(3)]
         public int AttackOnceCooldownSeconds { get; set; }
 
+        [Range(0, 120)]
+        [Slider]
+        [DefaultValue(10)]
+        public int EvilAttackPlayerCooldownSeconds { get; set; }
+
         [Range(0, 60)]
         [Slider]
         [DefaultValue(5)]

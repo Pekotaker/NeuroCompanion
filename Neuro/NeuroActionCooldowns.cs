@@ -80,6 +80,7 @@ namespace NeuroCompanion.Neuro
                 NeuroCommandType.Follow => config.FollowCooldownSeconds,
                 NeuroCommandType.AttackOnce => config.AttackOnceCooldownSeconds,
                 NeuroCommandType.StartTimedAttack => config.AutoAttackCooldownSeconds,
+                NeuroCommandType.AttackPlayer => config.EvilAttackPlayerCooldownSeconds,
                 NeuroCommandType.BuffPlayer => config.BuffPlayerCooldownSeconds,
                 NeuroCommandType.DebuffPlayer => config.DebuffPlayerCooldownSeconds,
                 NeuroCommandType.DebuffNearestEnemy => config.DebuffEnemyCooldownSeconds,

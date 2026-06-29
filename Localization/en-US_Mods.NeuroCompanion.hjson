@@ -24,6 +24,7 @@ Projectiles: {
 	NeuroCompanionProjectile.DisplayName: Neuro Companion
 	NeuroCompanionShot.DisplayName: Neuro Companion Fireball
 	NeuroCompanionTyphoon.DisplayName: Neuro Companion Typhoon
+	EvilNeuroBoltProjectile.DisplayName: Evil Neuro Bolt Projectile
 }
 
 Buffs: {
@@ -126,6 +127,11 @@ Configs: {
 
 		MaxAutoAttackDurationSeconds: {
 			Label: Max Auto Attack Duration Seconds
+			Tooltip: ""
+		}
+
+		EvilAttackPlayerCooldownSeconds: {
+			Label: Evil Attack Player Cooldown Seconds
 			Tooltip: ""
 		}
 	}

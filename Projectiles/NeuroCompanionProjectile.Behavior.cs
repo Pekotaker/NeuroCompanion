@@ -27,6 +27,12 @@ namespace NeuroCompanion.Projectiles
             NeuroCompanionPlayer neuroPlayer
         )
         {
+            if (neuroPlayer.ConsumeAttackPlayerRequest())
+            {
+                RunAttackPlayerCommand(owner, neuroPlayer);
+                return;
+            }
+
             if (neuroPlayer.ConsumeSingleAttackRequest())
             {
                 RunSingleAttackCommand(owner);
@@ -65,6 +71,19 @@ namespace NeuroCompanion.Projectiles
 
             HoverNearOwnerForCombat(owner, target);
             ShootWeaponAtTarget(owner, target);
+        }
+
+        private void RunAttackPlayerCommand(
+            Player owner,
+            NeuroCompanionPlayer neuroPlayer
+        )
+        {
+            State = CompanionState.Attacking;
+
+            neuroPlayer.TriggerEvilVisual();
+
+            HoverNearOwnerForEvilAttack(owner);
+            ShootEvilProjectileAtOwner(owner);
         }
 
         private void RunTimedAttackMode(Player owner)

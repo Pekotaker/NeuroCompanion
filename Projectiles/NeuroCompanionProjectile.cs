@@ -52,6 +52,10 @@ namespace NeuroCompanion.Projectiles
         private const float ShotSpawnOffset = 20f;
         private const float MinimumShotDirectionLengthSquared = 1f;
 
+        private const int EvilProjectileDamage = 30;
+        private const float EvilProjectileKnockBack = 2f;
+        private const float EvilProjectileSpeed = 9f;
+
         private const float IdleRotationFactor = 0.05f;
         private const float AttackRotationFactor = 0.06f;
 

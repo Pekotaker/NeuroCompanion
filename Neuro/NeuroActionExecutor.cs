@@ -47,6 +47,7 @@ namespace NeuroCompanion.Neuro
                 command.Type == NeuroCommandType.Recall ||
                 command.Type == NeuroCommandType.Follow ||
                 command.Type == NeuroCommandType.AttackOnce ||
+                command.Type == NeuroCommandType.AttackPlayer ||
                 command.Type == NeuroCommandType.StartTimedAttack;
 
             if (commandRequiresCompanion && !HasCompanionSummoned(player))
@@ -96,6 +97,15 @@ namespace NeuroCompanion.Neuro
                         StartTimedAttack(neuroPlayer, command.DurationSeconds)
                     );
 
+                case NeuroCommandType.AttackPlayer:
+                    neuroPlayer.RequestAttackPlayer();
+                    neuroPlayer.TriggerEvilVisual();
+
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroActionResult.Ok("Evil Neuro attack requested.")
+                    );
+
                 case NeuroCommandType.BuffPlayer:
                     return StartCooldownAndReturn(
                         command.Type,
@@ -103,10 +113,20 @@ namespace NeuroCompanion.Neuro
                     );
 
                 case NeuroCommandType.DebuffPlayer:
-                    return StartCooldownAndReturn(
-                        command.Type,
-                        DebuffPlayer(player, command.EffectBuffId)
-                    );
+                    {
+                        NeuroActionResult debuffResult =
+                            DebuffPlayer(player, command.EffectBuffId);
+
+                        if (debuffResult.Success)
+                        {
+                            neuroPlayer.TriggerEvilVisual();
+                        }
+
+                        return StartCooldownAndReturn(
+                            command.Type,
+                            debuffResult
+                        );
+                    }
 
                 case NeuroCommandType.DebuffNearestEnemy:
                     return StartCooldownAndReturn(
