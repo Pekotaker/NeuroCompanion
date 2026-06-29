@@ -1,4 +1,4 @@
-﻿using Terraria;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -54,10 +54,9 @@ namespace NeuroCompanion.Neuro
             {
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.TargetedArea,
-                    "Accepted targeted-area magic weapon."
+                    $"{item.Name} is a targeted-area magic weapon. Neuro will place its attack at the target position."
                 );
             }
-
 
             if (IsControlledProjectileWeapon(projectile))
             {
@@ -96,6 +95,7 @@ namespace NeuroCompanion.Neuro
                 NeuroWeaponKind.DirectFire => "Direct-fire",
                 NeuroWeaponKind.Controlled => "Controlled projectile",
                 NeuroWeaponKind.Channeling => "Channeling",
+                NeuroWeaponKind.TargetedArea => "Targeted-area",
                 NeuroWeaponKind.Support => "Support",
                 NeuroWeaponKind.HeldBeam => "Held beam",
                 _ => "Invalid"
