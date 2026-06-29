@@ -1,36 +1,37 @@
 [b]Neuro Companion[/b]
 
-Neuro Companion is a tModLoader mod that adds a command-controlled summon companion to Terraria.
+Neuro Companion is a tModLoader mod that adds a summon companion you can control with Terraria chat commands.
 
-The companion works as a normal summon, but can also be controlled directly through Terraria chat commands. Randy/Neuro integration is optional.
+The companion works like a normal summon, but you can also give her simple commands. She can follow you, attack enemies, use a magic weapon, and apply buffs or debuffs.
+
+The mod works without Randy or the Neuro SDK. You can play it as a normal Terraria mod.
+
+If you want to test Neuro/Randy control, the mod can also connect to Randy through websocket. Randy can choose high-level actions, but it does not directly control the player.
 
 [b]Features[/b]
 
 [list]
 [*]Summon a Neuro companion minion
-[*]Switch between follow mode and timed autoattack mode
-[*]Recall Neuro near the player
+[*]Make Neuro follow the player
 [*]Attack enemies on command
-[*]Equip Neuro with her own magic weapon
-[*]Use a custom Neuro weapon slot in the inventory UI
-[*]Let Neuro take a valid magic weapon from the player inventory
-[*]Apply random or specific allowed buffs to the player
-[*]Apply random or specific allowed debuffs to the player or nearby enemies
-[*]Upgrade through Neuro Companion Staff Mk2, Mk3, and Mk4
-[*]Use Mk4 to detect enemies through blocks and make Neuro-fired projectiles pass through blocks
-[*]Optional Randy websocket integration for Neuro SDK testing
+[*]Start autoattack mode for a limited time
+[*]Give Neuro her own magic weapon
+[*]Assign Neuro a weapon through commands or the inventory UI
+[*]Let Neuro take a valid magic weapon from your inventory
+[*]Apply allowed buffs and debuffs
+[*]Upgrade the Neuro Companion Staff through Mk2, Mk3, and Mk4
+[*]Optionally connect to Randy through websocket for Neuro SDK testing
 [/list]
 
 [b]Standalone Use[/b]
 
-This mod does not require Neuro, Randy, or the Neuro SDK for normal gameplay.
+Randy is not required.
 
-You can use the companion with commands such as:
+You can control Neuro with commands such as:
 
 [list]
 [*]/neuro help
 [*]/neuro status
-[*]/neuro recall
 [*]/neuro follow
 [*]/neuro attack
 [*]/neuro autoattack 30
@@ -45,14 +46,16 @@ You can use the companion with commands such as:
 
 [b]Staff Upgrades[/b]
 
+The staff controls how often Neuro can fire her equipped weapon.
+
 [list]
 [*]Neuro Companion Staff: 50-tick staff fire limit
 [*]Neuro Companion Staff Mk2: 30-tick staff fire limit
-[*]Neuro Companion Staff Mk3: 1-tick staff fire limit
-[*]Neuro Companion Staff Mk4: 1-tick staff fire limit, through-block detection, and through-block Neuro projectiles
+[*]Neuro Companion Staff Mk3: 1-tick staff fire limit, still limited by the weapon's use time
+[*]Neuro Companion Staff Mk4: 1-tick staff fire limit, still limited by the weapon's use time. Neuro can also detect enemies through blocks, and projectiles fired by Neuro can pass through blocks.
 [/list]
 
-Important: Neuro still cannot fire faster than the equipped weapon's own use time.
+Neuro cannot fire faster than the equipped weapon's own use time.
 
 Actual Neuro fire interval = max(staff fire limit, equipped weapon useTime)
 
@@ -60,72 +63,54 @@ Actual Neuro fire interval = max(staff fire limit, equipped weapon useTime)
 
 Neuro has her own magic weapon slot.
 
-She currently accepts direct-fire magic weapons, controllable magic weapons, some channeling magic weapons, and targeted-area magic weapons such as Resonance Scepter.
+She can use several kinds of magic weapons:
 
-Unsupported support/stationary/persistent-field weapons and held beam weapons are rejected for now.
+[list]
+[*]Magic weapons that fire normal projectiles
+[*]Magic weapons with controllable projectiles, such as Magic Missile
+[*]Some simple channeling magic weapons
+[*]Magic weapons that place an attack at a target position, such as Resonance Scepter
+[/list]
+
+Weapons that create stationary clouds, fields, walls, or similar effects are rejected for now.
+
+Beam weapons such as Last Prism and Laser Machinegun are also rejected for now.
 
 Examples:
 
 [list]
-[*]Wand of Sparking - accepted, direct-fire
-[*]Water Bolt - accepted, direct-fire
-[*]Demon Scythe - accepted, direct-fire
-[*]Magic Missile - accepted, controlled projectile
-[*]Flamelash - accepted, controlled projectile
-[*]Rainbow Rod - accepted, controlled projectile
-[*]Resonance Scepter - accepted, targeted-area
-[*]Laser Machinegun - rejected for now
+[*]Wand of Sparking - accepted
+[*]Water Bolt - accepted
+[*]Demon Scythe - accepted
+[*]Magic Missile - accepted
+[*]Flamelash - accepted
+[*]Rainbow Rod - accepted
+[*]Resonance Scepter - accepted
+[*]Laser Machinegun - rejected
 [*]Nimbus Rod - rejected
 [*]Clinger Staff - rejected
 [*]Magnet Sphere - rejected
-[*]Last Prism - rejected for now
+[*]Last Prism - rejected
 [/list]
 
 [b]Update 0.2.1[/b]
 
 [list]
 [*]Added unique sprites for Neuro Companion Staff Mk2, Mk3, and Mk4.
-[*]Rebalanced staff tiers around clear fire limits and equipped weapon use time.
-[*]Added targeted-area weapon support, currently including Resonance Scepter.
-[*]Added Mk4 endgame utility: enemy detection through blocks and Neuro-fired projectiles passing through blocks.
-[*]Fixed Resonance Scepter behavior so its attack is placed at the target position instead of fired as a traveling projectile.
-[*]Fixed targeted-area weapon inspection/status text so it displays as targeted-area instead of invalid.
+[*]Rebalanced staff upgrade tiers.
+[*]Added support for Resonance Scepter and similar weapons that place attacks at a target position.
+[*]Added Mk4 behavior that lets Neuro detect enemies and fire through blocks.
+[*]Fixed Resonance Scepter so its attack is placed at the target position.
+[*]Fixed weapon status text for weapons like Resonance Scepter.
 [/list]
 
 [b]Optional Randy/Neuro Integration[/b]
 
-The mod can optionally connect to Randy from the VedalAI Neuro SDK through websocket.
+The mod can connect to Randy from the VedalAI Neuro SDK through websocket.
 
-When connected, the mod sends Terraria context and lets Randy/Neuro choose high-level actions. Neuro does not directly control the player or press low-level inputs.
+When connected, the mod sends Terraria context and lets Randy/Neuro choose high-level actions. Neuro does not control the player directly.
 
 Randy integration is optional and disabled by default.
-
-[b]Update 0.2.1[/b]
-
-[list]
-[*]Added unique sprites for Neuro Companion Staff Mk2, Mk3, and Mk4.
-[*]Rebalanced staff tiers around clear fire limits and equipped weapon use time.
-[*]Added targeted-area weapon support, currently including Resonance Scepter.
-[*]Added Mk4 endgame utility: enemy detection through blocks and Neuro-fired projectiles passing through blocks.
-[*]Fixed Resonance Scepter behavior so its attack is placed at the target position instead of fired as a traveling projectile.
-[*]Fixed targeted-area weapon inspection/status text so it displays as targeted-area instead of invalid.
-[/list]
-
-[b]Staff Upgrade Behavior[/b]
-
-[list]
-[*]Neuro Companion Staff: 50-tick staff fire limit
-[*]Neuro Companion Staff Mk2: 30-tick staff fire limit
-[*]Neuro Companion Staff Mk3: as fast as the weapon
-[*]Neuro Companion Staff Mk4: as fast as the weapon, Neuro can detect enemies and fire through blocks.
-[/list]
-
-
-[b]Weapon Support[/b]
-
-Neuro currently accepts direct-fire magic weapons, controllable magic weapons, some channeling magic weapons, and targeted-area magic weapons such as Resonance Scepter.
-
-Unsupported support/stationary/persistent-field weapons and held beam weapons are rejected for now.
 
 [b]Repository[/b]
 
