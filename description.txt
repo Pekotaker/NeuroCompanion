@@ -1,11 +1,7 @@
-Neuro Companion adds a command-controlled summon companion to Terraria.
+Neuro Companion adds a summon companion you can control with Terraria chat commands.
 
-The companion can follow the player, recall, attack, autoattack, use an equipped magic weapon, and apply buffs or debuffs through chat commands.
+The companion can follow the player, attack enemies, autoattack for a limited time, use an equipped magic weapon, and apply buffs or debuffs.
 
-Neuro has her own weapon slot and supports direct-fire, controllable, channeling, and targeted-area magic weapons such as Resonance Scepter.
-
-Upgraded staff tiers improve Neuro's firing limits, and Mk4 adds through-block enemy detection plus through-block Neuro projectiles.
-
-The mod works standalone without Neuro/Randy.
+The mod works as a normal standalone Terraria mod. Neuro/Randy is optional.
 
 Optional Randy websocket integration is included for local Neuro SDK testing, but it is disabled by default.
