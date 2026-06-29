@@ -2,12 +2,12 @@
 
 Neuro Companion is a tModLoader mod for Terraria that adds a summon companion with command-based behavior.
 
-The companion works as a normal Terraria summon, but it can also be controlled through in-game commands. It can follow the player, attack enemies, use an equipped magic weapon, apply buffs/debuffs, and switch between follow and autoattack modes.
+The companion works as a normal Terraria summon, but it can also be controlled through in-game commands. It can follow the player, recall, attack enemies, use an equipped magic weapon, apply buffs/debuffs, and switch between follow and autoattack modes.
 
 The mod can be used in two ways:
 
-* **Standalone command mode**: control the companion directly with Terraria chat commands
-* **Optional Neuro/Randy mode**: connect the mod to Randy from the VedalAI Neuro SDK so Neuro can choose high-level actions through websocket
+* **Standalone command mode**: control the companion directly with Terraria chat commands.
+* **Optional Neuro/Randy mode**: connect the mod to Randy from the VedalAI Neuro SDK so Neuro can choose high-level actions through websocket.
 
 Neuro/Randy is optional. The mod works without it.
 
@@ -33,28 +33,32 @@ Neuro/Randy is optional. The mod works without it.
 
 ## Features
 
-* Adds the **Neuro Companion Staff**
-* Summons a Neuro companion minion
-* Companion follows the player by default
-* Companion can attack once on command
-* Companion can autoattack for a limited time
-* Maximum autoattack duration is configurable, up to 10 minutes
-* Companion can use an equipped magic weapon
-* Adds a Neuro weapon equipment slot in the inventory UI
-* Player can manually assign a weapon to Neuro
-* Neuro can take a valid weapon from the player inventory
-* Neuro Companion Staff tooltip shows Neuro’s current weapon damage, crit chance, and fire interval
-* Neuro Companion Staff prefixes apply to Neuro’s weapon attacks
-* Adds upgraded staff tiers: Mk2, Mk3, and Mk4
-* Supports direct-fire magic weapons
-* Supports controllable magic weapons by treating them like normal attacks
-* Supports some simple channeling magic weapons
-* Can apply positive buffs to the player
-* Can apply specific allowed buffs by name or buff ID
-* Can apply debuffs to the player or a nearby enemy
-* Can apply specific allowed debuffs by name or buff ID
-* Can optionally connect to Randy through websocket
-* Can optionally send Terraria context to Randy/Neuro
+* Adds the **Neuro Companion Staff**.
+* Summons a Neuro companion minion.
+* Companion follows the player by default.
+* Companion can recall near the player on command.
+* Companion can attack once on command.
+* Companion can autoattack for a limited time.
+* Maximum autoattack duration is configurable, up to 10 minutes.
+* Companion can use an equipped magic weapon.
+* Adds a Neuro weapon equipment slot in the inventory UI.
+* Player can manually assign a weapon to Neuro.
+* Neuro can take a valid weapon from the player inventory.
+* Neuro Companion Staff tooltip shows Neuro’s current weapon damage, crit chance, staff fire limit, and effective fire interval.
+* Neuro Companion Staff prefixes apply to Neuro’s weapon attacks.
+* Adds upgraded staff tiers: Mk2, Mk3, and Mk4.
+* Adds unique sprites for Mk2, Mk3, and Mk4.
+* Supports direct-fire magic weapons.
+* Supports controllable magic weapons by treating them like normal attacks.
+* Supports some simple channeling magic weapons.
+* Supports targeted-area magic weapons such as Resonance Scepter.
+* Mk4 can detect enemies through blocks and makes Neuro-fired projectiles pass through blocks.
+* Can apply positive buffs to the player.
+* Can apply specific allowed buffs by name or buff ID.
+* Can apply debuffs to the player or a nearby enemy.
+* Can apply specific allowed debuffs by name or buff ID.
+* Can optionally connect to Randy through websocket.
+* Can optionally send Terraria context to Randy/Neuro.
 
 ## Setup
 
@@ -67,13 +71,13 @@ You only need:
 
 In tModLoader:
 
-1. Open **Workshop**
-2. Open **Develop Mods**
-3. Build the mod
-4. Enable **Neuro Companion**
-5. Reload mods
-6. Enter a world
-7. Obtain or craft the Neuro Companion Staff
+1. Open **Workshop**.
+2. Open **Develop Mods**.
+3. Build the mod.
+4. Enable **Neuro Companion**.
+5. Reload mods.
+6. Enter a world.
+7. Obtain or craft the Neuro Companion Staff.
 
 After that, you can control the companion with `/neuro` commands.
 
@@ -119,7 +123,13 @@ Shows the Neuro command list.
 /neuro status
 ```
 
-Shows companion status, current mode, autoattack timer, and active action cooldowns.
+Shows companion status, current mode, autoattack timer, active action cooldowns, and weapon status.
+
+```text
+/neuro recall
+```
+
+Recalls the companion near the player.
 
 ```text
 /neuro follow
@@ -273,13 +283,14 @@ Shows detailed debug information, including connection status, summoned status, 
 
 ## Staff Upgrades
 
-The Neuro Companion Staff controls Neuro’s firing interval.
+The Neuro Companion Staff controls Neuro’s staff fire limit.
 
 The staff tooltip shows:
 
 * Neuro weapon damage
 * Neuro weapon crit chance
-* Neuro fire interval
+* Neuro staff fire limit
+* Neuro effective fire interval
 
 Neuro’s displayed damage is based on:
 
@@ -292,12 +303,22 @@ The staff can be reforged, but it is limited to universal combat prefixes instea
 
 Staff tiers:
 
+| Staff | Staff fire limit | Extra behavior |
+| --- | ---: | --- |
+| Neuro Companion Staff | 50 ticks | Base tier |
+| Neuro Companion Staff Mk2 | 30 ticks | Faster base firing |
+| Neuro Companion Staff Mk3 | 1 tick | Fires as fast as the equipped weapon allows |
+| Neuro Companion Staff Mk4 | 1 tick | Fires as fast as the equipped weapon allows, detects through blocks, and makes Neuro-fired projectiles pass through blocks |
+
+Important rule:
+
 ```text
-Neuro Companion Staff      -> normal fire interval
-Neuro Companion Staff Mk2  -> faster fire interval
-Neuro Companion Staff Mk3  -> faster fire interval
-Neuro Companion Staff Mk4  -> fastest fire interval
+Actual Neuro fire interval = max(staff fire limit, equipped weapon useTime)
 ```
+
+This means Mk3 and Mk4 do not create true 1-tick spam unless the equipped weapon itself has a 1-tick use time.
+
+Mk4 is the endgame utility tier. Its main identity is through-block detection and through-block Neuro projectiles.
 
 Recipes:
 
@@ -327,49 +348,53 @@ You can equip a weapon by dragging it into the slot or by using commands.
 
 Weapons can be assigned by:
 
-* Dragging a valid weapon into the Neuro weapon slot
-* Using `/neuro weapon set`
-* Using `/neuro weapon take`
-* Letting Randy/Neuro choose the equivalent weapon action when connected
+* Dragging a valid weapon into the Neuro weapon slot.
+* Using `/neuro weapon set`.
+* Using `/neuro weapon take`.
+* Letting Randy/Neuro choose the equivalent weapon action when connected.
 
 Important weapon rules:
 
-* Moving a weapon into Neuro’s slot moves the item, not copies it
-* If Neuro already has a weapon, the old weapon is swapped back safely
-* `/neuro weapon take` ignores the player’s currently selected hotbar item
-* Neuro does not steal the item currently held by the mouse cursor
+* Moving a weapon into Neuro’s slot moves the item, not copies it.
+* If Neuro already has a weapon, the old weapon is swapped back safely.
+* `/neuro weapon take` ignores the player’s currently selected hotbar item.
+* Neuro does not steal the item currently held by the mouse cursor.
 
 Neuro currently accepts:
 
-* Direct-fire magic weapons
-* Controllable magic weapons, treated like normal attacks
-* Some simple channeling magic weapons
+* Direct-fire magic weapons.
+* Controllable magic weapons, treated like normal attacks.
+* Some simple channeling magic weapons.
+* Targeted-area magic weapons, currently including Resonance Scepter.
 
 Neuro rejects:
 
-* Non-magic weapons
-* Items with no damage
-* Items with no mana cost
-* Items that do not shoot projectiles
-* Support/stationary/persistent-field magic weapons
-* Player-held channeling weapons that require special player-held behavior
-* Held beam weapons
+* Non-magic weapons.
+* Items with no damage.
+* Items with no mana cost.
+* Items that do not shoot projectiles.
+* Support/stationary/persistent-field magic weapons.
+* Player-held channeling weapons that require special player-held behavior.
+* Held beam weapons.
 
 Examples:
 
 ```text
-Wand of Sparking     -> accepted
-Water Bolt           -> accepted
-Demon Scythe         -> accepted
-Magic Missile        -> accepted
-Flamelash            -> accepted
-Rainbow Rod          -> accepted
-Laser Machinegun     -> rejected
-Nimbus Rod           -> rejected
-Clinger Staff        -> rejected
-Magnet Sphere        -> rejected
-Last Prism           -> rejected
+Wand of Sparking     -> accepted, direct-fire
+Water Bolt           -> accepted, direct-fire
+Demon Scythe         -> accepted, direct-fire
+Magic Missile        -> accepted, controlled projectile
+Flamelash            -> accepted, controlled projectile
+Rainbow Rod          -> accepted, controlled projectile
+Resonance Scepter    -> accepted, targeted-area
+Laser Machinegun     -> rejected, held beam/channeling behavior not supported yet
+Nimbus Rod           -> rejected, support/persistent field
+Clinger Staff        -> rejected, support/persistent field
+Magnet Sphere        -> rejected, support/persistent field
+Last Prism           -> rejected, held beam not supported yet
 ```
+
+Targeted-area weapons behave differently from normal projectile weapons. Neuro places the attack at the enemy position, or at the cursor when no valid enemy is targeted, instead of firing a projectile from her body.
 
 Last Prism, Laser Machinegun, and other player-held beam/channeling weapons are not supported yet because they need custom behavior attached to Neuro’s companion body instead of the player.
 
@@ -420,6 +445,7 @@ When connected, the mod can send Terraria context to Randy/Neuro, including:
 
 Randy/Neuro can then choose high-level actions such as:
 
+* Recall companion
 * Follow player
 * Attack once
 * Start autoattack
@@ -442,11 +468,11 @@ This integration is optional. The same companion actions can be tested manually 
 
 Check that:
 
-* The companion is summoned
-* Neuro has a valid magic weapon equipped
-* There is a valid enemy nearby
-* The action is not on cooldown
-* Autoattack mode is active, or `/neuro attack` was used
+* The companion is summoned.
+* Neuro has a valid magic weapon equipped.
+* There is a valid enemy nearby.
+* The action is not on cooldown.
+* Autoattack mode is active, or `/neuro attack` was used.
 
 Use:
 
@@ -500,6 +526,20 @@ Resummon Neuro with the upgraded/reforged staff.
 
 The companion remembers the staff tier and prefix used when she was summoned.
 
+### Mk3 or Mk4 is not firing every tick
+
+This is expected for most weapons.
+
+Neuro’s actual fire interval is the slower value between the staff fire limit and the equipped weapon’s own use time.
+
+Use the staff tooltip to check the effective fire interval.
+
+### Mk4 can shoot through blocks, but earlier staffs cannot
+
+This is expected.
+
+Mk4 is the through-block utility tier. The normal staff, Mk2, and Mk3 should still require normal line of sight.
+
 ### Randy does not connect
 
 Randy is optional. You do not need it for normal command-based use.
@@ -519,22 +559,8 @@ Default:
 ws://localhost:8000
 ```
 
-### Randy keeps trying actions when the companion is missing
-
-The mod treats missing-companion actions as skipped instead of hard failures, so Randy should not repeatedly retry them.
-
-Summon the companion with the Neuro Companion Staff before testing combat actions.
-
 ## Repository
-
-Terraria mod:
 
 ```text
 https://github.com/Pekotaker/NeuroCompanion
-```
-
-Neuro SDK:
-
-```text
-https://github.com/VedalAI/neuro-sdk
 ```
