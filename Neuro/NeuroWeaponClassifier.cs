@@ -1,4 +1,4 @@
-﻿using Terraria;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -57,7 +57,6 @@ namespace NeuroCompanion.Neuro
                     $"{item.Name} is a targeted-area magic weapon. Neuro will place its attack at the target position."
                 );
             }
-
 
             if (IsControlledProjectileWeapon(projectile))
             {

@@ -9,12 +9,15 @@ The companion works as a normal summon, but can also be controlled directly thro
 [list]
 [*]Summon a Neuro companion minion
 [*]Switch between follow mode and timed autoattack mode
+[*]Recall Neuro near the player
 [*]Attack enemies on command
 [*]Equip Neuro with her own magic weapon
 [*]Use a custom Neuro weapon slot in the inventory UI
 [*]Let Neuro take a valid magic weapon from the player inventory
-[*]Apply random Red Potion-style buffs to the player
-[*]Apply random Red Potion-style debuffs to the player or nearby enemies
+[*]Apply random or specific allowed buffs to the player
+[*]Apply random or specific allowed debuffs to the player or nearby enemies
+[*]Upgrade through Neuro Companion Staff Mk2, Mk3, and Mk4
+[*]Use Mk4 to detect enemies through blocks and make Neuro-fired projectiles pass through blocks
 [*]Optional Randy websocket integration for Neuro SDK testing
 [/list]
 
@@ -27,9 +30,12 @@ You can use the companion with commands such as:
 [list]
 [*]/neuro help
 [*]/neuro status
+[*]/neuro recall
 [*]/neuro follow
 [*]/neuro attack
 [*]/neuro autoattack 30
+[*]/neuro buff ironskin
+[*]/neuro debuff enemy poisoned
 [*]/neuro weapon status
 [*]/neuro weapon inspect
 [*]/neuro weapon set
@@ -37,28 +43,53 @@ You can use the companion with commands such as:
 [*]/neuro weapon return
 [/list]
 
+[b]Staff Upgrades[/b]
+
+[list]
+[*]Neuro Companion Staff: 50-tick staff fire limit
+[*]Neuro Companion Staff Mk2: 30-tick staff fire limit
+[*]Neuro Companion Staff Mk3: 1-tick staff fire limit
+[*]Neuro Companion Staff Mk4: 1-tick staff fire limit, through-block detection, and through-block Neuro projectiles
+[/list]
+
+Important: Neuro still cannot fire faster than the equipped weapon's own use time.
+
+Actual Neuro fire interval = max(staff fire limit, equipped weapon useTime)
+
 [b]Weapon System[/b]
 
 Neuro has her own magic weapon slot.
 
-She currently accepts direct-fire magic weapons, controllable magic weapons, and some channeling magic weapons.
+She currently accepts direct-fire magic weapons, controllable magic weapons, some channeling magic weapons, and targeted-area magic weapons such as Resonance Scepter.
 
-Unsupported support/stationary/persistent-field weapons are rejected.
+Unsupported support/stationary/persistent-field weapons and held beam weapons are rejected for now.
 
 Examples:
 
 [list]
-[*]Wand of Sparking - accepted
-[*]Water Bolt - accepted
-[*]Demon Scythe - accepted
-[*]Magic Missile - accepted
-[*]Flamelash - accepted
-[*]Rainbow Rod - accepted
-[*]Laser Machinegun - rejected
+[*]Wand of Sparking - accepted, direct-fire
+[*]Water Bolt - accepted, direct-fire
+[*]Demon Scythe - accepted, direct-fire
+[*]Magic Missile - accepted, controlled projectile
+[*]Flamelash - accepted, controlled projectile
+[*]Rainbow Rod - accepted, controlled projectile
+[*]Resonance Scepter - accepted, targeted-area
+[*]Laser Machinegun - rejected for now
 [*]Nimbus Rod - rejected
 [*]Clinger Staff - rejected
 [*]Magnet Sphere - rejected
 [*]Last Prism - rejected for now
+[/list]
+
+[b]Update 0.2.1[/b]
+
+[list]
+[*]Added unique sprites for Neuro Companion Staff Mk2, Mk3, and Mk4.
+[*]Rebalanced staff tiers around clear fire limits and equipped weapon use time.
+[*]Added targeted-area weapon support, currently including Resonance Scepter.
+[*]Added Mk4 endgame utility: enemy detection through blocks and Neuro-fired projectiles passing through blocks.
+[*]Fixed Resonance Scepter behavior so its attack is placed at the target position instead of fired as a traveling projectile.
+[*]Fixed targeted-area weapon inspection/status text so it displays as targeted-area instead of invalid.
 [/list]
 
 [b]Optional Randy/Neuro Integration[/b]
