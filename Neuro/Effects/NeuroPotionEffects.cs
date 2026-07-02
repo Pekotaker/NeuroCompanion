@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Neuro.Effects
 {
@@ -86,7 +84,7 @@ namespace NeuroCompanion.Neuro.Effects
                 );
             }
 
-            return $"Neuro applied buffs: {FormatBuffList(appliedBuffs)}.";
+            return $"Neuro applied buffs: {NeuroBuffLookup.FormatBuffList(appliedBuffs)}.";
         }
 
         public static bool TryApplySpecificRedPotionBuff(
@@ -95,16 +93,16 @@ namespace NeuroCompanion.Neuro.Effects
             out string message
         )
         {
-            if (!IsAllowedBuff(buffId, RedPotionBuffs))
+            if (!NeuroBuffLookup.IsAllowed(buffId, RedPotionBuffs))
             {
                 message =
-                    $"{GetBuffNameSafe(buffId)} is not an allowed Neuro positive buff.";
+                    $"{NeuroBuffLookup.GetBuffNameSafe(buffId)} is not an allowed Neuro positive buff.";
                 return false;
             }
 
             player.AddBuff(buffId, RedPotionBuffDurationTicks);
 
-            message = $"Neuro applied {GetBuffNameSafe(buffId)} to the player.";
+            message = $"Neuro applied {NeuroBuffLookup.GetBuffNameSafe(buffId)} to the player.";
             return true;
         }
 
@@ -128,16 +126,16 @@ namespace NeuroCompanion.Neuro.Effects
             out string message
         )
         {
-            if (!IsAllowedBuff(debuffId, RedPotionDebuffs))
+            if (!NeuroBuffLookup.IsAllowed(debuffId, RedPotionDebuffs))
             {
                 message =
-                    $"{GetBuffNameSafe(debuffId)} is not an allowed Neuro debuff.";
+                    $"{NeuroBuffLookup.GetBuffNameSafe(debuffId)} is not an allowed Neuro debuff.";
                 return false;
             }
 
             player.AddBuff(debuffId, GetRedPotionDebuffDurationTicks());
 
-            message = $"Neuro applied {GetBuffNameSafe(debuffId)} to the player.";
+            message = $"Neuro applied {NeuroBuffLookup.GetBuffNameSafe(debuffId)} to the player.";
             return true;
         }
 
@@ -166,24 +164,24 @@ namespace NeuroCompanion.Neuro.Effects
             out string message
         )
         {
-            if (!IsAllowedBuff(debuffId, RedPotionDebuffs))
+            if (!NeuroBuffLookup.IsAllowed(debuffId, RedPotionDebuffs))
             {
                 message =
-                    $"{GetBuffNameSafe(debuffId)} is not an allowed Neuro debuff.";
+                    $"{NeuroBuffLookup.GetBuffNameSafe(debuffId)} is not an allowed Neuro debuff.";
                 return false;
             }
 
             if (!CanNpcReceiveDebuff(npc, debuffId))
             {
                 message =
-                    $"{npc.FullName} is immune to {GetBuffNameSafe(debuffId)}.";
+                    $"{npc.FullName} is immune to {NeuroBuffLookup.GetBuffNameSafe(debuffId)}.";
                 return false;
             }
 
             npc.AddBuff(debuffId, GetRedPotionDebuffDurationTicks());
 
             message =
-                $"Neuro applied {GetBuffNameSafe(debuffId)} to {npc.FullName}.";
+                $"Neuro applied {NeuroBuffLookup.GetBuffNameSafe(debuffId)} to {npc.FullName}.";
             return true;
         }
 
@@ -193,10 +191,10 @@ namespace NeuroCompanion.Neuro.Effects
             out string error
         )
         {
-            return TryFindBuffInAllowedList(
+            return NeuroBuffLookup.TryFindAllowedBuff(
                 input,
-                RedPotionBuffs,
-                "positive buff",
+                RedPotionDebuffs,
+                "debuff",
                 out buffId,
                 out error
             );
@@ -208,10 +206,10 @@ namespace NeuroCompanion.Neuro.Effects
             out string error
         )
         {
-            return TryFindBuffInAllowedList(
+            return NeuroBuffLookup.TryFindAllowedBuff(
                 input,
-                RedPotionDebuffs,
-                "debuff",
+                RedPotionBuffs,
+                "positive buff",
                 out buffId,
                 out error
             );
@@ -219,63 +217,12 @@ namespace NeuroCompanion.Neuro.Effects
 
         public static string GetAllowedPositiveBuffListText()
         {
-            return FormatAllowedBuffList(RedPotionBuffs);
+            return NeuroBuffLookup.FormatAllowedBuffList(RedPotionBuffs);
         }
 
         public static string GetAllowedDebuffListText()
         {
-            return FormatAllowedBuffList(RedPotionDebuffs);
-        }
-
-        private static bool TryFindBuffInAllowedList(
-            string input,
-            int[] allowedBuffs,
-            string listName,
-            out int buffId,
-            out string error
-        )
-        {
-            buffId = NeuroCommand.NoSpecificEffect;
-            error = null;
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                error = $"No {listName} was provided.";
-                return false;
-            }
-
-            input = input.Trim();
-
-            if (int.TryParse(input, out int parsedId))
-            {
-                if (IsAllowedBuff(parsedId, allowedBuffs))
-                {
-                    buffId = parsedId;
-                    return true;
-                }
-
-                error =
-                    $"{parsedId} is not an allowed Neuro {listName}. Allowed: {FormatAllowedBuffList(allowedBuffs)}";
-                return false;
-            }
-
-            string normalizedInput = NormalizeBuffName(input);
-
-            foreach (int allowedBuff in allowedBuffs)
-            {
-                string normalizedBuffName =
-                    NormalizeBuffName(GetBuffNameSafe(allowedBuff));
-
-                if (normalizedInput == normalizedBuffName)
-                {
-                    buffId = allowedBuff;
-                    return true;
-                }
-            }
-
-            error =
-                $"Unknown Neuro {listName}: {input}. Allowed: {FormatAllowedBuffList(allowedBuffs)}";
-            return false;
+            return NeuroBuffLookup.FormatAllowedBuffList(RedPotionDebuffs);
         }
 
         private static List<int> GetAllowedBuffsPlayerDoesNotHave(
@@ -364,19 +311,6 @@ namespace NeuroCompanion.Neuro.Effects
             return true;
         }
 
-        private static bool IsAllowedBuff(int buffId, int[] allowedBuffs)
-        {
-            foreach (int allowedBuff in allowedBuffs)
-            {
-                if (buffId == allowedBuff)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private static int GetRedPotionDebuffDurationTicks()
         {
             int hours = 1;
@@ -391,75 +325,6 @@ namespace NeuroCompanion.Neuro.Effects
             }
 
             return hours * SecondsPerMinute * SecondsPerMinute * TicksPerSecond;
-        }
-
-        private static string FormatBuffList(List<int> buffs)
-        {
-            if (buffs.Count == 0)
-            {
-                return "none";
-            }
-
-            StringBuilder builder = new();
-
-            for (int i = 0; i < buffs.Count; i++)
-            {
-                if (i > 0)
-                {
-                    builder.Append(", ");
-                }
-
-                builder.Append(GetBuffNameSafe(buffs[i]));
-            }
-
-            return builder.ToString();
-        }
-
-        private static string FormatAllowedBuffList(int[] buffs)
-        {
-            StringBuilder builder = new();
-
-            for (int i = 0; i < buffs.Length; i++)
-            {
-                if (i > 0)
-                {
-                    builder.Append(", ");
-                }
-
-                int buff = buffs[i];
-
-                builder.Append(GetBuffNameSafe(buff));
-                builder.Append(" (");
-                builder.Append(buff);
-                builder.Append(")");
-            }
-
-            return builder.ToString();
-        }
-
-        private static string GetBuffNameSafe(int buffId)
-        {
-            if (buffId < 0 || buffId >= BuffLoader.BuffCount)
-            {
-                return $"Unknown buff {buffId}";
-            }
-
-            return Lang.GetBuffName(buffId);
-        }
-
-        private static string NormalizeBuffName(string text)
-        {
-            StringBuilder builder = new();
-
-            foreach (char character in text)
-            {
-                if (char.IsLetterOrDigit(character))
-                {
-                    builder.Append(char.ToLowerInvariant(character));
-                }
-            }
-
-            return builder.ToString();
         }
     }
 }
