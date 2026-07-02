@@ -56,9 +56,16 @@ namespace NeuroCompanion.Commands
 
             if (!NeuroChatCommandParser.TryCreateCommand(
                     args,
-                    out NeuroCommand command
+                    out NeuroCommand command,
+                    out string parseError
                 ))
             {
+                if (!string.IsNullOrWhiteSpace(parseError))
+                {
+                    caller.Reply(parseError);
+                    return;
+                }
+
                 caller.Reply($"Unknown or invalid Neuro command: {input}");
                 NeuroCommandHelp.ReplyWithHelp(caller);
                 return;

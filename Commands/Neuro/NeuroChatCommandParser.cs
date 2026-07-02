@@ -7,10 +7,12 @@ namespace NeuroCompanion.Commands.Neuro
     {
         public static bool TryCreateCommand(
             string[] args,
-            out NeuroCommand command
+            out NeuroCommand command,
+            out string error
         )
         {
             command = null;
+            error = null;
 
             if (args == null || args.Length == 0)
             {
@@ -39,10 +41,18 @@ namespace NeuroCompanion.Commands.Neuro
                     return true;
 
                 case "buff":
-                    return TryCreateBuffCommand(args, out command);
+                    return TryCreateBuffCommand(
+                        args,
+                        out command,
+                        out error
+                    );
 
                 case "debuff":
-                    return TryCreateDebuffCommand(args, out command);
+                    return TryCreateDebuffCommand(
+                        args,
+                        out command,
+                        out error
+                    );
 
                 default:
                     return false;
@@ -89,10 +99,12 @@ namespace NeuroCompanion.Commands.Neuro
 
         private static bool TryCreateBuffCommand(
             string[] args,
-            out NeuroCommand command
+            out NeuroCommand command,
+            out string error
         )
         {
             command = null;
+            error = null;
 
             if (args.Length < 2)
             {
@@ -105,7 +117,7 @@ namespace NeuroCompanion.Commands.Neuro
             if (!NeuroPotionEffects.TryFindPositiveBuff(
                     buffInput,
                     out int buffId,
-                    out _
+                    out error
                 ))
             {
                 return false;
@@ -121,13 +133,17 @@ namespace NeuroCompanion.Commands.Neuro
 
         private static bool TryCreateDebuffCommand(
             string[] args,
-            out NeuroCommand command
+            out NeuroCommand command,
+            out string error
         )
         {
             command = null;
+            error = null;
 
             if (args.Length < 2)
             {
+                error =
+                    "Usage: /neuro debuff player [debuff name/id] or /neuro debuff enemy [debuff name/id]";
                 return false;
             }
 
@@ -146,6 +162,8 @@ namespace NeuroCompanion.Commands.Neuro
                     break;
 
                 default:
+                    error =
+                        $"Unknown debuff target: {target}. Use /neuro debuff player [debuff name/id] or /neuro debuff enemy [debuff name/id].";
                     return false;
             }
 
@@ -160,7 +178,7 @@ namespace NeuroCompanion.Commands.Neuro
             if (!NeuroPotionEffects.TryFindDebuff(
                     debuffInput,
                     out int debuffId,
-                    out _
+                    out error
                 ))
             {
                 return false;
