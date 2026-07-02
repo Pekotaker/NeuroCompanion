@@ -1,7 +1,7 @@
 ﻿using Terraria;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Globals
 {
     public class NeuroMk4ProjectileGlobal : GlobalProjectile
     {

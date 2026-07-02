@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Attacks
 {
     public class NeuroCompanionShot : ModProjectile
     {

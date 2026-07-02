@@ -1,9 +1,10 @@
-﻿using NeuroCompanion.Buffs;
-using NeuroCompanion.Players;
-using NeuroCompanion.Projectiles;
-using NeuroCompanion.Configs;
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
+
+using NeuroCompanion.Buffs;
+using NeuroCompanion.Players;
+using NeuroCompanion.Projectiles.Companion;
+using NeuroCompanion.Configs;
 using NeuroCompanion.Neuro.WebSocket;
 
 

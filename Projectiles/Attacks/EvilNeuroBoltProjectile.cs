@@ -4,7 +4,7 @@ using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Attacks
 {
     public class EvilNeuroBoltProjectile : ModProjectile
     {

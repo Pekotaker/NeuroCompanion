@@ -1,11 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
-using NeuroCompanion.Neuro.Weapons;
-using NeuroCompanion.Players;
+
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles
+using NeuroCompanion.Neuro.Weapons;
+using NeuroCompanion.Players;
+
+using NeuroCompanion.Projectiles.Attacks;
+using NeuroCompanion.Projectiles.Globals;
+
+namespace NeuroCompanion.Projectiles.Helpers
 {
     public static class NeuroProjectileSpawner
     {

@@ -1,11 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using NeuroCompanion.Buffs;
+﻿using NeuroCompanion.Buffs;
 using NeuroCompanion.Players;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile : ModProjectile
     {
@@ -24,8 +23,6 @@ namespace NeuroCompanion.Projectiles
 
         private const int IdleDustChance = 12;
         private const int AttackDustChance = 5;
-
-        private const int ShootCooldownTicks = 50;
 
         private const float MinionSlotsUsed = 1f;
 
@@ -52,7 +49,6 @@ namespace NeuroCompanion.Projectiles
         private const float ShotSpawnOffset = 20f;
         private const float MinimumShotDirectionLengthSquared = 1f;
 
-        private const int EvilProjectileDamage = 30;
         private const float EvilProjectileKnockBack = 2f;
         private const float EvilProjectileSpeed = 9f;
 

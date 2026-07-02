@@ -1,7 +1,9 @@
-﻿using NeuroCompanion.Players;
-using NeuroCompanion.Projectiles;
-using Terraria;
+﻿using Terraria;
 using Terraria.ModLoader;
+
+using NeuroCompanion.Players;
+using NeuroCompanion.Projectiles.Companion;
+
 using NeuroCompanion.Neuro;
 using NeuroCompanion.Neuro.Actions;
 using NeuroCompanion.Neuro.Runtime;

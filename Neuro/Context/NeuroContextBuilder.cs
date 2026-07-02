@@ -1,8 +1,11 @@
 ﻿using System.Text;
-using NeuroCompanion.Players;
-using NeuroCompanion.Projectiles;
+
 using Terraria;
 using Terraria.ModLoader;
+
+using NeuroCompanion.Players;
+using NeuroCompanion.Projectiles.Companion;
+
 using NeuroCompanion.Configs;
 using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Neuro.Actions;

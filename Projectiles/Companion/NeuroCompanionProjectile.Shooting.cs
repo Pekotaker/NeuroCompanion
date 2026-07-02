@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using NeuroCompanion.Neuro.Weapons;
-using NeuroCompanion.Neuro.Effects;
-using NeuroCompanion.Players;
+
 using Terraria;
 using Terraria.Audio;
 
-namespace NeuroCompanion.Projectiles
+using NeuroCompanion.Neuro.Weapons;
+using NeuroCompanion.Neuro.Effects;
+using NeuroCompanion.Players;
+using NeuroCompanion.Projectiles.Helpers;
+
+namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile
     {

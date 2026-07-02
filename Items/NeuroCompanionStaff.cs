@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using NeuroCompanion.Buffs;
-using NeuroCompanion.Neuro.Weapons;
-using NeuroCompanion.Players;
-using NeuroCompanion.Projectiles;
+
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
+
+using NeuroCompanion.Buffs;
+using NeuroCompanion.Neuro.Weapons;
+using NeuroCompanion.Players;
+using NeuroCompanion.Projectiles.Companion;
 
 namespace NeuroCompanion.Items
 {

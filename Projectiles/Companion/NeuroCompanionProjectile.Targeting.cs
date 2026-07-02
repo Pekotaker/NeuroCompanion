@@ -2,7 +2,7 @@
 using Terraria;
 using NeuroCompanion.Players;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile
     {

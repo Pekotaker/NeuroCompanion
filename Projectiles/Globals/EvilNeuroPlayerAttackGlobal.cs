@@ -3,7 +3,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Globals
 {
     public class EvilNeuroPlayerAttackGlobal : GlobalProjectile
     {

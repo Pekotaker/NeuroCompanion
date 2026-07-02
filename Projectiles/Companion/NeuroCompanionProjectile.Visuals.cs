@@ -6,12 +6,12 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile
     {
         private const string EvilTexturePath =
-            "NeuroCompanion/Projectiles/NeuroCompanionProjectile_Evil";
+            "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile_Evil";
 
         private void Animate()
         {

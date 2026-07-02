@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
 
-namespace NeuroCompanion.Projectiles
+namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile
     {
