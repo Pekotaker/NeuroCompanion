@@ -193,8 +193,8 @@ namespace NeuroCompanion.Neuro.Effects
         {
             return NeuroBuffLookup.TryFindAllowedBuff(
                 input,
-                RedPotionDebuffs,
-                "debuff",
+                RedPotionBuffs,
+                "buff",
                 out buffId,
                 out error
             );
