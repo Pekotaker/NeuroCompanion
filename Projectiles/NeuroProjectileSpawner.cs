@@ -19,27 +19,16 @@ namespace NeuroCompanion.Projectiles
             Vector2 velocity
         )
         {
-            int damage = NeuroDamageService.GetNeuroWeaponDamage(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            if (!TrySpawnProjectile(
+            if (!TrySpawnWeaponProjectile(
                     source,
+                    projectileOwner,
+                    owner,
+                    neuroPlayer,
+                    weapon,
                     position,
                     velocity,
-                    weapon.shoot,
-                    damage,
-                    knockBack,
-                    projectileOwner,
-                    out Projectile spawnedProjectile
+                    out Projectile spawnedProjectile,
+                    out int damage
                 ))
             {
                 return;
@@ -70,27 +59,16 @@ namespace NeuroCompanion.Projectiles
             Vector2 velocity
         )
         {
-            int damage = NeuroDamageService.GetNeuroWeaponDamage(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            if (!TrySpawnProjectile(
+            if (!TrySpawnWeaponProjectile(
                     source,
+                    projectileOwner,
+                    owner,
+                    neuroPlayer,
+                    weapon,
                     position,
                     velocity,
-                    weapon.shoot,
-                    damage,
-                    knockBack,
-                    projectileOwner,
-                    out Projectile spawnedProjectile
+                    out Projectile spawnedProjectile,
+                    out int damage
                 ))
             {
                 return;
@@ -154,6 +132,42 @@ namespace NeuroCompanion.Projectiles
             evilGlobal.KillOnOwnerHit = killOnOwnerHit;
 
             spawnedProjectile.netUpdate = true;
+        }
+
+        private static bool TrySpawnWeaponProjectile(
+            IEntitySource source,
+            int projectileOwner,
+            Player owner,
+            NeuroCompanionPlayer neuroPlayer,
+            Item weapon,
+            Vector2 position,
+            Vector2 velocity,
+            out Projectile spawnedProjectile,
+            out int damage
+        )
+        {
+            damage = NeuroDamageService.GetNeuroWeaponDamage(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
+
+            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
+
+            return TrySpawnProjectile(
+                source,
+                position,
+                velocity,
+                weapon.shoot,
+                damage,
+                knockBack,
+                projectileOwner,
+                out spawnedProjectile
+            );
         }
 
         private static bool TrySpawnProjectile(
