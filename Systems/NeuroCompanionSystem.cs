@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.ModLoader;
 
 using NeuroCompanion.Configs;
+using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Systems
 {

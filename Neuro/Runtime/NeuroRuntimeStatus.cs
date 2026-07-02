@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Runtime
 {
     public static class NeuroRuntimeStatus
     {

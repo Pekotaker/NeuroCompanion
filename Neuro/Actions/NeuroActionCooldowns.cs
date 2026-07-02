@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NeuroCompanion.Configs;
 using Terraria.ModLoader;
+using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Neuro
 {

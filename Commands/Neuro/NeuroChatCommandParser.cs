@@ -1,4 +1,5 @@
 ﻿using NeuroCompanion.Neuro;
+using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Commands.Neuro
 {

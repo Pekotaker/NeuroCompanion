@@ -3,6 +3,7 @@ using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
 using Terraria;
 using Terraria.ModLoader;
+using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Commands
 {

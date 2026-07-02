@@ -3,6 +3,7 @@ using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Neuro
 {

@@ -3,6 +3,7 @@ using NeuroCompanion.Commands.Neuro;
 using NeuroCompanion.Commands.Neuro.Weapon;
 using Terraria;
 using Terraria.ModLoader;
+using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Commands
 {

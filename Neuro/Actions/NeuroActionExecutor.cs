@@ -1,6 +1,7 @@
 ﻿using NeuroCompanion.Players;
 using System;
 using Terraria;
+using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Neuro
 {
