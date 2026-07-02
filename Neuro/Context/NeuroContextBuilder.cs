@@ -30,7 +30,10 @@ namespace NeuroCompanion.Neuro
             int autoAttackSecondsRemaining =
                 neuroPlayer.GetTimedAttackSecondsRemaining();
 
-            NPC nearestEnemy = FindNearestEnemy(player);
+            NPC nearestEnemy = NeuroNpcTargetFinder.FindNearestEnemy(
+                player,
+                NearbyEnemyRange
+            );
             bool validEnemyAvailable = nearestEnemy != null;
 
             StringBuilder builder = new();
@@ -67,34 +70,6 @@ namespace NeuroCompanion.Neuro
             ] > 0;
         }
 
-        private static NPC FindNearestEnemy(Player player)
-        {
-            NPC bestTarget = null;
-            float bestDistance = NearbyEnemyRange;
-
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC npc = Main.npc[i];
-
-                if (!npc.active || !npc.CanBeChasedBy())
-                {
-                    continue;
-                }
-
-                float distance = player.Distance(npc.Center);
-
-                if (distance >= bestDistance)
-                {
-                    continue;
-                }
-
-                bestDistance = distance;
-                bestTarget = npc;
-            }
-
-            return bestTarget;
-        }
-
         private static void AppendNearestEnemy(
             StringBuilder builder,
             Player player,
@@ -129,7 +104,7 @@ namespace NeuroCompanion.Neuro
             {
                 NPC npc = Main.npc[i];
 
-                if (!npc.active || !npc.CanBeChasedBy())
+                if (!NeuroNpcTargetFinder.IsValidEnemy(npc))
                 {
                     continue;
                 }

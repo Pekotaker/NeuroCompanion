@@ -61,7 +61,10 @@ namespace NeuroCompanion.Neuro
             int specificDebuffId
         )
         {
-            NPC target = FindNearestDebuffTarget(player);
+            NPC target = NeuroNpcTargetFinder.FindNearestEnemy(
+                player,
+                DebuffEnemySearchRange
+            );
 
             if (target == null)
             {
@@ -87,34 +90,6 @@ namespace NeuroCompanion.Neuro
             return NeuroActionResult.Ok(
                 $"Neuro applied {appliedCount} Red Potion-style debuffs to {target.FullName}."
             );
-        }
-
-        private static NPC FindNearestDebuffTarget(Player player)
-        {
-            NPC bestTarget = null;
-            float bestDistance = DebuffEnemySearchRange;
-
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC npc = Main.npc[i];
-
-                if (!npc.active || !npc.CanBeChasedBy())
-                {
-                    continue;
-                }
-
-                float distance = player.Distance(npc.Center);
-
-                if (distance >= bestDistance)
-                {
-                    continue;
-                }
-
-                bestDistance = distance;
-                bestTarget = npc;
-            }
-
-            return bestTarget;
         }
     }
 }
