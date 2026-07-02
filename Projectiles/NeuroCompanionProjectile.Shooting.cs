@@ -109,7 +109,12 @@ namespace NeuroCompanion.Projectiles
 
             ShootTimer = 0f;
 
-            Vector2 shotDirection = NormalizeShotDirection(rawDirection, owner);
+            Vector2 shotDirection =
+                NeuroShotDirectionHelper.NormalizeForOwnerFacing(
+                    rawDirection,
+                    owner,
+                    MinimumShotDirectionLengthSquared
+                );
 
             float shotSpeed = GetWeaponShootSpeed(weapon);
             Vector2 shotVelocity = shotDirection * shotSpeed;
@@ -125,19 +130,6 @@ namespace NeuroCompanion.Projectiles
                 shotPosition,
                 shotVelocity
             );
-        }
-
-        private Vector2 NormalizeShotDirection(
-            Vector2 rawDirection,
-            Player owner
-        )
-        {
-            if (rawDirection.LengthSquared() < MinimumShotDirectionLengthSquared)
-            {
-                rawDirection = Vector2.UnitX * owner.direction;
-            }
-
-            return rawDirection.SafeNormalize(Vector2.UnitX * owner.direction);
         }
 
         private static float GetWeaponShootSpeed(Item weapon)
@@ -270,14 +262,13 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            Vector2 shotDirection = owner.Center - Projectile.Center;
-
-            if (shotDirection.LengthSquared() < MinimumShotDirectionLengthSquared)
-            {
-                shotDirection = Vector2.UnitY;
-            }
-
-            shotDirection = shotDirection.SafeNormalize(Vector2.UnitY);
+            Vector2 shotDirection =
+                NeuroShotDirectionHelper.NormalizeFromTo(
+                    Projectile.Center,
+                    owner.Center,
+                    Vector2.UnitY,
+                    MinimumShotDirectionLengthSquared
+                );
 
             float shotSpeed = GetWeaponShootSpeed(weapon);
             Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
@@ -302,14 +293,13 @@ namespace NeuroCompanion.Projectiles
         {
             ShootTimer = 0f;
 
-            Vector2 shotDirection = owner.Center - Projectile.Center;
-
-            if (shotDirection.LengthSquared() < MinimumShotDirectionLengthSquared)
-            {
-                shotDirection = Vector2.UnitY;
-            }
-
-            shotDirection = shotDirection.SafeNormalize(Vector2.UnitY);
+            Vector2 shotDirection =
+                NeuroShotDirectionHelper.NormalizeFromTo(
+                    Projectile.Center,
+                    owner.Center,
+                    Vector2.UnitY,
+                    MinimumShotDirectionLengthSquared
+                );
 
             Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
             Vector2 shotVelocity = shotDirection * EvilProjectileSpeed;
