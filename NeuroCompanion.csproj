@@ -11,7 +11,6 @@
 	  <Folder Include="Neuro\Websocket\" />
 	  <Folder Include="Neuro\Context\" />
 	  <Folder Include="Neuro\Commands\" />
-	  <Folder Include="Neuro\Actions\" />
 	</ItemGroup>
 
 	<!-- References -->

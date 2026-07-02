@@ -1,6 +1,5 @@
 ﻿using NeuroCompanion.Configs;
 using NeuroCompanion.Players;
-using NeuroCompanion.Projectiles;
 using System;
 using Terraria;
 using Terraria.ModLoader;
@@ -15,13 +14,6 @@ namespace NeuroCompanion.Neuro
         private const int MinimumAttackDurationSeconds = 1;
 
         private const float DebuffEnemySearchRange = 700f;
-
-        private static bool HasCompanionSummoned(Player player)
-        {
-            return player.ownedProjectileCounts[
-                ModContent.ProjectileType<NeuroCompanionProjectile>()
-            ] > 0;
-        }
 
         public static NeuroActionResult Execute(
             Player player,
@@ -43,28 +35,13 @@ namespace NeuroCompanion.Neuro
             NeuroCompanionPlayer neuroPlayer =
                 player.GetModPlayer<NeuroCompanionPlayer>();
 
-            bool commandRequiresCompanion =
-                command.Type == NeuroCommandType.Recall ||
-                command.Type == NeuroCommandType.Follow ||
-                command.Type == NeuroCommandType.AttackOnce ||
-                command.Type == NeuroCommandType.AttackPlayer ||
-                command.Type == NeuroCommandType.StartTimedAttack;
-
-            if (commandRequiresCompanion && !HasCompanionSummoned(player))
+            if (!NeuroCommandRequirements.TryValidate(
+                    player,
+                    command,
+                    out NeuroActionResult validationResult
+                ))
             {
-                return NeuroActionResult.Ok(
-                    "Neuro companion is not summoned, so the action was skipped. Use the Neuro Companion Staff first."
-                );
-            }
-            bool commandRequiresWeapon =
-                command.Type == NeuroCommandType.AttackOnce ||
-                command.Type == NeuroCommandType.StartTimedAttack;
-
-            if (commandRequiresWeapon && !HasUsableNeuroWeapon(player, out string weaponReason))
-            {
-                return NeuroActionResult.Ok(
-                    $"Action skipped: {weaponReason}"
-                );
+                return validationResult;
             }
 
 
@@ -320,27 +297,6 @@ namespace NeuroCompanion.Neuro
             }
 
             return result;
-        }
-
-        private static bool HasUsableNeuroWeapon(Player player, out string reason)
-        {
-            NeuroCompanionPlayer neuroPlayer =
-                player.GetModPlayer<NeuroCompanionPlayer>();
-
-            if (!neuroPlayer.HasNeuroWeapon())
-            {
-                reason = "Neuro has no magic weapon equipped. Use /neuro weapon set or /neuro weapon take first.";
-                return false;
-            }
-
-            if (!NeuroWeaponValidator.IsValidNeuroWeapon(neuroPlayer.NeuroWeapon, out reason))
-            {
-                reason = $"Neuro's equipped weapon is no longer valid: {reason}";
-                return false;
-            }
-
-            reason = string.Empty;
-            return true;
         }
 
         private static int GetMaximumAttackDurationSeconds()
