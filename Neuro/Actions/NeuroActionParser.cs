@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Nodes;
 
 using NeuroCompanion.Neuro.Runtime;
+using NeuroCompanion.Neuro.Effects;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Actions
 {
     public static class NeuroActionParser
     {

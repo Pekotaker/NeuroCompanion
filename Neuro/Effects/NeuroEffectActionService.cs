@@ -1,6 +1,9 @@
 ﻿using Terraria;
 
-namespace NeuroCompanion.Neuro
+using NeuroCompanion.Neuro.Actions;
+using NeuroCompanion.Neuro.Context;
+
+namespace NeuroCompanion.Neuro.Effects
 {
     public static class NeuroEffectActionService
     {

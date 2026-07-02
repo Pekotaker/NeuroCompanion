@@ -1,4 +1,5 @@
 ﻿using NeuroCompanion.Neuro;
+using NeuroCompanion.Neuro.Actions;
 using NeuroCompanion.Players;
 using Terraria;
 using Terraria.ModLoader;

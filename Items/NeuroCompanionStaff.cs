@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using NeuroCompanion.Buffs;
-using NeuroCompanion.Neuro;
+using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
 using Terraria;

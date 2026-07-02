@@ -5,7 +5,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.Utilities;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Weapons
 {
     public static class NeuroDamageService
     {

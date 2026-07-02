@@ -2,8 +2,10 @@
 using System;
 using Terraria;
 using NeuroCompanion.Neuro.Runtime;
+using NeuroCompanion.Neuro.Effects;
+using NeuroCompanion.Neuro.Weapons;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Actions
 {
     public static class NeuroActionExecutor
     {

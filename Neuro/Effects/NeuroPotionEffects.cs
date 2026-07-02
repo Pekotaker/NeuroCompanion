@@ -5,7 +5,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using NeuroCompanion.Neuro.Runtime;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Effects
 {
     public static class NeuroPotionEffects
     {

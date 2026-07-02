@@ -1,6 +1,6 @@
 ﻿using Terraria;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Context
 {
     public static class NeuroNpcTargetFinder
     {

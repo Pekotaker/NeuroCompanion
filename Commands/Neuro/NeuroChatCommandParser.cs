@@ -1,4 +1,4 @@
-﻿using NeuroCompanion.Neuro;
+﻿using NeuroCompanion.Neuro.Effects;
 using NeuroCompanion.Neuro.Runtime;
 
 namespace NeuroCompanion.Commands.Neuro

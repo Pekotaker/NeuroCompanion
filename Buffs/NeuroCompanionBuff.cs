@@ -1,6 +1,5 @@
 ﻿using NeuroCompanion.Projectiles;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace NeuroCompanion.Buffs

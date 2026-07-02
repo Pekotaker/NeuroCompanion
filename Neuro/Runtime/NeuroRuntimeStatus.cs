@@ -1,5 +1,7 @@
 ﻿using System;
 
+using NeuroCompanion.Neuro.Actions;
+
 namespace NeuroCompanion.Neuro.Runtime
 {
     public static class NeuroRuntimeStatus

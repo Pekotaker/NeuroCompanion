@@ -3,8 +3,9 @@ using NeuroCompanion.Projectiles;
 using Terraria;
 using Terraria.ModLoader;
 using NeuroCompanion.Neuro.Runtime;
+using NeuroCompanion.Neuro.Weapons;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Actions
 {
     public static class NeuroCommandRequirements
     {

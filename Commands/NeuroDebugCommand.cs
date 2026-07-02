@@ -1,9 +1,11 @@
-﻿using NeuroCompanion.Neuro;
-using NeuroCompanion.Players;
+﻿using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
 using Terraria;
 using Terraria.ModLoader;
+using NeuroCompanion.Neuro;
+using NeuroCompanion.Neuro.Actions;
 using NeuroCompanion.Neuro.Runtime;
+using NeuroCompanion.Neuro.WebSocket;
 
 namespace NeuroCompanion.Commands
 {

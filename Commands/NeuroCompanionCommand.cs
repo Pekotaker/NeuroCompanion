@@ -1,9 +1,10 @@
-﻿using NeuroCompanion.Neuro;
+﻿
 using NeuroCompanion.Commands.Neuro;
 using NeuroCompanion.Commands.Neuro.Weapon;
 using Terraria;
 using Terraria.ModLoader;
 using NeuroCompanion.Neuro.Runtime;
+using NeuroCompanion.Neuro.Actions;
 
 namespace NeuroCompanion.Commands
 {

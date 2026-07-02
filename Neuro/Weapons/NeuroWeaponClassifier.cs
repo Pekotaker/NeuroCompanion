@@ -2,7 +2,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Weapons
 {
     public static class NeuroWeaponClassifier
     {

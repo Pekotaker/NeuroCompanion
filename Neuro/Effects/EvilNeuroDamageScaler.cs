@@ -1,7 +1,7 @@
 ﻿using NeuroCompanion.Players;
 using Terraria;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Effects
 {
     public static class EvilNeuroDamageScaler
     {

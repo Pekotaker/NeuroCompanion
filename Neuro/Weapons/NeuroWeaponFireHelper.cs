@@ -1,8 +1,7 @@
 ﻿using NeuroCompanion.Players;
 using Terraria;
-using Terraria.ModLoader;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Weapons
 {
     public static class NeuroWeaponFireHelper
     {

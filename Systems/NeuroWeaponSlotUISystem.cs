@@ -5,7 +5,8 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
 using Terraria.UI;
-using NeuroCompanion.Neuro;
+using NeuroCompanion.Neuro.Actions;
+using NeuroCompanion.Neuro.Weapons;
 
 namespace NeuroCompanion.Systems
 {

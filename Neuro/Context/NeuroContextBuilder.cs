@@ -1,12 +1,14 @@
 ﻿using System.Text;
-using NeuroCompanion.Buffs;
 using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles;
 using Terraria;
 using Terraria.ModLoader;
 using NeuroCompanion.Configs;
+using NeuroCompanion.Neuro.Weapons;
+using NeuroCompanion.Neuro.Actions;
+using NeuroCompanion.Neuro.Effects;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Context
 {
     public static class NeuroContextBuilder
     {

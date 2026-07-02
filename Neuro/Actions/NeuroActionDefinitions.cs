@@ -1,4 +1,4 @@
-﻿namespace NeuroCompanion.Neuro
+﻿namespace NeuroCompanion.Neuro.Actions
 {
     public static class NeuroActionDefinitions
     {

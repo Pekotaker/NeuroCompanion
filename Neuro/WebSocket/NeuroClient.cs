@@ -6,12 +6,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using NeuroCompanion.Neuro.Actions;
 using NeuroCompanion.Neuro.Runtime;
 
 using NeuroCompanion.Configs;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.WebSocket
 {
     public sealed class NeuroClient
     {

@@ -2,7 +2,7 @@
 using NeuroCompanion.Players;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Actions
 {
     public static class NeuroTimedAttackService
     {

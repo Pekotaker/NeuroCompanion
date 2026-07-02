@@ -1,6 +1,6 @@
 ﻿using Terraria;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Weapons
 {
     public static class NeuroWeaponValidator
     {

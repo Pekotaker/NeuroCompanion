@@ -1,8 +1,9 @@
 ﻿using NeuroCompanion.Players;
 using Terraria;
-using Terraria.ModLoader;
 
-namespace NeuroCompanion.Neuro
+using NeuroCompanion.Neuro.Actions;
+
+namespace NeuroCompanion.Neuro.Weapons
 {
     public static class NeuroWeaponService
     {

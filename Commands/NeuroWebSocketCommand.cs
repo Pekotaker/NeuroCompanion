@@ -1,4 +1,5 @@
-﻿using NeuroCompanion.Neuro;
+﻿using NeuroCompanion.Neuro.WebSocket;
+using NeuroCompanion.Neuro.Context;
 using Terraria;
 using Terraria.ModLoader;
 

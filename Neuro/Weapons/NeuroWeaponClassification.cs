@@ -1,4 +1,4 @@
-﻿namespace NeuroCompanion.Neuro
+﻿namespace NeuroCompanion.Neuro.Weapons
 {
     public enum NeuroWeaponKind
     {

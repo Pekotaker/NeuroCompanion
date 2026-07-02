@@ -4,7 +4,7 @@ using NeuroCompanion.Configs;
 using Terraria.ModLoader;
 using NeuroCompanion.Neuro.Runtime;
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Actions
 {
     public static class NeuroActionCooldowns
     {

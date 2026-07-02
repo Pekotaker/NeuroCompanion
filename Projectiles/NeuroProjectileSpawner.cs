@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using NeuroCompanion.Neuro;
+using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Players;
 using Terraria;
 using Terraria.DataStructures;

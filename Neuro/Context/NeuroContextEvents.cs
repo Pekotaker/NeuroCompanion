@@ -4,9 +4,10 @@ using NeuroCompanion.Projectiles;
 using NeuroCompanion.Configs;
 using Terraria;
 using Terraria.ModLoader;
+using NeuroCompanion.Neuro.WebSocket;
 
 
-namespace NeuroCompanion.Neuro
+namespace NeuroCompanion.Neuro.Context
 {
     public class NeuroContextEvents
     {
