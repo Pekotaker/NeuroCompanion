@@ -3,8 +3,6 @@ using NeuroCompanion.Neuro;
 using NeuroCompanion.Players;
 using Terraria;
 using Terraria.Audio;
-using Terraria.ID;
-using Terraria.ModLoader;
 
 namespace NeuroCompanion.Projectiles
 {
@@ -118,7 +116,15 @@ namespace NeuroCompanion.Projectiles
             Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
 
             PlayWeaponSound(weapon);
-            SpawnWeaponProjectile(owner, weapon, shotPosition, shotVelocity);
+            NeuroProjectileSpawner.SpawnCompanionWeaponProjectile(
+                Projectile.GetSource_FromThis(),
+                Projectile.owner,
+                owner,
+                owner.GetModPlayer<NeuroCompanionPlayer>(),
+                weapon,
+                shotPosition,
+                shotVelocity
+            );
         }
 
         private Vector2 NormalizeShotDirection(
@@ -157,60 +163,6 @@ namespace NeuroCompanion.Projectiles
             );
         }
 
-        private void SpawnWeaponProjectile(
-            Player owner,
-            Item weapon,
-            Vector2 shotPosition,
-            Vector2 shotVelocity
-        )
-        {
-            NeuroCompanionPlayer neuroPlayer =
-                owner.GetModPlayer<NeuroCompanionPlayer>();
-
-            int damage = NeuroDamageService.GetNeuroWeaponDamage(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            int projectileIndex = Projectile.NewProjectile(
-                Projectile.GetSource_FromThis(),
-                shotPosition,
-                shotVelocity,
-                weapon.shoot,
-                damage,
-                knockBack,
-                Projectile.owner
-            );
-
-            if (
-                projectileIndex < 0 ||
-                projectileIndex >= Main.maxProjectiles
-            )
-            {
-                return;
-            }
-
-            Projectile spawnedProjectile = Main.projectile[projectileIndex];
-
-            spawnedProjectile.DamageType = DamageClass.Magic;
-            spawnedProjectile.originalDamage = damage;
-
-            ApplyNeuroStaffProjectileBehavior(neuroPlayer, spawnedProjectile);
-
-            spawnedProjectile.CritChance = NeuroDamageService.GetNeuroWeaponCritChance(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-            spawnedProjectile.netUpdate = true;
-        }
         private static int GetWeaponCooldownTicks(
             Player owner,
             Item weapon,
@@ -253,8 +205,11 @@ namespace NeuroCompanion.Projectiles
 
             PlayWeaponSound(weapon);
 
-            SpawnWeaponProjectile(
+            NeuroProjectileSpawner.SpawnCompanionWeaponProjectile(
+                Projectile.GetSource_FromThis(),
+                Projectile.owner,
                 owner,
+                owner.GetModPlayer<NeuroCompanionPlayer>(),
                 weapon,
                 worldPosition,
                 Vector2.Zero
@@ -302,7 +257,9 @@ namespace NeuroCompanion.Projectiles
 
             if (classification.Kind == NeuroWeaponKind.TargetedArea)
             {
-                SpawnEvilWeaponProjectile(
+                NeuroProjectileSpawner.SpawnEvilWeaponProjectile(
+                    Projectile.GetSource_FromThis(),
+                    Projectile.owner,
                     owner,
                     neuroPlayer,
                     weapon,
@@ -328,7 +285,9 @@ namespace NeuroCompanion.Projectiles
 
             PlayWeaponSound(weapon);
 
-            SpawnEvilWeaponProjectile(
+            NeuroProjectileSpawner.SpawnEvilWeaponProjectile(
+                Projectile.GetSource_FromThis(),
+                Projectile.owner,
                 owner,
                 neuroPlayer,
                 weapon,
@@ -357,119 +316,14 @@ namespace NeuroCompanion.Projectiles
 
             int damage = EvilNeuroDamageScaler.GetFallbackBoltDamage(neuroPlayer);
 
-            int projectileIndex = Projectile.NewProjectile(
+            NeuroProjectileSpawner.SpawnFallbackEvilBolt(
                 Projectile.GetSource_FromThis(),
+                Projectile.owner,
                 shotPosition,
                 shotVelocity,
-                ModContent.ProjectileType<EvilNeuroBoltProjectile>(),
                 damage,
-                EvilProjectileKnockBack,
-                Projectile.owner
+                EvilProjectileKnockBack
             );
-
-            if (
-                projectileIndex < 0 ||
-                projectileIndex >= Main.maxProjectiles
-            )
-            {
-                return;
-            }
-
-            Projectile spawnedProjectile = Main.projectile[projectileIndex];
-
-            spawnedProjectile.friendly = false;
-            spawnedProjectile.hostile = false;
-
-            spawnedProjectile.damage = damage;
-            spawnedProjectile.originalDamage = damage;
-
-            EvilNeuroPlayerAttackGlobal evilGlobal =
-                spawnedProjectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
-
-            evilGlobal.CanDamageOwner = true;
-            evilGlobal.KillOnOwnerHit = true;
-
-            spawnedProjectile.netUpdate = true;
-        }
-
-
-        private void SpawnEvilWeaponProjectile(
-            Player owner,
-            NeuroCompanionPlayer neuroPlayer,
-            Item weapon,
-            Vector2 shotPosition,
-            Vector2 shotVelocity
-        )
-        {
-            int damage = NeuroDamageService.GetNeuroWeaponDamage(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            int projectileIndex = Projectile.NewProjectile(
-                Projectile.GetSource_FromThis(),
-                shotPosition,
-                shotVelocity,
-                weapon.shoot,
-                damage,
-                knockBack,
-                Projectile.owner
-            );
-
-            if (
-                projectileIndex < 0 ||
-                projectileIndex >= Main.maxProjectiles
-            )
-            {
-                return;
-            }
-
-            Projectile spawnedProjectile = Main.projectile[projectileIndex];
-
-            spawnedProjectile.friendly = false;
-            spawnedProjectile.hostile = false;
-
-            spawnedProjectile.damage = damage;
-            spawnedProjectile.originalDamage = damage;
-            spawnedProjectile.DamageType = DamageClass.Magic;
-
-            EvilNeuroPlayerAttackGlobal evilGlobal =
-                spawnedProjectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
-
-            evilGlobal.CanDamageOwner = true;
-            evilGlobal.KillOnOwnerHit = false;
-
-            spawnedProjectile.netUpdate = true;
-        }
-
-
-        private static void ApplyNeuroStaffProjectileBehavior(
-            NeuroCompanionPlayer neuroPlayer,
-            Projectile spawnedProjectile
-        )
-        {
-            if (neuroPlayer == null || spawnedProjectile == null)
-            {
-                return;
-            }
-
-            if (!neuroPlayer.NeuroStaffCanDetectThroughBlocks)
-            {
-                return;
-            }
-
-            spawnedProjectile.tileCollide = false;
-
-            spawnedProjectile
-                .GetGlobalProjectile<NeuroMk4ProjectileGlobal>()
-                .IgnoreTilesForNeuroMk4 = true;
         }
     }
 }
