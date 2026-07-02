@@ -47,7 +47,7 @@ namespace NeuroCompanion.Commands
 
             if (subcommand == "weapon")
             {
-                HandleWeaponCommand(caller, player, args);
+                NeuroWeaponCommandHandler.Handle(caller, player, args);
                 return;
             }
 
@@ -81,64 +81,6 @@ namespace NeuroCompanion.Commands
             );
 
             caller.Reply(NeuroActionCooldowns.GetCooldownStatusText());
-        }
-
-        private static void HandleWeaponCommand(
-            CommandCaller caller,
-            Player player,
-            string[] args
-        )
-        {
-            if (args.Length < 2)
-            {
-                ReplyWithWeaponHelp(caller);
-                return;
-            }
-
-            string weaponCommand = args[1].ToLowerInvariant();
-
-            NeuroActionResult result;
-
-            switch (weaponCommand)
-            {
-                case "status":
-                    caller.Reply(NeuroWeaponService.GetStatusText(player));
-                    return;
-
-                case "set":
-                    result = NeuroWeaponService.SetFromSelectedItem(player);
-                    caller.Reply(result.Message);
-                    return;
-
-                case "take":
-                    result = NeuroWeaponService.TakeStrongestFromInventory(player);
-                    caller.Reply(result.Message);
-                    return;
-
-                case "return":
-                    result = NeuroWeaponService.ReturnWeaponToInventory(player);
-                    caller.Reply(result.Message);
-                    return;
-
-                case "inspect":
-                    caller.Reply(NeuroWeaponService.InspectSelectedItem(player));
-                    return;
-
-                default:
-                    caller.Reply($"Unknown weapon command: {weaponCommand}");
-                    ReplyWithWeaponHelp(caller);
-                    return;
-            }
-        }
-
-        private static void ReplyWithWeaponHelp(CommandCaller caller)
-        {
-            caller.Reply("Neuro weapon commands:");
-            caller.Reply("/neuro weapon status");
-            caller.Reply("/neuro weapon set");
-            caller.Reply("/neuro weapon take");
-            caller.Reply("/neuro weapon return");
-            caller.Reply("/neuro weapon inspect");
         }
 
         private static void ReplyWithHelp(CommandCaller caller)
