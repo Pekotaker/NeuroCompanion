@@ -355,7 +355,7 @@ namespace NeuroCompanion.Projectiles
             Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
             Vector2 shotVelocity = shotDirection * EvilProjectileSpeed;
 
-            int damage = GetFallbackEvilBoltDamage(neuroPlayer);
+            int damage = EvilNeuroDamageScaler.GetFallbackBoltDamage(neuroPlayer);
 
             int projectileIndex = Projectile.NewProjectile(
                 Projectile.GetSource_FromThis(),
@@ -470,70 +470,6 @@ namespace NeuroCompanion.Projectiles
             spawnedProjectile
                 .GetGlobalProjectile<NeuroMk4ProjectileGlobal>()
                 .IgnoreTilesForNeuroMk4 = true;
-        }
-
-        private static int GetFallbackEvilBoltDamage(
-    NeuroCompanionPlayer neuroPlayer
-)
-        {
-            int baseDamage = GetFallbackEvilBoltBaseDamage(neuroPlayer);
-            float difficultyMultiplier = GetWorldDifficultyDamageMultiplier();
-
-            int finalDamage = (int)System.Math.Round(
-                baseDamage * difficultyMultiplier,
-                System.MidpointRounding.AwayFromZero
-            );
-
-            return finalDamage < 1 ? 1 : finalDamage;
-        }
-
-        private static int GetFallbackEvilBoltBaseDamage(
-            NeuroCompanionPlayer neuroPlayer
-        )
-        {
-            if (neuroPlayer.NeuroStaffCanDetectThroughBlocks)
-            {
-                return 400;
-            }
-
-            if (neuroPlayer.NeuroStaffShootCooldownTicks <= 1)
-            {
-                return 200;
-            }
-
-            if (neuroPlayer.NeuroStaffShootCooldownTicks <= 30)
-            {
-                return 150;
-            }
-
-            return 100;
-        }
-
-        private static float GetWorldDifficultyDamageMultiplier()
-        {
-            int difficultyLevel = GetWorldDifficultyLevel();
-
-            return 1f + difficultyLevel * 0.33f;
-        }
-
-        private static int GetWorldDifficultyLevel()
-        {
-            if (Main.masterMode && (Main.getGoodWorld || Main.zenithWorld))
-            {
-                return 3;
-            }
-
-            if (Main.masterMode)
-            {
-                return 2;
-            }
-
-            if (Main.expertMode)
-            {
-                return 1;
-            }
-
-            return 0;
         }
     }
 }
