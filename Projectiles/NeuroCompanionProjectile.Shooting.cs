@@ -263,17 +263,12 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            Vector2 shotDirection =
-                NeuroShotDirectionHelper.NormalizeFromTo(
-                    Projectile.Center,
-                    owner.Center,
-                    Vector2.UnitY,
-                    MinimumShotDirectionLengthSquared
-                );
-
-            float shotSpeed = GetWeaponShootSpeed(weapon);
-            Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
-            Vector2 shotVelocity = shotDirection * shotSpeed;
+            GetShotTowardOwner(
+                owner,
+                GetWeaponShootSpeed(weapon),
+                out Vector2 shotPosition,
+                out Vector2 shotVelocity
+            );
 
             PlayWeaponSound(weapon);
 
@@ -287,13 +282,14 @@ namespace NeuroCompanion.Projectiles
                 shotVelocity
             );
         }
-        private void ShootFallbackEvilBoltAtOwner(
+
+        private void GetShotTowardOwner(
             Player owner,
-            NeuroCompanionPlayer neuroPlayer
+            float shotSpeed,
+            out Vector2 shotPosition,
+            out Vector2 shotVelocity
         )
         {
-            ShootTimer = 0f;
-
             Vector2 shotDirection =
                 NeuroShotDirectionHelper.NormalizeFromTo(
                     Projectile.Center,
@@ -302,8 +298,23 @@ namespace NeuroCompanion.Projectiles
                     MinimumShotDirectionLengthSquared
                 );
 
-            Vector2 shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
-            Vector2 shotVelocity = shotDirection * EvilProjectileSpeed;
+            shotPosition = Projectile.Center + shotDirection * ShotSpawnOffset;
+            shotVelocity = shotDirection * shotSpeed;
+        }
+
+        private void ShootFallbackEvilBoltAtOwner(
+            Player owner,
+            NeuroCompanionPlayer neuroPlayer
+        )
+        {
+            ShootTimer = 0f;
+
+            GetShotTowardOwner(
+                owner,
+                EvilProjectileSpeed,
+                out Vector2 shotPosition,
+                out Vector2 shotVelocity
+            );
 
             int damage = EvilNeuroDamageScaler.GetFallbackBoltDamage(neuroPlayer);
 
