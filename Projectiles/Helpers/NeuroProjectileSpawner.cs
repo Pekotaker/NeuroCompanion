@@ -133,6 +133,12 @@ namespace NeuroCompanion.Projectiles.Helpers
                 neuroPlayer.NeuroStaffPrefix
             );
 
+            Vector2[] shotVelocities =
+                NeuroWeaponShotProfile.CreateShotVelocities(
+                    weapon,
+                    velocity
+                );
+
             NeuroWeaponProjectileSpawnContext.Begin(
                 owner,
                 neuroPlayer,
@@ -144,16 +150,19 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             try
             {
-                TrySpawnProjectile(
-                    source,
-                    position,
-                    velocity,
-                    weapon.shoot,
-                    damage,
-                    knockBack,
-                    projectileOwner,
-                    out _
-                );
+                for (int i = 0; i < shotVelocities.Length; i++)
+                {
+                    TrySpawnProjectile(
+                        source,
+                        position,
+                        shotVelocities[i],
+                        weapon.shoot,
+                        damage,
+                        knockBack,
+                        projectileOwner,
+                        out _
+                    );
+                }
             }
             finally
             {
