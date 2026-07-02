@@ -78,7 +78,7 @@ namespace NeuroCompanion.Neuro.Weapons
             {
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.Channeling,
-                    $"{item.Name} is a channeling magic weapon."
+                    $"{item.Name} is a channeling magic weapon. Neuro cannot use this yet because vanilla channeling projectiles depend on the player holding the attack button."
                 );
             }
 

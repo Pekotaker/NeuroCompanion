@@ -93,6 +93,7 @@ namespace NeuroCompanion.Projectiles.Companion
             if (target == null)
             {
                 State = CompanionState.Idle;
+                ShootTimer = 0f;
                 FollowOwner(owner);
                 return;
             }

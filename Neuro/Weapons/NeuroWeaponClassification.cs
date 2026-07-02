@@ -19,7 +19,6 @@
         public bool IsAccepted =>
             Kind == NeuroWeaponKind.DirectFire ||
             Kind == NeuroWeaponKind.Controlled ||
-            Kind == NeuroWeaponKind.Channeling ||
             Kind == NeuroWeaponKind.TargetedArea;
 
         public NeuroWeaponClassification(
