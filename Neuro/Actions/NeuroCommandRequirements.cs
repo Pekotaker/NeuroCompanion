@@ -47,7 +47,10 @@ namespace NeuroCompanion.Neuro.Actions
                 commandType == NeuroCommandType.Follow ||
                 commandType == NeuroCommandType.AttackOnce ||
                 commandType == NeuroCommandType.AttackPlayer ||
-                commandType == NeuroCommandType.StartTimedAttack;
+                commandType == NeuroCommandType.StartTimedAttack ||
+                commandType == NeuroCommandType.BuffPlayer ||
+                commandType == NeuroCommandType.DebuffPlayer ||
+                commandType == NeuroCommandType.DebuffNearestEnemy;
         }
 
         private static bool RequiresWeapon(NeuroCommandType commandType)
