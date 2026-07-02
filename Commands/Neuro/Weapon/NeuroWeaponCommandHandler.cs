@@ -2,7 +2,7 @@
 using Terraria;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Commands
+namespace NeuroCompanion.Commands.Neuro.Weapon
 {
     public static class NeuroWeaponCommandHandler
     {

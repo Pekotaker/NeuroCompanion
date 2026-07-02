@@ -1,4 +1,6 @@
 ﻿using NeuroCompanion.Neuro;
+using NeuroCompanion.Commands.Neuro;
+using NeuroCompanion.Commands.Neuro.Weapon;
 using Terraria;
 using Terraria.ModLoader;
 

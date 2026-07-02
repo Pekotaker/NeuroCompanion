@@ -1,6 +1,6 @@
 ﻿using NeuroCompanion.Neuro;
 
-namespace NeuroCompanion.Commands
+namespace NeuroCompanion.Commands.Neuro
 {
     public static class NeuroChatCommandParser
     {

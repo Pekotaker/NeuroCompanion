@@ -1,6 +1,6 @@
 ﻿using Terraria.ModLoader;
 
-namespace NeuroCompanion.Commands
+namespace NeuroCompanion.Commands.Neuro
 {
     public static class NeuroCommandHelp
     {

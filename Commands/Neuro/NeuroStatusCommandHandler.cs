@@ -3,7 +3,7 @@ using NeuroCompanion.Players;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Commands
+namespace NeuroCompanion.Commands.Neuro
 {
     public static class NeuroStatusCommandHandler
     {
