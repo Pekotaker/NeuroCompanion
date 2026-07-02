@@ -8,7 +8,6 @@
 		
 	</PropertyGroup>
 	<ItemGroup>
-	  <Folder Include="Neuro\Weapons\" />
 	  <Folder Include="Neuro\Websocket\" />
 	  <Folder Include="Neuro\Effects\" />
 	  <Folder Include="Neuro\Context\" />

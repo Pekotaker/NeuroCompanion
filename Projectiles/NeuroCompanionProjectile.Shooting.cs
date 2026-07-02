@@ -12,20 +12,12 @@ namespace NeuroCompanion.Projectiles
     {
         private void ShootWeaponAtTargetWhenReady(Player owner, NPC target)
         {
-            NeuroCompanionPlayer neuroPlayer =
-                owner.GetModPlayer<NeuroCompanionPlayer>();
-
-            if (!neuroPlayer.HasNeuroWeapon())
-            {
-                return;
-            }
-
-            Item weapon = neuroPlayer.NeuroWeapon;
-
-            NeuroWeaponClassification classification =
-                NeuroWeaponClassifier.Classify(weapon);
-
-            if (!classification.IsAccepted)
+            if (!NeuroWeaponFireHelper.TryGetAcceptedWeapon(
+                    owner,
+                    out NeuroCompanionPlayer neuroPlayer,
+                    out Item weapon,
+                    out NeuroWeaponClassification classification
+                ))
             {
                 return;
             }
@@ -56,24 +48,15 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            NeuroCompanionPlayer neuroPlayer =
-                owner.GetModPlayer<NeuroCompanionPlayer>();
-
-            if (!neuroPlayer.HasNeuroWeapon())
+            if (!NeuroWeaponFireHelper.TryGetAcceptedWeapon(
+                    owner,
+                    out _,
+                    out Item weapon,
+                    out NeuroWeaponClassification classification
+                ))
             {
                 return;
             }
-
-            Item weapon = neuroPlayer.NeuroWeapon;
-
-            NeuroWeaponClassification classification =
-                NeuroWeaponClassifier.Classify(weapon);
-
-            if (!classification.IsAccepted)
-            {
-                return;
-            }
-
 
             if (classification.Kind == NeuroWeaponKind.TargetedArea)
             {
@@ -88,24 +71,15 @@ namespace NeuroCompanion.Projectiles
 
         private void ShootWeaponTowardCursor(Player owner)
         {
-            NeuroCompanionPlayer neuroPlayer =
-                owner.GetModPlayer<NeuroCompanionPlayer>();
-
-            if (!neuroPlayer.HasNeuroWeapon())
+            if (!NeuroWeaponFireHelper.TryGetAcceptedWeapon(
+                    owner,
+                    out _,
+                    out _,
+                    out NeuroWeaponClassification classification
+                ))
             {
                 return;
             }
-
-            Item weapon = neuroPlayer.NeuroWeapon;
-
-            NeuroWeaponClassification classification =
-                NeuroWeaponClassifier.Classify(weapon);
-
-            if (!classification.IsAccepted)
-            {
-                return;
-            }
-
 
             if (classification.Kind == NeuroWeaponKind.TargetedArea)
             {
@@ -125,20 +99,12 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            NeuroCompanionPlayer neuroPlayer =
-                owner.GetModPlayer<NeuroCompanionPlayer>();
-
-            if (!neuroPlayer.HasNeuroWeapon())
-            {
-                return;
-            }
-
-            Item weapon = neuroPlayer.NeuroWeapon;
-
-            NeuroWeaponClassification classification =
-                NeuroWeaponClassifier.Classify(weapon);
-
-            if (!classification.IsAccepted)
+            if (!NeuroWeaponFireHelper.TryGetAcceptedWeapon(
+                    owner,
+                    out _,
+                    out Item weapon,
+                    out _
+                ))
             {
                 return;
             }
@@ -266,21 +232,6 @@ namespace NeuroCompanion.Projectiles
             );
         }
 
-        private static int ClampInt(int value, int min, int max)
-        {
-            if (value < min)
-            {
-                return min;
-            }
-
-            if (value > max)
-            {
-                return max;
-            }
-
-            return value;
-        }
-
         private void ShootWeaponAtWorldPosition(Player owner, Vector2 worldPosition)
         {
             if (Projectile.owner != Main.myPlayer)
@@ -288,20 +239,12 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            NeuroCompanionPlayer neuroPlayer =
-                owner.GetModPlayer<NeuroCompanionPlayer>();
-
-            if (!neuroPlayer.HasNeuroWeapon())
-            {
-                return;
-            }
-
-            Item weapon = neuroPlayer.NeuroWeapon;
-
-            NeuroWeaponClassification classification =
-                NeuroWeaponClassifier.Classify(weapon);
-
-            if (!classification.IsAccepted)
+            if (!NeuroWeaponFireHelper.TryGetAcceptedWeapon(
+                    owner,
+                    out _,
+                    out Item weapon,
+                    out _
+                ))
             {
                 return;
             }
@@ -328,24 +271,21 @@ namespace NeuroCompanion.Projectiles
             NeuroCompanionPlayer neuroPlayer =
                 owner.GetModPlayer<NeuroCompanionPlayer>();
 
-            if (neuroPlayer.HasNeuroWeapon())
+            if (NeuroWeaponFireHelper.TryGetAcceptedWeapon(
+                    owner,
+                    out _,
+                    out Item weapon,
+                    out NeuroWeaponClassification classification
+                ))
             {
-                Item weapon = neuroPlayer.NeuroWeapon;
+                ShootEquippedWeaponAtOwner(
+                    owner,
+                    neuroPlayer,
+                    weapon,
+                    classification
+                );
 
-                NeuroWeaponClassification classification =
-                    NeuroWeaponClassifier.Classify(weapon);
-
-                if (classification.IsAccepted)
-                {
-                    ShootEquippedWeaponAtOwner(
-                        owner,
-                        neuroPlayer,
-                        weapon,
-                        classification
-                    );
-
-                    return;
-                }
+                return;
             }
 
             ShootFallbackEvilBoltAtOwner(owner, neuroPlayer);
