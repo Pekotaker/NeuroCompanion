@@ -66,6 +66,14 @@ namespace NeuroCompanion.Neuro.Weapons
                 );
             }
 
+            if (IsSupportedChannelingProfile(item))
+            {
+                return new NeuroWeaponClassification(
+                    NeuroWeaponKind.SupportedChanneling,
+                    $"{item.Name} is a supported channeling magic weapon. Neuro will fire it using a custom channeling profile."
+                );
+            }
+
             if (item.channel && LooksLikeHeldBeamWeapon(projectile))
             {
                 return new NeuroWeaponClassification(
@@ -94,6 +102,7 @@ namespace NeuroCompanion.Neuro.Weapons
             {
                 NeuroWeaponKind.DirectFire => "Direct-fire",
                 NeuroWeaponKind.Controlled => "Controlled projectile",
+                NeuroWeaponKind.SupportedChanneling => "Supported channeling",
                 NeuroWeaponKind.Channeling => "Channeling",
                 NeuroWeaponKind.TargetedArea => "Targeted-area",
                 NeuroWeaponKind.Support => "Support",
@@ -162,6 +171,17 @@ namespace NeuroCompanion.Neuro.Weapons
             switch (item.type)
             {
                 case ItemID.PrincessWeapon:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static bool IsSupportedChannelingProfile(Item item)
+        {
+            switch (item.type)
+            {
+                case ItemID.LaserMachinegun:
                     return true;
                 default:
                     return false;

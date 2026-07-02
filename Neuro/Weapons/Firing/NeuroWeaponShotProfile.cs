@@ -11,6 +11,23 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
     {
         private const float MinimumVelocityLengthSquared = 0.01f;
 
+        public static int GetProjectileType(Item weapon)
+        {
+            if (weapon == null || weapon.IsAir)
+            {
+                return ProjectileID.None;
+            }
+
+            switch (weapon.type)
+            {
+                case ItemID.LaserMachinegun:
+                    return ProjectileID.LaserMachinegunLaser;
+
+                default:
+                    return weapon.shoot;
+            }
+        }
+
         public static Vector2[] CreateShotVelocities(
             Item weapon,
             Vector2 baseVelocity

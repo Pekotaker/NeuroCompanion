@@ -104,12 +104,14 @@ namespace NeuroCompanion.Projectiles.Helpers
             bool killOnOwnerHit
         )
         {
+            int projectileType = NeuroWeaponShotProfile.GetProjectileType(weapon);
+
             if (
                 owner == null ||
                 neuroPlayer == null ||
                 weapon == null ||
                 weapon.IsAir ||
-                weapon.shoot <= ProjectileID.None
+                projectileType <= ProjectileID.None
             )
             {
                 return;
@@ -156,7 +158,7 @@ namespace NeuroCompanion.Projectiles.Helpers
                         source,
                         position,
                         shotVelocities[i],
-                        weapon.shoot,
+                        projectileType,
                         damage,
                         knockBack,
                         projectileOwner,

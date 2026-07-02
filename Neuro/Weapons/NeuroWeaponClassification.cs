@@ -5,6 +5,7 @@
         Invalid,
         DirectFire,
         Controlled,
+        SupportedChanneling,
         Channeling,
         TargetedArea,
         HeldBeam,
@@ -19,6 +20,7 @@
         public bool IsAccepted =>
             Kind == NeuroWeaponKind.DirectFire ||
             Kind == NeuroWeaponKind.Controlled ||
+            Kind == NeuroWeaponKind.SupportedChanneling ||
             Kind == NeuroWeaponKind.TargetedArea;
 
         public NeuroWeaponClassification(

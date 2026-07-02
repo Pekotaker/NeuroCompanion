@@ -173,6 +173,11 @@ namespace NeuroCompanion.Projectiles.Companion
                 return NeuroCompanionPlayer.DefaultNeuroStaffShootCooldownTicks;
             }
 
+            if (classification.Kind == NeuroWeaponKind.SupportedChanneling)
+            {
+                return NeuroDamageService.GetWeaponInherentShootCooldownTicks(weapon);
+            }
+
             return NeuroDamageService.GetEffectiveNeuroShootCooldownTicks(
                 weapon,
                 neuroPlayer.NeuroStaffShootCooldownTicks,
