@@ -86,13 +86,19 @@ namespace NeuroCompanion.Neuro
                 case NeuroCommandType.BuffPlayer:
                     return StartCooldownAndReturn(
                         command.Type,
-                        BuffPlayer(player, command.EffectBuffId)
+                        NeuroEffectActionService.BuffPlayer(
+                            player,
+                            command.EffectBuffId
+                        )
                     );
 
                 case NeuroCommandType.DebuffPlayer:
                     {
                         NeuroActionResult debuffResult =
-                            DebuffPlayer(player, command.EffectBuffId);
+                            NeuroEffectActionService.DebuffPlayer(
+                                player,
+                                command.EffectBuffId
+                            );
 
                         if (debuffResult.Success)
                         {
@@ -108,7 +114,10 @@ namespace NeuroCompanion.Neuro
                 case NeuroCommandType.DebuffNearestEnemy:
                     return StartCooldownAndReturn(
                         command.Type,
-                        DebuffNearestEnemy(player, command.EffectBuffId)
+                        NeuroEffectActionService.DebuffNearestEnemy(
+                            player,
+                            command.EffectBuffId
+                        )
                     );
 
                 case NeuroCommandType.WeaponStatus:
@@ -158,117 +167,6 @@ namespace NeuroCompanion.Neuro
             return NeuroActionResult.Ok(
                 $"Neuro companion will attack for {seconds} seconds. Current maximum is {maximumAttackDurationSeconds} seconds."
             );
-        }
-
-        private static NeuroActionResult BuffPlayer(
-            Player player,
-            int specificBuffId
-        )
-        {
-            if (specificBuffId >= 0)
-            {
-                if (NeuroPotionEffects.TryApplySpecificRedPotionBuff(
-                        player,
-                        specificBuffId,
-                        out string specificMessage
-                    ))
-                {
-                    return NeuroActionResult.Ok(specificMessage);
-                }
-
-                return NeuroActionResult.Fail(specificMessage);
-            }
-
-            return NeuroActionResult.Ok(
-                NeuroPotionEffects.ApplyPrioritizedRedPotionBuffs(player)
-            );
-        }
-
-        private static NeuroActionResult DebuffPlayer(
-            Player player,
-            int specificDebuffId
-        )
-        {
-            if (specificDebuffId >= 0)
-            {
-                if (NeuroPotionEffects.TryApplySpecificRedPotionDebuff(
-                        player,
-                        specificDebuffId,
-                        out string specificMessage
-                    ))
-                {
-                    return NeuroActionResult.Ok(specificMessage);
-                }
-
-                return NeuroActionResult.Fail(specificMessage);
-            }
-
-            int appliedCount = NeuroPotionEffects.ApplyRedPotionDebuffs(player);
-
-            return NeuroActionResult.Ok(
-                $"Neuro applied {appliedCount} Red Potion-style debuffs to the player."
-            );
-        }
-
-        private static NeuroActionResult DebuffNearestEnemy(
-            Player player,
-            int specificDebuffId
-        )
-        {
-            NPC target = FindNearestDebuffTarget(player);
-
-            if (target == null)
-            {
-                return NeuroActionResult.Fail("No valid enemy found nearby.");
-            }
-
-            if (specificDebuffId >= 0)
-            {
-                if (NeuroPotionEffects.TryApplySpecificRedPotionDebuff(
-                        target,
-                        specificDebuffId,
-                        out string specificMessage
-                    ))
-                {
-                    return NeuroActionResult.Ok(specificMessage);
-                }
-
-                return NeuroActionResult.Fail(specificMessage);
-            }
-
-            int appliedCount = NeuroPotionEffects.ApplyRedPotionDebuffs(target);
-
-            return NeuroActionResult.Ok(
-                $"Neuro applied {appliedCount} Red Potion-style debuffs to {target.FullName}."
-            );
-        }
-
-        private static NPC FindNearestDebuffTarget(Player player)
-        {
-            NPC bestTarget = null;
-            float bestDistance = DebuffEnemySearchRange;
-
-            for (int i = 0; i < Main.maxNPCs; i++)
-            {
-                NPC npc = Main.npc[i];
-
-                if (!npc.active || !npc.CanBeChasedBy())
-                {
-                    continue;
-                }
-
-                float distance = player.Distance(npc.Center);
-
-                if (distance >= bestDistance)
-                {
-                    continue;
-                }
-
-                bestDistance = distance;
-                bestTarget = npc;
-            }
-
-            return bestTarget;
         }
 
         private static int Clamp(int value, int minimum, int maximum)
