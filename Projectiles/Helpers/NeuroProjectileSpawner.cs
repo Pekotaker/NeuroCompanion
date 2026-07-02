@@ -2,9 +2,11 @@
 
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 using NeuroCompanion.Neuro.Weapons;
+using NeuroCompanion.Neuro.Weapons.Firing;
 using NeuroCompanion.Players;
 
 using NeuroCompanion.Projectiles.Attacks;
@@ -24,34 +26,17 @@ namespace NeuroCompanion.Projectiles.Helpers
             Vector2 velocity
         )
         {
-            if (!TrySpawnWeaponProjectile(
-                    source,
-                    projectileOwner,
-                    owner,
-                    neuroPlayer,
-                    weapon,
-                    position,
-                    velocity,
-                    out Projectile spawnedProjectile,
-                    out int damage
-                ))
-            {
-                return;
-            }
-
-            spawnedProjectile.DamageType = DamageClass.Magic;
-            spawnedProjectile.originalDamage = damage;
-
-            ApplyNeuroStaffProjectileBehavior(neuroPlayer, spawnedProjectile);
-
-            spawnedProjectile.CritChance =
-                NeuroDamageService.GetNeuroWeaponCritChance(
-                    owner,
-                    weapon,
-                    neuroPlayer.NeuroStaffPrefix
-                );
-
-            spawnedProjectile.netUpdate = true;
+            SpawnWeaponProjectileWithContext(
+                source,
+                projectileOwner,
+                owner,
+                neuroPlayer,
+                weapon,
+                position,
+                velocity,
+                isEvil: false,
+                killOnOwnerHit: false
+            );
         }
 
         public static void SpawnEvilWeaponProjectile(
@@ -64,26 +49,15 @@ namespace NeuroCompanion.Projectiles.Helpers
             Vector2 velocity
         )
         {
-            if (!TrySpawnWeaponProjectile(
-                    source,
-                    projectileOwner,
-                    owner,
-                    neuroPlayer,
-                    weapon,
-                    position,
-                    velocity,
-                    out Projectile spawnedProjectile,
-                    out int damage
-                ))
-            {
-                return;
-            }
-
-            spawnedProjectile.DamageType = DamageClass.Magic;
-
-            ApplyEvilOwnerDamageBehavior(
-                spawnedProjectile,
-                damage,
+            SpawnWeaponProjectileWithContext(
+                source,
+                projectileOwner,
+                owner,
+                neuroPlayer,
+                weapon,
+                position,
+                velocity,
+                isEvil: true,
                 killOnOwnerHit: false
             );
         }
@@ -118,6 +92,75 @@ namespace NeuroCompanion.Projectiles.Helpers
             );
         }
 
+        private static void SpawnWeaponProjectileWithContext(
+            IEntitySource source,
+            int projectileOwner,
+            Player owner,
+            NeuroCompanionPlayer neuroPlayer,
+            Item weapon,
+            Vector2 position,
+            Vector2 velocity,
+            bool isEvil,
+            bool killOnOwnerHit
+        )
+        {
+            if (
+                owner == null ||
+                neuroPlayer == null ||
+                weapon == null ||
+                weapon.IsAir ||
+                weapon.shoot <= ProjectileID.None
+            )
+            {
+                return;
+            }
+
+            int damage = NeuroDamageService.GetNeuroWeaponDamage(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
+
+            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
+
+            int critChance = NeuroDamageService.GetNeuroWeaponCritChance(
+                owner,
+                weapon,
+                neuroPlayer.NeuroStaffPrefix
+            );
+
+            NeuroWeaponProjectileSpawnContext.Begin(
+                owner,
+                neuroPlayer,
+                damage,
+                critChance,
+                isEvil,
+                killOnOwnerHit
+            );
+
+            try
+            {
+                TrySpawnProjectile(
+                    source,
+                    position,
+                    velocity,
+                    weapon.shoot,
+                    damage,
+                    knockBack,
+                    projectileOwner,
+                    out _
+                );
+            }
+            finally
+            {
+                NeuroWeaponProjectileSpawnContext.End();
+            }
+        }
+
         private static void ApplyEvilOwnerDamageBehavior(
             Projectile spawnedProjectile,
             int damage,
@@ -137,42 +180,6 @@ namespace NeuroCompanion.Projectiles.Helpers
             evilGlobal.KillOnOwnerHit = killOnOwnerHit;
 
             spawnedProjectile.netUpdate = true;
-        }
-
-        private static bool TrySpawnWeaponProjectile(
-            IEntitySource source,
-            int projectileOwner,
-            Player owner,
-            NeuroCompanionPlayer neuroPlayer,
-            Item weapon,
-            Vector2 position,
-            Vector2 velocity,
-            out Projectile spawnedProjectile,
-            out int damage
-        )
-        {
-            damage = NeuroDamageService.GetNeuroWeaponDamage(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            float knockBack = NeuroDamageService.GetNeuroWeaponKnockBack(
-                owner,
-                weapon,
-                neuroPlayer.NeuroStaffPrefix
-            );
-
-            return TrySpawnProjectile(
-                source,
-                position,
-                velocity,
-                weapon.shoot,
-                damage,
-                knockBack,
-                projectileOwner,
-                out spawnedProjectile
-            );
         }
 
         private static bool TrySpawnProjectile(
@@ -208,28 +215,6 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             spawnedProjectile = Main.projectile[projectileIndex];
             return spawnedProjectile != null;
-        }
-
-        private static void ApplyNeuroStaffProjectileBehavior(
-            NeuroCompanionPlayer neuroPlayer,
-            Projectile spawnedProjectile
-        )
-        {
-            if (neuroPlayer == null || spawnedProjectile == null)
-            {
-                return;
-            }
-
-            if (!neuroPlayer.NeuroStaffCanDetectThroughBlocks)
-            {
-                return;
-            }
-
-            spawnedProjectile.tileCollide = false;
-
-            spawnedProjectile
-                .GetGlobalProjectile<NeuroMk4ProjectileGlobal>()
-                .IgnoreTilesForNeuroMk4 = true;
         }
     }
 }
