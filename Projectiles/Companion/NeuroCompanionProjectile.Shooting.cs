@@ -8,6 +8,8 @@ using NeuroCompanion.Neuro.Effects;
 using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles.Helpers;
 
+using NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles;
+
 namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile
@@ -25,6 +27,15 @@ namespace NeuroCompanion.Projectiles.Companion
             }
 
             ShootTimer++;
+
+            if (classification.Kind == NeuroWeaponKind.SupportedChanneling)
+            {
+                SupportedChannelTicks++;
+            }
+            else
+            {
+                SupportedChannelTicks = 0f;
+            }
 
             int cooldownTicks = GetWeaponCooldownTicks(
                 owner,
@@ -159,7 +170,7 @@ namespace NeuroCompanion.Projectiles.Companion
             );
         }
 
-        private static int GetWeaponCooldownTicks(
+        private int GetWeaponCooldownTicks(
             Player owner,
             Item weapon,
             NeuroWeaponClassification classification
@@ -175,7 +186,10 @@ namespace NeuroCompanion.Projectiles.Companion
 
             if (classification.Kind == NeuroWeaponKind.SupportedChanneling)
             {
-                return NeuroDamageService.GetWeaponInherentShootCooldownTicks(weapon);
+                return NeuroWeaponFiringProfileRegistry.GetCooldownTicks(
+                    weapon,
+                    (int)SupportedChannelTicks
+                );
             }
 
             return NeuroDamageService.GetEffectiveNeuroShootCooldownTicks(

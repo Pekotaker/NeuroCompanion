@@ -18,6 +18,7 @@ namespace NeuroCompanion.Projectiles.Companion
 
             State = CompanionState.Idle;
             ShootTimer = 0f;
+            SupportedChannelTicks = 0f;
 
             TeleportTo(GetIdlePosition(owner));
         }
@@ -52,6 +53,7 @@ namespace NeuroCompanion.Projectiles.Companion
         {
             State = CompanionState.Idle;
             ShootTimer = 0f;
+            SupportedChannelTicks = 0f;
 
             FollowOwner(owner);
         }
@@ -61,6 +63,7 @@ namespace NeuroCompanion.Projectiles.Companion
             NPC target = FindTarget(owner);
 
             State = CompanionState.Attacking;
+            SupportedChannelTicks = 0f;
 
             if (target == null)
             {
@@ -79,6 +82,7 @@ namespace NeuroCompanion.Projectiles.Companion
         )
         {
             State = CompanionState.Attacking;
+            SupportedChannelTicks = 0f;
 
             neuroPlayer.TriggerEvilVisual();
 
@@ -94,6 +98,7 @@ namespace NeuroCompanion.Projectiles.Companion
             {
                 State = CompanionState.Idle;
                 ShootTimer = 0f;
+                SupportedChannelTicks = 0f;
                 FollowOwner(owner);
                 return;
             }

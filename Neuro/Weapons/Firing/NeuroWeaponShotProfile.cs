@@ -5,6 +5,8 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 
+using NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles;
+
 namespace NeuroCompanion.Neuro.Weapons.Firing
 {
     public static class NeuroWeaponShotProfile
@@ -18,14 +20,15 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                 return ProjectileID.None;
             }
 
-            switch (weapon.type)
-            {
-                case ItemID.LaserMachinegun:
-                    return ProjectileID.LaserMachinegunLaser;
+            int profiledProjectileType =
+                NeuroWeaponFiringProfileRegistry.GetProjectileType(weapon);
 
-                default:
-                    return weapon.shoot;
+            if (profiledProjectileType > ProjectileID.None)
+            {
+                return profiledProjectileType;
             }
+
+            return weapon.shoot;
         }
 
         public static Vector2[] CreateShotVelocities(
@@ -33,6 +36,17 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Vector2 baseVelocity
         )
         {
+            Vector2[] profiledVelocities =
+                NeuroWeaponFiringProfileRegistry.CreateShotVelocities(
+                    weapon,
+                    baseVelocity
+                );
+
+            if (profiledVelocities != null)
+            {
+                return profiledVelocities;
+            }
+
             ShotPattern pattern = GetShotPattern(weapon);
 
             if (

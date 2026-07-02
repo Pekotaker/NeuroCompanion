@@ -71,6 +71,12 @@ namespace NeuroCompanion.Projectiles.Companion
             set => Projectile.ai[1] = value;
         }
 
+        private float SupportedChannelTicks
+        {
+            get => Projectile.localAI[0];
+            set => Projectile.localAI[0] = value;
+        }
+
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 6;

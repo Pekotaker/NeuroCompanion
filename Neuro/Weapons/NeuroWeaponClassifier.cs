@@ -2,6 +2,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles;
+
 namespace NeuroCompanion.Neuro.Weapons
 {
     public static class NeuroWeaponClassifier
@@ -179,13 +181,7 @@ namespace NeuroCompanion.Neuro.Weapons
 
         private static bool IsSupportedChannelingProfile(Item item)
         {
-            switch (item.type)
-            {
-                case ItemID.LaserMachinegun:
-                    return true;
-                default:
-                    return false;
-            }
+            return NeuroWeaponFiringProfileRegistry.IsSupportedChannelingProfile(item);
         }
     }
 }
