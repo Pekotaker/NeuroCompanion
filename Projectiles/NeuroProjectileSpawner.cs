@@ -96,20 +96,13 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
-            spawnedProjectile.friendly = false;
-            spawnedProjectile.hostile = false;
-
-            spawnedProjectile.damage = damage;
-            spawnedProjectile.originalDamage = damage;
             spawnedProjectile.DamageType = DamageClass.Magic;
 
-            EvilNeuroPlayerAttackGlobal evilGlobal =
-                spawnedProjectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
-
-            evilGlobal.CanDamageOwner = true;
-            evilGlobal.KillOnOwnerHit = false;
-
-            spawnedProjectile.netUpdate = true;
+            ApplyEvilOwnerDamageBehavior(
+                spawnedProjectile,
+                damage,
+                killOnOwnerHit: false
+            );
         }
 
         public static void SpawnFallbackEvilBolt(
@@ -135,6 +128,19 @@ namespace NeuroCompanion.Projectiles
                 return;
             }
 
+            ApplyEvilOwnerDamageBehavior(
+                spawnedProjectile,
+                damage,
+                killOnOwnerHit: true
+            );
+        }
+
+        private static void ApplyEvilOwnerDamageBehavior(
+            Projectile spawnedProjectile,
+            int damage,
+            bool killOnOwnerHit
+        )
+        {
             spawnedProjectile.friendly = false;
             spawnedProjectile.hostile = false;
 
@@ -145,7 +151,7 @@ namespace NeuroCompanion.Projectiles
                 spawnedProjectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
 
             evilGlobal.CanDamageOwner = true;
-            evilGlobal.KillOnOwnerHit = true;
+            evilGlobal.KillOnOwnerHit = killOnOwnerHit;
 
             spawnedProjectile.netUpdate = true;
         }
