@@ -10,7 +10,6 @@
 	<ItemGroup>
 	  <Folder Include="Neuro\Websocket\" />
 	  <Folder Include="Neuro\Context\" />
-	  <Folder Include="Neuro\Commands\" />
 	</ItemGroup>
 
 	<!-- References -->
