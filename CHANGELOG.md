@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.3.1
+
+### Changed
+
+* Added a unique Neuro companion sprite for each staff tier.
+* Added matching companion buff icons and names for each staff tier:
+
+  * Neuro Companion
+  * Hellfire Neuro
+  * Hallowed Neuro
+  * AI Lord
+* Updated the mod icon.
+
+
 ## 0.2.3
 
 ### Added

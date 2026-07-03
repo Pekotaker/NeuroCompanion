@@ -1,4 +1,4 @@
 displayName = Neuro Companion
 author = Pekotaker
-version = 0.2.3
+version = 0.2.3.1
 homepage = https://github.com/Pekotaker/NeuroCompanion
