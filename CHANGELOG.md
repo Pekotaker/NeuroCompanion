@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.3
+
+### Added
+
+* Added custom Neuro support for Laser Machinegun.
+* Laser Machinegun now uses a custom firing profile instead of relying on normal player-held channeling behavior.
+
+### Changed
+
+* Generic channeling magic weapons are now rejected unless they have explicit custom Neuro support.
+* Buff and debuff commands now require Neuro to be summoned.
+* Buff and debuff Randy/Neuro actions now also require Neuro to be summoned.
+* Updated documentation to better explain supported weapon profiles, rejected channeling weapons, and summon requirements.
+
+### Fixed
+
+* Fixed buff and debuff actions being usable when the companion was not summoned.
+
+
 ## 0.2.2
 
 ### Added
