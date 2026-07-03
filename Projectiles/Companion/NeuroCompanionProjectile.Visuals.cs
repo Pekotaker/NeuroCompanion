@@ -10,6 +10,18 @@ namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile
     {
+        private const string BaseTexturePath =
+            "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile";
+
+        private const string Mk2TexturePath =
+            "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile_Mk2";
+
+        private const string Mk3TexturePath =
+            "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile_Mk3";
+
+        private const string Mk4TexturePath =
+            "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile_Mk4";
+
         private const string EvilTexturePath =
             "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile_Evil";
 
@@ -86,7 +98,7 @@ namespace NeuroCompanion.Projectiles.Companion
                 Projectile.GetAlpha(lightColor),
                 Projectile.rotation,
                 origin,
-                Projectile.scale,
+                Projectile.scale * GetCurrentCompanionTextureScale(),
                 spriteEffects,
                 0
             );
@@ -103,9 +115,66 @@ namespace NeuroCompanion.Projectiles.Companion
                     .Value;
             }
 
-            return TextureAssets
-                .Projectile[Projectile.type]
+            return ModContent
+                .Request<Texture2D>(GetStaffTexturePath())
                 .Value;
+        }
+
+        private float GetCurrentCompanionTextureScale()
+        {
+            if (IsEvilVisualActive())
+            {
+                return 1f;
+            }
+
+            int visualTier = GetOwnerStaffVisualTier();
+
+            if (visualTier == 4)
+            {
+                return 1f / 3f;
+            }
+
+            return 1f;
+        }
+
+        private string GetStaffTexturePath()
+        {
+            int visualTier = GetOwnerStaffVisualTier();
+
+            switch (visualTier)
+            {
+                case 2:
+                    return Mk2TexturePath;
+
+                case 3:
+                    return Mk3TexturePath;
+
+                case 4:
+                    return Mk4TexturePath;
+
+                default:
+                    return BaseTexturePath;
+            }
+        }
+
+        private int GetOwnerStaffVisualTier()
+        {
+            if (Projectile.owner < 0 || Projectile.owner >= Main.maxPlayers)
+            {
+                return 1;
+            }
+
+            Player owner = Main.player[Projectile.owner];
+
+            if (owner == null || !owner.active)
+            {
+                return 1;
+            }
+
+            NeuroCompanionPlayer neuroPlayer =
+                owner.GetModPlayer<NeuroCompanionPlayer>();
+
+            return neuroPlayer.NeuroStaffVisualTier;
         }
 
         private bool IsEvilVisualActive()

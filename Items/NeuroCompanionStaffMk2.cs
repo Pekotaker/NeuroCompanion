@@ -10,6 +10,8 @@ namespace NeuroCompanion.Items
 
         protected override int StaffShootCooldownTicks => 30;
 
+        protected override int StaffVisualTier => 2;
+
         protected override int StaffRarity => ItemRarityID.Orange;
 
         protected override int StaffValue =>

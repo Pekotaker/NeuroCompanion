@@ -44,6 +44,8 @@ namespace NeuroCompanion.Items
 
         protected virtual bool StaffCanDetectThroughBlocks => false;
 
+        protected virtual int StaffVisualTier => 1;
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 1;
@@ -236,6 +238,7 @@ namespace NeuroCompanion.Items
                 player.GetModPlayer<NeuroCompanionPlayer>();
 
             neuroPlayer.NeuroStaffPrefix = Item.prefix;
+            neuroPlayer.NeuroStaffVisualTier = StaffVisualTier;
             neuroPlayer.NeuroStaffShootCooldownTicks = StaffShootCooldownTicks;
             neuroPlayer.NeuroStaffCanDetectThroughBlocks = StaffCanDetectThroughBlocks;
 

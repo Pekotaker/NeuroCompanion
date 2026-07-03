@@ -19,6 +19,8 @@ namespace NeuroCompanion.Players
         public Item NeuroWeapon { get; private set; }
         public int NeuroStaffPrefix { get; set; }
 
+        public int NeuroStaffVisualTier { get; set; }
+
         public bool NeuroStaffCanDetectThroughBlocks { get; set; }
 
         public int NeuroStaffShootCooldownTicks { get; set; }
@@ -45,6 +47,7 @@ namespace NeuroCompanion.Players
             evilVisualTicksRemaining = 0;
 
             NeuroStaffPrefix = 0;
+            NeuroStaffVisualTier = 1;
             NeuroStaffShootCooldownTicks = DefaultNeuroStaffShootCooldownTicks;
             NeuroStaffCanDetectThroughBlocks = false;
 
