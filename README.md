@@ -566,7 +566,7 @@ Expected result:
 More Randy test commands:
 
 ```text
-[PASTE GOOGLE DRIVE LINK HERE]
+https://docs.google.com/document/d/1ZtHm9jQQ9Ov3Ffl4zOgVQDNZxE1mhyzk/edit?usp=sharing&ouid=107349745517509779788&rtpof=true&sd=true
 ```
 
 ### Randy Safety Notes
