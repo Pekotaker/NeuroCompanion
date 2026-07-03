@@ -2,27 +2,33 @@
 
 Neuro Companion is a tModLoader mod for Terraria that adds a summon companion you can control with chat commands.
 
-The companion works like a normal summon, but you can also give her simple commands. She can follow you, attack enemies, use a magic weapon, and apply buffs or debuffs.
+The companion works like a normal summon, but you can also give her simple commands. She can follow you, attack enemies, use a magic weapon, apply buffs or debuffs, and use some special weapon profiles.
 
-The mod works without Randy or the Neuro SDK. You can play it as a normal Terraria mod.
+The mod works without Randy or the Neuro SDK. You can play it as a normal standalone Terraria mod.
 
-If you want to test Neuro/Randy control, the mod can also connect to Randy through websocket. Randy can choose high-level actions, but it does not directly control the player.
+Randy/Neuro SDK support is optional. It is only needed if you want to test Neuro/Randy control through websocket.
 
 ## Table of Contents
 
 * [Features](#features)
-* [Setup](#setup)
-  * [Standalone Setup](#standalone-setup)
-  * [Optional Randy Setup](#optional-randy-setup)
+* [Standalone Setup](#standalone-setup)
 * [Commands](#commands)
+
   * [Companion Commands](#companion-commands)
   * [Weapon Commands](#weapon-commands)
   * [Websocket Commands](#websocket-commands)
   * [Debug Command](#debug-command)
 * [Staff Upgrades](#staff-upgrades)
 * [Weapon System](#weapon-system)
+* [Evil Neuro](#evil-neuro)
+* [Randy / Neuro SDK Integration](#randy--neuro-sdk-integration)
+
+  * [Requirements](#requirements)
+  * [Start Randy](#start-randy)
+  * [Connect Terraria to Randy](#connect-terraria-to-randy)
+  * [Manual Randy Action Tests](#manual-randy-action-tests)
+  * [Randy Safety Notes](#randy-safety-notes)
 * [Mod Config](#mod-config)
-* [Optional Neuro/Randy Integration](#optional-neurorandy-integration)
 * [Troubleshooting](#troubleshooting)
 * [Repository](#repository)
 
@@ -33,18 +39,18 @@ If you want to test Neuro/Randy control, the mod can also connect to Randy throu
 * Lets Neuro follow the player by default.
 * Lets Neuro attack once on command.
 * Lets Neuro attack nearby enemies for a limited time.
+* Adds Evil Neuro behavior for harmful player-facing actions.
 * Gives Neuro her own magic weapon slot.
 * Lets you assign a weapon to Neuro through commands or the inventory UI.
 * Lets Neuro take a valid magic weapon from your inventory.
-* Shows Neuro’s weapon damage, crit chance, and fire interval on the staff tooltip.
+* Shows Neuro's weapon damage, crit chance, and fire interval on the staff tooltip.
 * Adds upgraded staff tiers: Mk2, Mk3, and Mk4.
 * Supports several types of magic weapons.
+* Supports custom weapon profiles for some unusual weapons, such as Laser Machinegun.
 * Lets Neuro apply allowed buffs and debuffs.
 * Can connect to Randy through websocket for optional Neuro SDK testing.
 
-## Setup
-
-### Standalone Setup
+## Standalone Setup
 
 You only need:
 
@@ -53,48 +59,14 @@ You only need:
 
 In tModLoader:
 
-1. Enter a world.
-2. Obtain or craft the Neuro Companion Staff.
-
-After that, use `/neuro` commands in chat.
+1. Enable Neuro Companion.
+2. Enter a world.
+3. Obtain or craft the Neuro Companion Staff.
+4. Use the staff to summon Neuro.
+5. Open your inventory and give Neuro a valid magic weapon, or use `/neuro weapon set`.
+6. Use `/neuro` commands in chat.
 
 Randy is not required.
-
-### Optional Randy Setup
-
-This is for proper Neuro Integration.
-
-Clone this repository and the Neuro SDK repository:
-```text
-https://github.com/VedalAI/neuro-sdk
-```
-
-Start Randy locally:
-
-```text
-cd Randy
-npm start
-```
-
-By default, the mod expects Randy at:
-
-```text
-ws://localhost:8000
-```
-
-You can change this in the mod config.
-
-Then run this in Terraria chat:
-
-```text
-/neurows connect
-```
-
-To check the connection:
-
-```text
-/neurows status
-```
 
 ## Commands
 
@@ -110,7 +82,7 @@ Shows the Neuro command list.
 /neuro status
 ```
 
-Shows Neuro’s current status, mode, autoattack timer, cooldowns, and weapon info.
+Shows Neuro's current status, mode, autoattack timer, cooldowns, and weapon info.
 
 ```text
 /neuro follow
@@ -141,6 +113,16 @@ Starts autoattack mode for the default duration.
 Starts autoattack mode for 30 seconds.
 
 The duration is limited by the maximum autoattack duration in the mod config.
+
+```text
+/neuro attack player
+```
+
+Makes Evil Neuro attack the player.
+
+If Neuro has a valid equipped magic weapon, Evil Neuro uses it.
+
+If Neuro has no valid equipped weapon, Evil Neuro uses a fallback evil bolt.
 
 ```text
 /neuro buff
@@ -190,7 +172,7 @@ Applies a specific allowed debuff to the nearest valid enemy by name or ID.
 /neuro weapon status
 ```
 
-Shows Neuro’s equipped weapon.
+Shows Neuro's equipped weapon.
 
 ```text
 /neuro weapon inspect
@@ -202,7 +184,7 @@ Checks your selected item and tells you if Neuro can use it.
 /neuro weapon set
 ```
 
-Moves your selected hotbar item into Neuro’s weapon slot if it is valid.
+Moves your selected hotbar item into Neuro's weapon slot if it is valid.
 
 If Neuro already has a weapon, the old weapon is swapped back.
 
@@ -220,7 +202,7 @@ If Neuro already has a weapon, the old weapon is swapped back.
 /neuro weapon return
 ```
 
-Returns Neuro’s weapon to your inventory.
+Returns Neuro's weapon to your inventory.
 
 ### Websocket Commands
 
@@ -275,31 +257,33 @@ The staff tooltip shows:
 * Neuro staff fire limit
 * Neuro effective fire interval
 
-Neuro’s displayed damage is based on:
+Neuro's displayed damage is based on:
 
-* Neuro’s equipped magic weapon
-* the weapon’s modifier
+* Neuro's equipped magic weapon
+* the weapon's modifier
 * your magic damage bonuses
-* the staff’s universal prefix
+* the staff's universal prefix
 
 The staff can be reforged, but only with selected universal combat prefixes.
 
 Staff tiers:
 
-| Staff | Staff fire limit | Extra behavior |
-| --- | ---: | --- |
-| Neuro Companion Staff | 50 ticks | Base tier |
-| Neuro Companion Staff Mk2 | 30 ticks | Faster firing |
-| Neuro Companion Staff Mk3 | 1 tick | Fires as fast as the equipped weapon allows |
-| Neuro Companion Staff Mk4 | 1 tick | Lets Neuro detect enemies through blocks. Projectiles fired by Neuro can also pass through blocks. |
+| Staff                     | Staff fire limit | Extra behavior                                                                                     |
+| ------------------------- | ---------------: | -------------------------------------------------------------------------------------------------- |
+| Neuro Companion Staff     |         50 ticks | Base tier                                                                                          |
+| Neuro Companion Staff Mk2 |         30 ticks | Faster firing                                                                                      |
+| Neuro Companion Staff Mk3 |           1 tick | Fires as fast as the equipped weapon allows                                                        |
+| Neuro Companion Staff Mk4 |           1 tick | Lets Neuro detect enemies through blocks. Projectiles fired by Neuro can also pass through blocks. |
 
-Important rule:
+Important rule for most weapons:
 
 ```text
 Actual Neuro fire interval = max(staff fire limit, equipped weapon useTime)
 ```
 
-So Mk3 and Mk4 are not true 1-tick spam unless the equipped weapon itself has a 1-tick use time.
+Some custom weapon profiles can define special behavior.
+
+For example, Laser Machinegun uses a custom Neuro firing profile instead of normal player-held channeling behavior.
 
 Recipes:
 
@@ -336,26 +320,28 @@ Weapons can be assigned by:
 
 Important weapon rules:
 
-* Moving a weapon into Neuro’s slot moves the item. It does not copy it.
+* Moving a weapon into Neuro's slot moves the item. It does not copy it.
 * If Neuro already has a weapon, the old weapon is swapped back safely.
 * `/neuro weapon take` ignores your selected hotbar item.
 * Neuro does not take the item held by your mouse cursor.
+* Neuro does not use the item currently in your hand. She uses her own equipped weapon.
 
 Neuro currently accepts:
 
 * Magic weapons that fire normal projectiles.
 * Magic weapons with controllable projectiles, such as Magic Missile.
-* Some simple channeling magic weapons.
-* Magic weapons that place an attack at a target position, such as Resonance Scepter.
+* Magic weapons that place attacks at a target position, such as Resonance Scepter.
+* Supported custom weapon profiles, such as Laser Machinegun.
 
-Neuro rejects:
+Neuro currently rejects:
 
 * Non-magic weapons.
 * Items with no damage.
 * Items with no mana cost.
 * Items that do not shoot projectiles.
 * Weapons that create stationary clouds, fields, walls, or similar effects.
-* Beam weapons that need special behavior attached to the player.
+* Generic channeling weapons that depend on the player holding the attack button.
+* Beam weapons that need custom behavior attached to Neuro's body, such as Last Prism.
 
 Examples:
 
@@ -367,49 +353,44 @@ Magic Missile        -> accepted
 Flamelash            -> accepted
 Rainbow Rod          -> accepted
 Resonance Scepter    -> accepted
-Laser Machinegun     -> rejected
+Laser Machinegun     -> accepted with custom Neuro profile
 Nimbus Rod           -> rejected
 Clinger Staff        -> rejected
 Magnet Sphere        -> rejected
 Last Prism           -> rejected
 ```
 
-Some weapons do not work like normal projectiles. For example, Resonance Scepter places its attack at the target position. Neuro handles that as a special case.
+Some weapons do not work like normal projectiles.
 
-Last Prism, Laser Machinegun, and similar beam weapons are not supported yet. They need custom behavior attached to Neuro’s body instead of the player.
+For example, Resonance Scepter places its attack at the target position, so Neuro handles it as a targeted-area weapon.
 
-## Mod Config
+Laser Machinegun normally depends on channeling behavior attached to the player. Neuro handles it with a custom weapon profile instead.
 
-The mod has options in the tModLoader config menu.
+Last Prism and similar beam weapons still need custom support.
 
-Current options include:
+## Evil Neuro
 
-* Randy websocket URL
-* Auto-connect on world load
-* Context sending interval
-* Event context messages
-* Low health context threshold
-* Action cooldowns
-* Maximum autoattack duration
+Some actions make Neuro use her Evil Neuro behavior.
 
-The maximum autoattack duration can be set up to:
+Current command:
 
 ```text
-600 seconds
-10 minutes
+/neuro attack player
 ```
 
-This limit applies to both `/neuro autoattack <seconds>` and Randy/Neuro autoattack actions.
+Evil Neuro attacks the player with her equipped magic weapon.
 
-## Optional Neuro/Randy Integration
+If Neuro has no valid equipped weapon, she uses a fallback evil bolt.
 
-The mod can connect to Randy from the VedalAI Neuro SDK.
+The fallback evil bolt scales with staff tier and world difficulty.
 
-```text
-https://github.com/VedalAI/neuro-sdk
-```
+## Randy / Neuro SDK Integration
 
-When connected, the mod can send Terraria context to Randy/Neuro, including:
+Randy integration is optional. You do not need it for normal command-based use.
+
+This section is for testing Neuro/Randy control through websocket.
+
+The mod sends Terraria context to Randy/Neuro, including:
 
 * Player health
 * Companion status
@@ -428,6 +409,7 @@ Randy/Neuro can choose high-level actions such as:
 * Follow player
 * Attack once
 * Start autoattack
+* Attack player with Evil Neuro
 * Buff player
 * Choose a specific allowed buff
 * Debuff player
@@ -437,11 +419,192 @@ Randy/Neuro can choose high-level actions such as:
 * Return weapon to player
 * Check weapon status
 
-Neuro does not control the player directly. She does not press movement keys, attack keys, or other low-level inputs.
+### Requirements
+
+You need:
+
+* Git
+* Node.js / npm
+* tModLoader
+* Neuro Companion enabled
+* The VedalAI Neuro SDK repository
+
+### Start Randy
+
+Open a terminal somewhere you keep source code.
+
+Clone the Neuro SDK:
+
+```text
+git clone https://github.com/VedalAI/neuro-sdk.git
+cd neuro-sdk
+```
+
+Go into the Randy folder:
+
+```text
+cd Randy
+```
+
+Install dependencies:
+
+```text
+npm install
+```
+
+Start Randy:
+
+```text
+npm start
+```
+
+Leave this terminal open.
+
+The exact terminal text may vary depending on the SDK version, but the important result is:
+
+* Randy stays running.
+* The terminal does not close with an error.
+* You see server/websocket startup messages.
+* The mod can connect to Randy at the configured websocket URL.
+
+By default, Neuro Companion expects Randy at:
+
+```text
+ws://localhost:8000
+```
+
+You can change this in the tModLoader mod config.
+
+### Connect Terraria to Randy
+
+In tModLoader:
+
+1. Enable Neuro Companion.
+2. Enter a world.
+3. Summon Neuro with the Neuro Companion Staff.
+4. Give Neuro a valid magic weapon.
+
+Then type this in Terraria chat:
+
+```text
+/neurows connect
+```
+
+Check the connection:
+
+```text
+/neurows status
+```
+
+You can also manually send the current game context:
+
+```text
+/neurows context
+```
+
+Expected result:
+
+* Terraria should show that the websocket is connected.
+* Randy's terminal should show activity.
+* `/neurows status` should report the connection state.
+
+### Manual Randy Action Tests
+
+Open a second terminal.
+
+Do not close the first terminal running Randy.
+
+PowerShell autoattack test:
+
+```powershell
+$body = @{
+    command = "action"
+    data = @{
+        id = "autoattack-test-1"
+        name = "autoattack"
+        data = '{"duration_seconds":10}'
+    }
+} | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod `
+    -Method Post `
+    -Uri "http://localhost:1337/" `
+    -ContentType "application/json" `
+    -Body $body
+```
+
+Expected result:
+
+* Randy receives the action request.
+* Neuro Companion receives the action through websocket.
+* Neuro starts autoattacking in Terraria for about 10 seconds.
+* The action result should appear in the mod's debug/status output.
+
+PowerShell Evil Neuro test:
+
+```powershell
+$body = @{
+    command = "action"
+    data = @{
+        id = "evil-neuro-test-1"
+        name = "attack_player"
+    }
+} | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod `
+    -Method Post `
+    -Uri "http://localhost:1337/" `
+    -ContentType "application/json" `
+    -Body $body
+```
+
+Expected result:
+
+* Evil Neuro attacks the player in-game.
+* If Neuro has a valid magic weapon equipped, she uses that weapon.
+* If Neuro has no valid weapon, she uses a fallback evil bolt.
+
+More Randy test commands:
+
+```text
+[PASTE GOOGLE DRIVE LINK HERE]
+```
+
+### Randy Safety Notes
+
+Randy/Neuro can only choose high-level actions exposed by the mod.
+
+Randy does not directly control the player.
+
+Randy does not press movement keys, attack keys, mouse buttons, or other low-level inputs.
 
 The mod checks each action before running it.
 
-This integration is optional. You can test the same actions yourself with `/neuro` commands.
+You can test the same gameplay features yourself with `/neuro` commands.
+
+## Mod Config
+
+The mod has options in the tModLoader config menu.
+
+Current options include:
+
+* Randy websocket URL
+* Auto-connect on world load
+* Context sending interval
+* Event context messages
+* Low health context threshold
+* Action cooldowns
+* Evil Neuro player attack cooldown
+* Maximum autoattack duration
+
+The maximum autoattack duration can be set up to:
+
+```text
+600 seconds
+10 minutes
+```
+
+This limit applies to both `/neuro autoattack <seconds>` and Randy/Neuro autoattack actions.
 
 ## Troubleshooting
 
@@ -511,37 +674,52 @@ Neuro remembers the staff tier and prefix used when she was summoned.
 
 Randy is optional. You do not need it for normal command-based use.
 
-If you are testing Randy integration, make sure Randy is running. Then use:
+If you are testing Randy integration, check that:
+
+* Randy is running.
+* The Randy terminal did not show a startup error.
+* The mod config websocket URL matches Randy's websocket URL.
+* The default expected URL is `ws://localhost:8000`.
+* You used `/neurows connect` in Terraria.
+
+Useful commands:
 
 ```text
 /neurows connect
 /neurows status
+/neurows context
+/neurodebug
 ```
 
-Also check that the websocket URL in the config matches Randy’s address.
+### Randy action test reaches Randy, but nothing happens in Terraria
 
-Default:
+Check that:
 
-```text
-ws://localhost:8000
+* Terraria is running.
+* You are inside a world.
+* Neuro Companion is enabled.
+* Neuro is summoned if the action requires her.
+* Neuro has a valid weapon if the action requires a weapon.
+* The websocket is connected.
+* The action name is spelled correctly.
+* Action arguments are inside `data.data` as a JSON string when required.
+
+For example:
+
+```powershell
+data = '{"duration_seconds":10}'
 ```
 
-### Randy keeps trying actions when the companion is not summoned
+not:
 
-The mod treats these actions as skipped instead of hard failures, so Randy should not keep retrying them forever.
-
-Summon the companion with the Neuro Companion Staff before testing combat actions.
+```powershell
+data = @{
+    duration_seconds = 10
+}
+```
 
 ## Repository
 
-Terraria mod:
-
 ```text
 https://github.com/Pekotaker/NeuroCompanion
-```
-
-Neuro SDK:
-
-```text
-https://github.com/VedalAI/neuro-sdk
 ```
