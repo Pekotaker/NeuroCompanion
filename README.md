@@ -46,7 +46,6 @@ Randy/Neuro SDK support is optional. It is only needed if you want to test Neuro
 * Shows Neuro's weapon damage, crit chance, and fire interval on the staff tooltip.
 * Adds upgraded staff tiers: Mk2, Mk3, and Mk4.
 * Supports several types of magic weapons.
-* Supports custom weapon profiles for some unusual weapons, such as Laser Machinegun.
 * Lets Neuro apply allowed buffs and debuffs.
 * Can connect to Randy through websocket for optional Neuro SDK testing.
 
