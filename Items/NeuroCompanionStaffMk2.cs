@@ -2,6 +2,8 @@
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using NeuroCompanion.Buffs.Companion;
+
 namespace NeuroCompanion.Items
 {
     public class NeuroCompanionStaffMk2 : NeuroCompanionStaff
@@ -11,6 +13,9 @@ namespace NeuroCompanion.Items
         protected override int StaffShootCooldownTicks => 30;
 
         protected override int StaffVisualTier => 2;
+
+        protected override int StaffBuffType =>
+            ModContent.BuffType<HellfireNeuroBuff>();
 
         protected override int StaffRarity => ItemRarityID.Orange;
 

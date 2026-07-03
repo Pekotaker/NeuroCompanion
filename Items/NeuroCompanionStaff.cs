@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.Utilities;
 
 using NeuroCompanion.Buffs;
+using NeuroCompanion.Buffs.Companion;
 using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles.Companion;
@@ -46,6 +47,9 @@ namespace NeuroCompanion.Items
 
         protected virtual int StaffVisualTier => 1;
 
+        protected virtual int StaffBuffType =>
+            ModContent.BuffType<NeuroCompanionBuff>();
+
         public override void SetStaticDefaults()
         {
             ItemID.Sets.StaffMinionSlotsRequired[Type] = 1;
@@ -77,7 +81,7 @@ namespace NeuroCompanion.Items
             Item.shoot = ModContent.ProjectileType<NeuroCompanionProjectile>();
             Item.shootSpeed = ShootSpeed;
 
-            Item.buffType = ModContent.BuffType<NeuroCompanionBuff>();
+            Item.buffType = StaffBuffType;
         }
 
         public override int ChoosePrefix(UnifiedRandom rand)
@@ -243,6 +247,7 @@ namespace NeuroCompanion.Items
             neuroPlayer.NeuroStaffCanDetectThroughBlocks = StaffCanDetectThroughBlocks;
 
             RemoveExistingCompanions(player);
+            NeuroCompanionBuffBehavior.ClearCompanionBuffs(player);
 
             player.AddBuff(Item.buffType, BuffDurationTicks);
 

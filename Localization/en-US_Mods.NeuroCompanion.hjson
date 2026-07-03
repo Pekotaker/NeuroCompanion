@@ -33,6 +33,21 @@ Buffs: {
 		Description: Neuro-sama is following you
 	}
 
+	HellfireNeuroBuff: {
+		DisplayName: Hellfire Neuro
+		Description: Hellfire Neuro is following you
+	}
+
+	HallowedNeuroBuff: {
+		DisplayName: Hallowed Neuro
+		Description: Hallowed Neuro is following you
+	}
+
+	AILordBuff: {
+		DisplayName: AI Lord
+		Description: AI Lord is following you
+	}
+
 	NeuroCompanionAttackBuff: {
 		DisplayName: Neuro Attack Mode
 		Description: Neuro is automatically attacking nearby enemies

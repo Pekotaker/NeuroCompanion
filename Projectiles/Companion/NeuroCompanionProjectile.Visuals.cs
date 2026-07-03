@@ -25,6 +25,9 @@ namespace NeuroCompanion.Projectiles.Companion
         private const string EvilTexturePath =
             "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile_Evil";
 
+        private const string Mk4EvilTexturePath =
+            "NeuroCompanion/Projectiles/Companion/NeuroCompanionProjectile_Mk4_Evil";
+
         private void Animate()
         {
             Projectile.frameCounter++;
@@ -98,7 +101,7 @@ namespace NeuroCompanion.Projectiles.Companion
                 Projectile.GetAlpha(lightColor),
                 Projectile.rotation,
                 origin,
-                Projectile.scale * GetCurrentCompanionTextureScale(),
+                Projectile.scale,
                 spriteEffects,
                 0
             );
@@ -111,7 +114,7 @@ namespace NeuroCompanion.Projectiles.Companion
             if (IsEvilVisualActive())
             {
                 return ModContent
-                    .Request<Texture2D>(EvilTexturePath)
+                    .Request<Texture2D>(GetEvilTexturePath())
                     .Value;
             }
 
@@ -120,21 +123,16 @@ namespace NeuroCompanion.Projectiles.Companion
                 .Value;
         }
 
-        private float GetCurrentCompanionTextureScale()
+        private string GetEvilTexturePath()
         {
-            if (IsEvilVisualActive())
-            {
-                return 1f;
-            }
-
             int visualTier = GetOwnerStaffVisualTier();
 
             if (visualTier == 4)
             {
-                return 1f / 3f;
+                return Mk4EvilTexturePath;
             }
 
-            return 1f;
+            return EvilTexturePath;
         }
 
         private string GetStaffTexturePath()

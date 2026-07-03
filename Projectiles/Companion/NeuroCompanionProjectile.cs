@@ -142,11 +142,11 @@ namespace NeuroCompanion.Projectiles.Companion
         {
             if (!owner.active || owner.dead)
             {
-                owner.ClearBuff(ModContent.BuffType<NeuroCompanionBuff>());
+                NeuroCompanionBuffBehavior.ClearCompanionBuffs(owner);
                 return false;
             }
 
-            if (owner.HasBuff(ModContent.BuffType<NeuroCompanionBuff>()))
+            if (NeuroCompanionBuffBehavior.PlayerHasAnyCompanionBuff(owner))
             {
                 Projectile.timeLeft = BuffRefreshTimeTicks;
                 return true;
