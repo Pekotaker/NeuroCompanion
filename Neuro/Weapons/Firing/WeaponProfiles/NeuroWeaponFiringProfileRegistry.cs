@@ -84,6 +84,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (SkySpawnStaffProfile.IsWeapon(weapon))
+            {
+                return SkySpawnStaffProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
