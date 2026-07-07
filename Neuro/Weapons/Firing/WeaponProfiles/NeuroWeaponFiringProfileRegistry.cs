@@ -22,14 +22,18 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             return ProjectileID.None;
         }
 
-        public static Vector2[] CreateShotVelocities(
+        public static NeuroWeaponShot[] CreateShots(
             Item weapon,
+            Vector2 basePosition,
             Vector2 baseVelocity
         )
         {
             if (LaserMachinegunProfile.IsWeapon(weapon))
             {
-                return LaserMachinegunProfile.CreateShotVelocities(baseVelocity);
+                return LaserMachinegunProfile.CreateShots(
+                    basePosition,
+                    baseVelocity
+                );
             }
 
             return null;

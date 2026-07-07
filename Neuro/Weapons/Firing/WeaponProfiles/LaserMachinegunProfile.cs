@@ -48,33 +48,44 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             return cooldownTicks;
         }
 
-        public static Vector2[] CreateShotVelocities(Vector2 baseVelocity)
+        public static NeuroWeaponShot[] CreateShots(
+            Vector2 basePosition,
+            Vector2 baseVelocity
+        )
         {
-            Vector2[] velocities = new Vector2[ProjectileCount];
+            NeuroWeaponShot[] shots = new NeuroWeaponShot[ProjectileCount];
 
             if (baseVelocity.LengthSquared() <= 0.01f)
             {
-                for (int i = 0; i < velocities.Length; i++)
+                for (int i = 0; i < shots.Length; i++)
                 {
-                    velocities[i] = baseVelocity;
+                    shots[i] = new NeuroWeaponShot(
+                        ProjectileType,
+                        basePosition,
+                        baseVelocity
+                    );
                 }
 
-                return velocities;
+                return shots;
             }
 
             float maxSpreadRadians = MathHelper.ToRadians(MaxInaccuracyDegrees);
 
-            for (int i = 0; i < velocities.Length; i++)
+            for (int i = 0; i < shots.Length; i++)
             {
                 float angle = Main.rand.NextFloat(
                     -maxSpreadRadians,
                     maxSpreadRadians
                 );
 
-                velocities[i] = Rotate(baseVelocity, angle);
+                shots[i] = new NeuroWeaponShot(
+                    ProjectileType,
+                    basePosition,
+                    Rotate(baseVelocity, angle)
+                );
             }
 
-            return velocities;
+            return shots;
         }
 
         private static float Clamp01(float value)

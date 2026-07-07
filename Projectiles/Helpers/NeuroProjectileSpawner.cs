@@ -104,14 +104,11 @@ namespace NeuroCompanion.Projectiles.Helpers
             bool killOnOwnerHit
         )
         {
-            int projectileType = NeuroWeaponShotProfile.GetProjectileType(weapon);
-
             if (
                 owner == null ||
                 neuroPlayer == null ||
                 weapon == null ||
-                weapon.IsAir ||
-                projectileType <= ProjectileID.None
+                weapon.IsAir
             )
             {
                 return;
@@ -135,11 +132,17 @@ namespace NeuroCompanion.Projectiles.Helpers
                 neuroPlayer.NeuroStaffPrefix
             );
 
-            Vector2[] shotVelocities =
-                NeuroWeaponShotProfile.CreateShotVelocities(
+            NeuroWeaponShot[] shots =
+                NeuroWeaponShotProfile.CreateShots(
                     weapon,
+                    position,
                     velocity
                 );
+
+            if (shots.Length <= 0)
+            {
+                return;
+            }
 
             NeuroWeaponProjectileSpawnContext.Begin(
                 owner,
@@ -152,17 +155,14 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             try
             {
-                for (int i = 0; i < shotVelocities.Length; i++)
+                for (int i = 0; i < shots.Length; i++)
                 {
-                    TrySpawnProjectile(
+                    TrySpawnWeaponProjectile(
                         source,
-                        position,
-                        shotVelocities[i],
-                        projectileType,
+                        shots[i],
                         damage,
                         knockBack,
-                        projectileOwner,
-                        out _
+                        projectileOwner
                     );
                 }
             }
@@ -193,6 +193,44 @@ namespace NeuroCompanion.Projectiles.Helpers
             spawnedProjectile.netUpdate = true;
         }
 
+        private static bool TrySpawnWeaponProjectile(
+            IEntitySource source,
+            NeuroWeaponShot shot,
+            int damage,
+            float knockBack,
+            int projectileOwner
+        )
+        {
+            if (
+                shot.ProjectileType <= ProjectileID.None ||
+                shot.ProjectileType >= ProjectileLoader.ProjectileCount
+            )
+            {
+                return false;
+            }
+
+            if (!TrySpawnProjectile(
+                    source,
+                    shot.Position,
+                    shot.Velocity,
+                    shot.ProjectileType,
+                    damage,
+                    knockBack,
+                    projectileOwner,
+                    out Projectile spawnedProjectile,
+                    shot.Ai0,
+                    shot.Ai1
+                ))
+            {
+                return false;
+            }
+
+            spawnedProjectile.scale *= shot.Scale;
+            spawnedProjectile.netUpdate = true;
+
+            return true;
+        }
+
         private static bool TrySpawnProjectile(
             IEntitySource source,
             Vector2 position,
@@ -201,7 +239,9 @@ namespace NeuroCompanion.Projectiles.Helpers
             int damage,
             float knockBack,
             int projectileOwner,
-            out Projectile spawnedProjectile
+            out Projectile spawnedProjectile,
+            float ai0 = 0f,
+            float ai1 = 0f
         )
         {
             spawnedProjectile = null;
@@ -213,7 +253,9 @@ namespace NeuroCompanion.Projectiles.Helpers
                 projectileType,
                 damage,
                 knockBack,
-                projectileOwner
+                projectileOwner,
+                ai0,
+                ai1
             );
 
             if (

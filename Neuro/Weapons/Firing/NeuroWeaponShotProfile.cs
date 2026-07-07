@@ -13,6 +13,62 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
     {
         private const float MinimumVelocityLengthSquared = 0.01f;
 
+        public static NeuroWeaponShot[] CreateShots(
+            Item weapon,
+            Vector2 basePosition,
+            Vector2 baseVelocity
+        )
+        {
+            if (weapon == null || weapon.IsAir)
+            {
+                return Array.Empty<NeuroWeaponShot>();
+            }
+
+            NeuroWeaponShot[] profiledShots =
+                NeuroWeaponFiringProfileRegistry.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+
+            if (profiledShots != null)
+            {
+                return profiledShots;
+            }
+
+            int projectileType = GetProjectileType(weapon);
+
+            if (projectileType <= ProjectileID.None)
+            {
+                return Array.Empty<NeuroWeaponShot>();
+            }
+
+            ShotPattern pattern = GetShotPattern(weapon);
+
+            if (
+                pattern.ProjectileCount <= 1 ||
+                baseVelocity.LengthSquared() <= MinimumVelocityLengthSquared
+            )
+            {
+                return new[]
+                {
+                    new NeuroWeaponShot(
+                        projectileType,
+                        basePosition,
+                        baseVelocity
+                    )
+                };
+            }
+
+            return CreateSpreadShots(
+                projectileType,
+                basePosition,
+                baseVelocity,
+                pattern.ProjectileCount,
+                MathHelper.ToRadians(pattern.TotalSpreadDegrees)
+            );
+        }
+
         public static int GetProjectileType(Item weapon)
         {
             if (weapon == null || weapon.IsAir)
@@ -29,39 +85,6 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             }
 
             return weapon.shoot;
-        }
-
-        public static Vector2[] CreateShotVelocities(
-            Item weapon,
-            Vector2 baseVelocity
-        )
-        {
-            Vector2[] profiledVelocities =
-                NeuroWeaponFiringProfileRegistry.CreateShotVelocities(
-                    weapon,
-                    baseVelocity
-                );
-
-            if (profiledVelocities != null)
-            {
-                return profiledVelocities;
-            }
-
-            ShotPattern pattern = GetShotPattern(weapon);
-
-            if (
-                pattern.ProjectileCount <= 1 ||
-                baseVelocity.LengthSquared() <= MinimumVelocityLengthSquared
-            )
-            {
-                return new[] { baseVelocity };
-            }
-
-            return CreateSpreadVelocities(
-                baseVelocity,
-                pattern.ProjectileCount,
-                MathHelper.ToRadians(pattern.TotalSpreadDegrees)
-            );
         }
 
         private static ShotPattern GetShotPattern(Item weapon)
@@ -108,18 +131,25 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             }
         }
 
-        private static Vector2[] CreateSpreadVelocities(
+        private static NeuroWeaponShot[] CreateSpreadShots(
+            int projectileType,
+            Vector2 basePosition,
             Vector2 baseVelocity,
             int projectileCount,
             float totalSpreadRadians
         )
         {
-            Vector2[] velocities = new Vector2[projectileCount];
+            NeuroWeaponShot[] shots = new NeuroWeaponShot[projectileCount];
 
             if (projectileCount <= 1)
             {
-                velocities[0] = baseVelocity;
-                return velocities;
+                shots[0] = new NeuroWeaponShot(
+                    projectileType,
+                    basePosition,
+                    baseVelocity
+                );
+
+                return shots;
             }
 
             float firstAngle = -totalSpreadRadians * 0.5f;
@@ -128,10 +158,15 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             for (int i = 0; i < projectileCount; i++)
             {
                 float angle = firstAngle + angleStep * i;
-                velocities[i] = Rotate(baseVelocity, angle);
+
+                shots[i] = new NeuroWeaponShot(
+                    projectileType,
+                    basePosition,
+                    Rotate(baseVelocity, angle)
+                );
             }
 
-            return velocities;
+            return shots;
         }
 
         private static Vector2 Rotate(Vector2 vector, float radians)
