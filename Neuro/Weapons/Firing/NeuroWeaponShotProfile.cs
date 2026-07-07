@@ -17,7 +17,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Player owner,
             Item weapon,
             Vector2 basePosition,
-            Vector2 baseVelocity
+            Vector2 baseVelocity,
+            Vector2 targetPosition
         )
         {
             if (weapon == null || weapon.IsAir)
@@ -30,7 +31,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                     owner,
                     weapon,
                     basePosition,
-                    baseVelocity
+                    baseVelocity,
+                    targetPosition
                 );
 
             if (profiledShots != null)

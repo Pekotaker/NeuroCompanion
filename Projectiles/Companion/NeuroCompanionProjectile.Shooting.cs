@@ -79,7 +79,7 @@ namespace NeuroCompanion.Projectiles.Companion
 
             Vector2 shotDirection = target.Center - Projectile.Center;
 
-            ShootWeaponInDirection(owner, shotDirection);
+            ShootWeaponInDirection(owner, shotDirection, target.Center);
         }
 
         private void ShootWeaponTowardCursor(Player owner)
@@ -102,10 +102,14 @@ namespace NeuroCompanion.Projectiles.Companion
 
             Vector2 shotDirection = Main.MouseWorld - Projectile.Center;
 
-            ShootWeaponInDirection(owner, shotDirection);
+            ShootWeaponInDirection(owner, shotDirection, Main.MouseWorld);
         }
 
-        private void ShootWeaponInDirection(Player owner, Vector2 rawDirection)
+        private void ShootWeaponInDirection(
+            Player owner,
+            Vector2 rawDirection,
+            Vector2 targetPosition
+        )
         {
             if (Projectile.owner != Main.myPlayer)
             {
@@ -143,7 +147,8 @@ namespace NeuroCompanion.Projectiles.Companion
                 owner.GetModPlayer<NeuroCompanionPlayer>(),
                 weapon,
                 shotPosition,
-                shotVelocity
+                shotVelocity,
+                targetPosition
             );
         }
 
@@ -227,7 +232,8 @@ namespace NeuroCompanion.Projectiles.Companion
                 owner.GetModPlayer<NeuroCompanionPlayer>(),
                 weapon,
                 worldPosition,
-                Vector2.Zero
+                Vector2.Zero,
+                worldPosition
             );
         }
 
@@ -279,7 +285,8 @@ namespace NeuroCompanion.Projectiles.Companion
                     neuroPlayer,
                     weapon,
                     owner.Center,
-                    Vector2.Zero
+                    Vector2.Zero,
+                    owner.Center
                 );
 
                 return;
@@ -301,7 +308,8 @@ namespace NeuroCompanion.Projectiles.Companion
                 neuroPlayer,
                 weapon,
                 shotPosition,
-                shotVelocity
+                shotVelocity,
+                owner.Center
             );
         }
 

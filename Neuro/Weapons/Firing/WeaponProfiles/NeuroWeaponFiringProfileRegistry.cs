@@ -26,7 +26,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             Player owner,
             Item weapon,
             Vector2 basePosition,
-            Vector2 baseVelocity
+            Vector2 baseVelocity,
+            Vector2 targetPosition
         )
         {
             if (LaserMachinegunProfile.IsWeapon(weapon))

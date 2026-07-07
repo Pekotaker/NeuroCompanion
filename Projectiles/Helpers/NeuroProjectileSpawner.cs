@@ -23,7 +23,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             NeuroCompanionPlayer neuroPlayer,
             Item weapon,
             Vector2 position,
-            Vector2 velocity
+            Vector2 velocity,
+            Vector2 targetPosition
         )
         {
             SpawnWeaponProjectileWithContext(
@@ -34,6 +35,7 @@ namespace NeuroCompanion.Projectiles.Helpers
                 weapon,
                 position,
                 velocity,
+                targetPosition,
                 isEvil: false,
                 killOnOwnerHit: false
             );
@@ -46,7 +48,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             NeuroCompanionPlayer neuroPlayer,
             Item weapon,
             Vector2 position,
-            Vector2 velocity
+            Vector2 velocity,
+            Vector2 targetPosition
         )
         {
             SpawnWeaponProjectileWithContext(
@@ -57,6 +60,7 @@ namespace NeuroCompanion.Projectiles.Helpers
                 weapon,
                 position,
                 velocity,
+                targetPosition,
                 isEvil: true,
                 killOnOwnerHit: false
             );
@@ -100,6 +104,7 @@ namespace NeuroCompanion.Projectiles.Helpers
             Item weapon,
             Vector2 position,
             Vector2 velocity,
+            Vector2 targetPosition,
             bool isEvil,
             bool killOnOwnerHit
         )
@@ -137,7 +142,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                     owner,
                     weapon,
                     position,
-                    velocity
+                    velocity,
+                    targetPosition
                 );
 
             if (shots.Length <= 0)
