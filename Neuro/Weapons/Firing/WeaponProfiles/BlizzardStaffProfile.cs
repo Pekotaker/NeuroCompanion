@@ -15,8 +15,9 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 
         private const int PairDelayTicks = 5;
 
-        private const float HorizontalSpawnHalfWidth = 120f;
-        private const float AimNoiseHalfWidth = 20f;
+        private const float HorizontalSpawnHalfWidth = 220f;
+        private const float AimNoiseHalfWidth = 160f;
+        private const float AimNoiseVerticalHalfHeight = 40f;
 
         public static bool IsWeapon(Item weapon)
         {
@@ -41,7 +42,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             NeuroWeaponShot[] shots =
                 new NeuroWeaponShot[totalIcicles];
 
-            float skyTopY = SkySpawnProfileHelper.GetScreenTopY();
+            float skyY = SkySpawnProfileHelper.GetNeuroSkyY(basePosition);
 
             float shotSpeed =
                 SkySpawnProfileHelper.GetShotSpeed(
@@ -58,11 +59,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 for (int i = 0; i < IciclesPerPair; i++)
                 {
                     Vector2 spawnPosition = new Vector2(
-                        targetPosition.X + Main.rand.NextFloat(
+                        basePosition.X + Main.rand.NextFloat(
                             -HorizontalSpawnHalfWidth,
                             HorizontalSpawnHalfWidth
                         ),
-                        skyTopY
+                        skyY + Main.rand.NextFloat(-20f, 20f)
                     );
 
                     Vector2 noisyAimPoint = targetPosition + new Vector2(
@@ -70,7 +71,10 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                             -AimNoiseHalfWidth,
                             AimNoiseHalfWidth
                         ),
-                        0f
+                        Main.rand.NextFloat(
+                            -AimNoiseVerticalHalfHeight,
+                            AimNoiseVerticalHalfHeight
+                        )
                     );
 
                     Vector2 velocity =
@@ -84,7 +88,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                         weapon.shoot,
                         spawnPosition,
                         velocity,
-                        delayTicks: delayTicks
+                        delayTicks: delayTicks,
+                        forceVisible: true
                     );
 
                     shotIndex++;

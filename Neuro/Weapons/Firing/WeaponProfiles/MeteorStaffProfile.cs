@@ -9,7 +9,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 {
     public static class MeteorStaffProfile
     {
-        private const float SpawnHeightAboveNeuro = 600f;
+        private const float HorizontalSpawnNoise = 40f;
 
         public static bool IsWeapon(Item weapon)
         {
@@ -32,8 +32,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
 
             Vector2 spawnPosition = new Vector2(
-                targetPosition.X,
-                basePosition.Y - SpawnHeightAboveNeuro
+                basePosition.X + Main.rand.NextFloat(
+                    -HorizontalSpawnNoise,
+                    HorizontalSpawnNoise
+                ),
+                SkySpawnProfileHelper.GetNeuroSkyY(basePosition)
             );
 
             Vector2 velocity =
@@ -48,7 +51,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 new NeuroWeaponShot(
                     weapon.shoot,
                     spawnPosition,
-                    velocity
+                    velocity,
+                    forceVisible: true
                 )
             };
         }

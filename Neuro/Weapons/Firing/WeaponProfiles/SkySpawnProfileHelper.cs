@@ -41,9 +41,9 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             return direction * speed;
         }
 
-        public static float GetScreenTopY()
+        public static float GetNeuroSkyY(Vector2 neuroPosition)
         {
-            return Main.screenPosition.Y - 16f;
+            return neuroPosition.Y - 520f;
         }
     }
 }

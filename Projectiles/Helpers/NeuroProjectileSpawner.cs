@@ -259,6 +259,13 @@ namespace NeuroCompanion.Projectiles.Helpers
             }
 
             spawnedProjectile.scale *= shot.Scale;
+
+            if (shot.ForceVisible)
+            {
+                spawnedProjectile.alpha = 0;
+                spawnedProjectile.hide = false;
+            }
+
             spawnedProjectile.netUpdate = true;
 
             return true;
