@@ -15,9 +15,9 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 
         private const int PairDelayTicks = 5;
 
-        private const float HorizontalSpawnHalfWidth = 220f;
-        private const float AimNoiseHalfWidth = 160f;
-        private const float AimNoiseVerticalHalfHeight = 40f;
+        private const float HorizontalSpawnHalfWidth = 180f;
+        private const float AimNoiseHalfWidth = 100f;
+        private const float AimNoiseVerticalHalfHeight = 25f;
 
         public static bool IsWeapon(Item weapon)
         {
@@ -42,7 +42,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             NeuroWeaponShot[] shots =
                 new NeuroWeaponShot[totalIcicles];
 
-            float skyY = SkySpawnProfileHelper.GetNeuroSkyY(basePosition);
+            Vector2 skyAnchor =
+                SkySpawnProfileHelper.GetMidpointSkyAnchor(
+                    basePosition,
+                    targetPosition
+                );
 
             float shotSpeed =
                 SkySpawnProfileHelper.GetShotSpeed(
@@ -59,11 +63,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 for (int i = 0; i < IciclesPerPair; i++)
                 {
                     Vector2 spawnPosition = new Vector2(
-                        basePosition.X + Main.rand.NextFloat(
+                        skyAnchor.X + Main.rand.NextFloat(
                             -HorizontalSpawnHalfWidth,
                             HorizontalSpawnHalfWidth
                         ),
-                        skyY + Main.rand.NextFloat(-20f, 20f)
+                        skyAnchor.Y + Main.rand.NextFloat(-20f, 20f)
                     );
 
                     Vector2 noisyAimPoint = targetPosition + new Vector2(
@@ -88,8 +92,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                         weapon.shoot,
                         spawnPosition,
                         velocity,
-                        delayTicks: delayTicks,
-                        forceVisible: true
+                        delayTicks: delayTicks
                     );
 
                     shotIndex++;
@@ -97,6 +100,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             }
 
             return shots;
+        }
+
+        public static int GetCooldownTicks(Item weapon)
+        {
+            return SkySpawnProfileHelper.GetFullUseCooldownTicks(weapon);
         }
 
         private static bool ShouldUseMythicalExtraPair(Item weapon)

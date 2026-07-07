@@ -41,9 +41,42 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             return direction * speed;
         }
 
+        public static Vector2 GetMidpointSkyAnchor(
+            Vector2 basePosition,
+            Vector2 targetPosition
+        )
+        {
+            return new Vector2(
+                MathHelper.Lerp(basePosition.X, targetPosition.X, 0.5f),
+                GetNeuroSkyY(basePosition)
+            );
+        }
+
         public static float GetNeuroSkyY(Vector2 neuroPosition)
         {
             return neuroPosition.Y - 520f;
+        }
+
+        public static int GetFullUseCooldownTicks(Item weapon)
+        {
+            if (weapon == null || weapon.IsAir)
+            {
+                return 1;
+            }
+
+            int cooldownTicks = weapon.useAnimation;
+
+            if (cooldownTicks <= 0)
+            {
+                cooldownTicks = weapon.useTime;
+            }
+
+            if (cooldownTicks <= 0)
+            {
+                cooldownTicks = 1;
+            }
+
+            return cooldownTicks;
         }
     }
 }

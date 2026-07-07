@@ -31,12 +31,18 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     baseVelocity
                 );
 
+            Vector2 skyAnchor =
+                SkySpawnProfileHelper.GetMidpointSkyAnchor(
+                    basePosition,
+                    targetPosition
+                );
+
             Vector2 spawnPosition = new Vector2(
-                basePosition.X + Main.rand.NextFloat(
+                skyAnchor.X + Main.rand.NextFloat(
                     -HorizontalSpawnNoise,
                     HorizontalSpawnNoise
                 ),
-                SkySpawnProfileHelper.GetNeuroSkyY(basePosition)
+                skyAnchor.Y
             );
 
             Vector2 velocity =
@@ -51,10 +57,14 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 new NeuroWeaponShot(
                     weapon.shoot,
                     spawnPosition,
-                    velocity,
-                    forceVisible: true
+                    velocity
                 )
             };
+        }
+
+        public static int GetCooldownTicks(Item weapon)
+        {
+            return SkySpawnProfileHelper.GetFullUseCooldownTicks(weapon);
         }
     }
 }

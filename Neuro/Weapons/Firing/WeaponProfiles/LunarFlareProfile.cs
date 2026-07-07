@@ -33,7 +33,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             NeuroWeaponShot[] shots =
                 new NeuroWeaponShot[ProjectileCount];
 
-            float skyY = SkySpawnProfileHelper.GetNeuroSkyY(basePosition);
+            Vector2 skyAnchor =
+                SkySpawnProfileHelper.GetMidpointSkyAnchor(
+                    basePosition,
+                    targetPosition
+                );
 
             float shotSpeed =
                 SkySpawnProfileHelper.GetShotSpeed(
@@ -44,11 +48,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             for (int i = 0; i < shots.Length; i++)
             {
                 Vector2 spawnPosition = new Vector2(
-                    basePosition.X + Main.rand.NextFloat(
+                    skyAnchor.X + Main.rand.NextFloat(
                         -HorizontalSpawnHalfWidth,
                         HorizontalSpawnHalfWidth
                     ),
-                    skyY + Main.rand.NextFloat(
+                    skyAnchor.Y + Main.rand.NextFloat(
                         -VerticalSpawnJitter,
                         VerticalSpawnJitter
                     )
@@ -65,12 +69,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     weapon.shoot,
                     spawnPosition,
                     velocity,
-                    delayTicks: i * DelayBetweenFlaresTicks,
-                    forceVisible: true
+                    delayTicks: i * DelayBetweenFlaresTicks
                 );
             }
 
             return shots;
+        }
+
+        public static int GetCooldownTicks(Item weapon)
+        {
+            return SkySpawnProfileHelper.GetFullUseCooldownTicks(weapon);
         }
     }
 }

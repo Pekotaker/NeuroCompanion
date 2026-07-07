@@ -129,5 +129,32 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 
             return 1;
         }
+
+        public static bool TryGetProfileShootCooldownTicks(
+            Item weapon,
+            out int cooldownTicks
+        )
+        {
+            if (MeteorStaffProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = MeteorStaffProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (BlizzardStaffProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = BlizzardStaffProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (LunarFlareProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = LunarFlareProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            cooldownTicks = 0;
+            return false;
+        }
     }
 }

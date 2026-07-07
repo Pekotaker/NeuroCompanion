@@ -198,6 +198,17 @@ namespace NeuroCompanion.Projectiles.Companion
                 );
             }
 
+            if (NeuroWeaponFiringProfileRegistry.TryGetProfileShootCooldownTicks(
+                    weapon,
+                    out int profileCooldownTicks
+                ))
+            {
+                return NeuroDamageService.GetStaffPrefixShootCooldownTicks(
+                    profileCooldownTicks,
+                    neuroPlayer.NeuroStaffPrefix
+                );
+            }
+
             return NeuroDamageService.GetEffectiveNeuroShootCooldownTicks(
                 weapon,
                 neuroPlayer.NeuroStaffShootCooldownTicks,
