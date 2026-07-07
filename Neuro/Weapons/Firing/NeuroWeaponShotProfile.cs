@@ -106,6 +106,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                         totalSpreadDegrees: 10f
                     );
 
+                case ItemID.LunarFlareBook:
+                    return new ShotPattern(
+                        projectileCount: 3,
+                        totalSpreadDegrees: 12f
+                    );
+
                 default:
                     return ShotPattern.Single;
             }
