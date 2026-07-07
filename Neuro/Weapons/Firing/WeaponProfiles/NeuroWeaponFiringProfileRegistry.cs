@@ -84,6 +84,36 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (MeteorStaffProfile.IsWeapon(weapon))
+            {
+                return MeteorStaffProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
+            if (BlizzardStaffProfile.IsWeapon(weapon))
+            {
+                return BlizzardStaffProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
+            if (LunarFlareProfile.IsWeapon(weapon))
+            {
+                return LunarFlareProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
