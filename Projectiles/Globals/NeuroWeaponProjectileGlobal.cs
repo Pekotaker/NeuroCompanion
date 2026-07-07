@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-
+﻿using NeuroCompanion.Neuro.Weapons.Firing;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
-
-using NeuroCompanion.Neuro.Weapons.Firing;
 
 namespace NeuroCompanion.Projectiles.Globals
 {
@@ -18,14 +17,19 @@ namespace NeuroCompanion.Projectiles.Globals
 
         public int FrameOverride { get; set; } = -1;
 
+        public float ScaleOverride { get; set; } = -1f;
+
         public override void PostAI(Projectile projectile)
         {
-            if (FrameOverride < 0)
+            if (FrameOverride >= 0)
             {
-                return;
+                projectile.frame = FrameOverride;
             }
 
-            projectile.frame = FrameOverride;
+            if (ScaleOverride > 0f)
+            {
+                projectile.scale = ScaleOverride;
+            }
         }
 
         public override void DrawBehind(

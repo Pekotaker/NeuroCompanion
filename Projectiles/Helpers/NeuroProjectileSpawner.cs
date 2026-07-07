@@ -1,18 +1,15 @@
-﻿using System;
-
-using Microsoft.Xna.Framework;
-
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.ModLoader;
-
+﻿using Microsoft.Xna.Framework;
 using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Neuro.Weapons.Firing;
 using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles.Attacks;
 using NeuroCompanion.Projectiles.Globals;
 using NeuroCompanion.Projectiles.Visuals;
+using System;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace NeuroCompanion.Projectiles.Helpers
 {
@@ -258,7 +255,16 @@ namespace NeuroCompanion.Projectiles.Helpers
                 return false;
             }
 
-            spawnedProjectile.scale *= shot.Scale;
+            bool startedWithZeroScale = spawnedProjectile.scale <= 0f;
+
+            ApplyShotScale(spawnedProjectile, shot.Scale);
+
+            if (startedWithZeroScale)
+            {
+                spawnedProjectile
+                    .GetGlobalProjectile<NeuroWeaponProjectileGlobal>()
+                    .ScaleOverride = spawnedProjectile.scale;
+            }
 
             if (shot.FrameOverride >= 0)
             {
@@ -286,6 +292,29 @@ namespace NeuroCompanion.Projectiles.Helpers
             spawnedProjectile.netUpdate = true;
 
             return true;
+        }
+
+        private static void ApplyShotScale(
+            Projectile spawnedProjectile,
+            float shotScale
+        )
+        {
+            if (shotScale <= 0f)
+            {
+                shotScale = 1f;
+            }
+
+            // Some vanilla projectiles, including Meteor Staff meteors,
+            // can initialize with scale = 0 when spawned manually.
+            // Multiplying zero by the shot scale keeps them invisible,
+            // so in that case assign the scale directly.
+            if (spawnedProjectile.scale <= 0f)
+            {
+                spawnedProjectile.scale = shotScale;
+                return;
+            }
+
+            spawnedProjectile.scale *= shotScale;
         }
 
         private static void SpawnVisualProjectileIfNeeded(
@@ -335,6 +364,7 @@ namespace NeuroCompanion.Projectiles.Helpers
             visualProjectile.scale = shot.Scale;
             visualProjectile.netUpdate = true;
         }
+
 
         private static void ApplyEvilOwnerDamageBehavior(
             Projectile spawnedProjectile,

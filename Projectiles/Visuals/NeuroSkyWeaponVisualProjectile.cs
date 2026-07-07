@@ -59,7 +59,18 @@ namespace NeuroCompanion.Projectiles.Visuals
 
             Projectile.Center = parent.Center;
             Projectile.velocity = parent.velocity;
-            Projectile.scale = parent.scale;
+
+            // Do not blindly copy parent.scale.
+            // Meteor Staff meteors reset their real projectile scale to 0 before drawing.
+            // If we copy that, the visual overlay becomes invisible too.
+            if (parent.scale > 0f)
+            {
+                Projectile.scale = parent.scale;
+            }
+            else if (Projectile.scale <= 0f)
+            {
+                Projectile.scale = 1f;
+            }
 
             if (Projectile.velocity.LengthSquared() > MinimumVelocityLengthSquared)
             {
