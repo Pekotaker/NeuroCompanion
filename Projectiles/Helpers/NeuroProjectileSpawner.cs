@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+
+using Microsoft.Xna.Framework;
 
 using Terraria;
 using Terraria.DataStructures;
@@ -24,7 +26,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             Item weapon,
             Vector2 position,
             Vector2 velocity,
-            Vector2 targetPosition
+            Vector2 targetPosition,
+            Action<PendingNeuroWeaponShot> queueDelayedShot = null
         )
         {
             SpawnWeaponProjectileWithContext(
@@ -37,7 +40,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                 velocity,
                 targetPosition,
                 isEvil: false,
-                killOnOwnerHit: false
+                killOnOwnerHit: false,
+                queueDelayedShot
             );
         }
 
@@ -49,7 +53,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             Item weapon,
             Vector2 position,
             Vector2 velocity,
-            Vector2 targetPosition
+            Vector2 targetPosition,
+            Action<PendingNeuroWeaponShot> queueDelayedShot = null
         )
         {
             SpawnWeaponProjectileWithContext(
@@ -62,7 +67,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                 velocity,
                 targetPosition,
                 isEvil: true,
-                killOnOwnerHit: false
+                killOnOwnerHit: false,
+                queueDelayedShot
             );
         }
 
@@ -96,6 +102,44 @@ namespace NeuroCompanion.Projectiles.Helpers
             );
         }
 
+        public static void SpawnPendingWeaponShot(
+            PendingNeuroWeaponShot pendingShot
+        )
+        {
+            if (
+                pendingShot.Owner == null ||
+                pendingShot.NeuroPlayer == null ||
+                pendingShot.Shot.ProjectileType <= ProjectileID.None
+            )
+            {
+                return;
+            }
+
+            NeuroWeaponProjectileSpawnContext.Begin(
+                pendingShot.Owner,
+                pendingShot.NeuroPlayer,
+                pendingShot.Damage,
+                pendingShot.CritChance,
+                pendingShot.IsEvil,
+                pendingShot.KillOnOwnerHit
+            );
+
+            try
+            {
+                TrySpawnWeaponProjectile(
+                    pendingShot.Source,
+                    pendingShot.Shot,
+                    pendingShot.Damage,
+                    pendingShot.KnockBack,
+                    pendingShot.ProjectileOwner
+                );
+            }
+            finally
+            {
+                NeuroWeaponProjectileSpawnContext.End();
+            }
+        }
+
         private static void SpawnWeaponProjectileWithContext(
             IEntitySource source,
             int projectileOwner,
@@ -106,7 +150,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             Vector2 velocity,
             Vector2 targetPosition,
             bool isEvil,
-            bool killOnOwnerHit
+            bool killOnOwnerHit,
+            Action<PendingNeuroWeaponShot> queueDelayedShot
         )
         {
             if (
@@ -151,53 +196,34 @@ namespace NeuroCompanion.Projectiles.Helpers
                 return;
             }
 
-            NeuroWeaponProjectileSpawnContext.Begin(
-                owner,
-                neuroPlayer,
-                damage,
-                critChance,
-                isEvil,
-                killOnOwnerHit
-            );
-
-            try
+            for (int i = 0; i < shots.Length; i++)
             {
-                for (int i = 0; i < shots.Length; i++)
-                {
-                    TrySpawnWeaponProjectile(
+                PendingNeuroWeaponShot pendingShot =
+                    new PendingNeuroWeaponShot(
                         source,
+                        projectileOwner,
+                        owner,
+                        neuroPlayer,
                         shots[i],
                         damage,
                         knockBack,
-                        projectileOwner
+                        critChance,
+                        isEvil,
+                        killOnOwnerHit,
+                        Math.Max(0, shots[i].DelayTicks)
                     );
+
+                if (
+                    pendingShot.RemainingTicks > 0 &&
+                    queueDelayedShot != null
+                )
+                {
+                    queueDelayedShot(pendingShot);
+                    continue;
                 }
+
+                SpawnPendingWeaponShot(pendingShot);
             }
-            finally
-            {
-                NeuroWeaponProjectileSpawnContext.End();
-            }
-        }
-
-        private static void ApplyEvilOwnerDamageBehavior(
-            Projectile spawnedProjectile,
-            int damage,
-            bool killOnOwnerHit
-        )
-        {
-            spawnedProjectile.friendly = false;
-            spawnedProjectile.hostile = false;
-
-            spawnedProjectile.damage = damage;
-            spawnedProjectile.originalDamage = damage;
-
-            EvilNeuroPlayerAttackGlobal evilGlobal =
-                spawnedProjectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
-
-            evilGlobal.CanDamageOwner = true;
-            evilGlobal.KillOnOwnerHit = killOnOwnerHit;
-
-            spawnedProjectile.netUpdate = true;
         }
 
         private static bool TrySpawnWeaponProjectile(
@@ -236,6 +262,27 @@ namespace NeuroCompanion.Projectiles.Helpers
             spawnedProjectile.netUpdate = true;
 
             return true;
+        }
+
+        private static void ApplyEvilOwnerDamageBehavior(
+            Projectile spawnedProjectile,
+            int damage,
+            bool killOnOwnerHit
+        )
+        {
+            spawnedProjectile.friendly = false;
+            spawnedProjectile.hostile = false;
+
+            spawnedProjectile.damage = damage;
+            spawnedProjectile.originalDamage = damage;
+
+            EvilNeuroPlayerAttackGlobal evilGlobal =
+                spawnedProjectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
+
+            evilGlobal.CanDamageOwner = true;
+            evilGlobal.KillOnOwnerHit = killOnOwnerHit;
+
+            spawnedProjectile.netUpdate = true;
         }
 
         private static bool TrySpawnProjectile(

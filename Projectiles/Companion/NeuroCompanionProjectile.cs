@@ -133,6 +133,7 @@ namespace NeuroCompanion.Projectiles.Companion
 
             ApplyRecallCommand(owner, neuroPlayer);
             RunCommandedBehavior(owner, neuroPlayer);
+            ProcessPendingWeaponShots();
 
             Animate();
             CreateVisualEffects();

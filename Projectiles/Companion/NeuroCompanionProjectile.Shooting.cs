@@ -148,7 +148,8 @@ namespace NeuroCompanion.Projectiles.Companion
                 weapon,
                 shotPosition,
                 shotVelocity,
-                targetPosition
+                targetPosition,
+                QueuePendingWeaponShot
             );
         }
 
@@ -233,7 +234,8 @@ namespace NeuroCompanion.Projectiles.Companion
                 weapon,
                 worldPosition,
                 Vector2.Zero,
-                worldPosition
+                worldPosition,
+                QueuePendingWeaponShot
             );
         }
 
@@ -286,7 +288,8 @@ namespace NeuroCompanion.Projectiles.Companion
                     weapon,
                     owner.Center,
                     Vector2.Zero,
-                    owner.Center
+                    owner.Center,
+                    QueuePendingWeaponShot
                 );
 
                 return;
@@ -309,7 +312,8 @@ namespace NeuroCompanion.Projectiles.Companion
                 weapon,
                 shotPosition,
                 shotVelocity,
-                owner.Center
+                owner.Center,
+                QueuePendingWeaponShot
             );
         }
 

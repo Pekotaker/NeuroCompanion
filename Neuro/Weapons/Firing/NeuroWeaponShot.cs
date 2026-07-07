@@ -10,6 +10,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
         public float Ai0 { get; }
         public float Ai1 { get; }
         public float Scale { get; }
+        public int DelayTicks { get; }
 
         public NeuroWeaponShot(
             int projectileType,
@@ -17,7 +18,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Vector2 velocity,
             float ai0 = 0f,
             float ai1 = 0f,
-            float scale = 1f
+            float scale = 1f,
+            int delayTicks = 0
         )
         {
             ProjectileType = projectileType;
@@ -26,6 +28,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Ai0 = ai0;
             Ai1 = ai1;
             Scale = scale;
+            DelayTicks = delayTicks;
         }
     }
 }
