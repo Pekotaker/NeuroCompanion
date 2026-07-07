@@ -74,6 +74,15 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (FangStaffProfile.IsWeapon(weapon))
+            {
+                return FangStaffProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
             return null;
         }
 
