@@ -14,6 +14,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
         private const float MinimumVelocityLengthSquared = 0.01f;
 
         public static NeuroWeaponShot[] CreateShots(
+            Player owner,
             Item weapon,
             Vector2 basePosition,
             Vector2 baseVelocity
@@ -26,6 +27,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
 
             NeuroWeaponShot[] profiledShots =
                 NeuroWeaponFiringProfileRegistry.CreateShots(
+                    owner,
                     weapon,
                     basePosition,
                     baseVelocity
@@ -100,18 +102,6 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                     return new ShotPattern(
                         projectileCount: 3,
                         totalSpreadDegrees: 10f
-                    );
-
-                case ItemID.BeeGun:
-                    return new ShotPattern(
-                        projectileCount: 3,
-                        totalSpreadDegrees: 12f
-                    );
-
-                case ItemID.BatScepter:
-                    return new ShotPattern(
-                        projectileCount: 3,
-                        totalSpreadDegrees: 14f
                     );
 
                 case ItemID.LunarFlareBook:

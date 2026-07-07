@@ -134,6 +134,7 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             NeuroWeaponShot[] shots =
                 NeuroWeaponShotProfile.CreateShots(
+                    owner,
                     weapon,
                     position,
                     velocity

@@ -23,6 +23,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
         }
 
         public static NeuroWeaponShot[] CreateShots(
+            Player owner,
             Item weapon,
             Vector2 basePosition,
             Vector2 baseVelocity
@@ -39,6 +40,34 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (BubbleGunProfile.IsWeapon(weapon))
             {
                 return BubbleGunProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
+            if (BeeGunProfile.IsWeapon(weapon))
+            {
+                return BeeGunProfile.CreateShots(
+                    owner,
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
+            if (WaspGunProfile.IsWeapon(weapon))
+            {
+                return WaspGunProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
+            if (BatScepterProfile.IsWeapon(weapon))
+            {
+                return BatScepterProfile.CreateShots(
                     weapon,
                     basePosition,
                     baseVelocity
