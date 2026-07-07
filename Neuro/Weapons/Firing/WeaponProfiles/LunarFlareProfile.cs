@@ -16,6 +16,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 
         private const int DelayBetweenFlaresTicks = 3;
 
+        private const float LunarFlareScale = 0.45f;
+
         public static bool IsWeapon(Item weapon)
         {
             return weapon != null &&
@@ -69,9 +71,9 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     ProjectileID.LunarFlare,
                     spawnPosition,
                     velocity,
+                    scale: LunarFlareScale,
                     delayTicks: i * DelayBetweenFlaresTicks,
-                    useSkyDrawLayer: true,
-                    visualStyle: NeuroWeaponVisualStyle.LunarFlareStreak
+                    useSkyDrawLayer: true
                 );
             }
 

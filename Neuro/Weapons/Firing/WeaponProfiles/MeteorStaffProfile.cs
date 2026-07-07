@@ -67,9 +67,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     projectileType,
                     spawnPosition,
                     velocity,
-                    useSkyDrawLayer: true,
-                    visualProjectileType: projectileType,
-                    visualStyle: NeuroWeaponVisualStyle.ProjectileTexture
+                    useSkyDrawLayer: true
                 )
             };
         }
