@@ -11,12 +11,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
     {
         private const int ProjectileCount = 3;
 
-        private const float HorizontalSpawnHalfWidth = 120f;
+        private const float HorizontalSpawnHalfWidth = 160f;
         private const float VerticalSpawnJitter = 40f;
 
         private const int DelayBetweenFlaresTicks = 3;
 
-        private const float LunarFlareScale = 0.45f;
+        private const float MaximumLunarFlareShotSpeed = 5f;
 
         public static bool IsWeapon(Item weapon)
         {
@@ -42,7 +42,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
 
             float shotSpeed =
-                SkySpawnProfileHelper.GetShotSpeed(
+                GetLunarFlareShotSpeed(
                     weapon,
                     baseVelocity
                 );
@@ -71,7 +71,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     ProjectileID.LunarFlare,
                     spawnPosition,
                     velocity,
-                    scale: LunarFlareScale,
+                    ai1: targetPosition.Y,
                     delayTicks: i * DelayBetweenFlaresTicks,
                     useSkyDrawLayer: true
                 );
@@ -83,6 +83,25 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
         public static int GetCooldownTicks(Item weapon)
         {
             return SkySpawnProfileHelper.GetFullUseCooldownTicks(weapon);
+        }
+
+        private static float GetLunarFlareShotSpeed(
+            Item weapon,
+            Vector2 baseVelocity
+        )
+        {
+            float shotSpeed =
+                SkySpawnProfileHelper.GetShotSpeed(
+                    weapon,
+                    baseVelocity
+                );
+
+            if (shotSpeed > MaximumLunarFlareShotSpeed)
+            {
+                return MaximumLunarFlareShotSpeed;
+            }
+
+            return shotSpeed;
         }
     }
 }
