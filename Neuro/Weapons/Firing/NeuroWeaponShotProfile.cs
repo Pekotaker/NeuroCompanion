@@ -114,12 +114,6 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                         totalSpreadDegrees: 14f
                     );
 
-                case ItemID.BubbleGun:
-                    return new ShotPattern(
-                        projectileCount: 3,
-                        totalSpreadDegrees: 16f
-                    );
-
                 case ItemID.LunarFlareBook:
                     return new ShotPattern(
                         projectileCount: 3,

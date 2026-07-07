@@ -36,6 +36,15 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (BubbleGunProfile.IsWeapon(weapon))
+            {
+                return BubbleGunProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
             return null;
         }
 
