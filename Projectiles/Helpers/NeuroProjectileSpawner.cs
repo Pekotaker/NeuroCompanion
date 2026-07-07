@@ -1,18 +1,17 @@
-﻿using System;
-
-using Microsoft.Xna.Framework;
-
-using Terraria;
-using Terraria.DataStructures;
-using Terraria.ID;
-using Terraria.ModLoader;
-
+﻿using Microsoft.Xna.Framework;
 using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Neuro.Weapons.Firing;
 using NeuroCompanion.Players;
 using NeuroCompanion.Projectiles.Attacks;
 using NeuroCompanion.Projectiles.Globals;
 using NeuroCompanion.Projectiles.Visuals;
+using NeuroCompanion.Systems;
+using System;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.GameContent;
+using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace NeuroCompanion.Projectiles.Helpers
 {
@@ -258,7 +257,18 @@ namespace NeuroCompanion.Projectiles.Helpers
                 return false;
             }
 
-            spawnedProjectile.scale *= shot.Scale;
+            LogMeteorProjectileIfNeeded(spawnedProjectile, shot);
+
+            bool startedWithZeroScale = spawnedProjectile.scale <= 0f;
+
+            ApplyShotScale(spawnedProjectile, shot.Scale);
+
+            if (startedWithZeroScale)
+            {
+                spawnedProjectile
+                    .GetGlobalProjectile<NeuroWeaponProjectileGlobal>()
+                    .ScaleOverride = spawnedProjectile.scale;
+            }
 
             if (shot.FrameOverride >= 0)
             {
@@ -286,6 +296,29 @@ namespace NeuroCompanion.Projectiles.Helpers
             spawnedProjectile.netUpdate = true;
 
             return true;
+        }
+
+        private static void ApplyShotScale(
+            Projectile spawnedProjectile,
+            float shotScale
+        )
+        {
+            if (shotScale <= 0f)
+            {
+                shotScale = 1f;
+            }
+
+            // Some vanilla projectiles, including Meteor Staff meteors,
+            // can initialize with scale = 0 when spawned manually.
+            // Multiplying zero by the shot scale keeps them invisible,
+            // so in that case assign the scale directly.
+            if (spawnedProjectile.scale <= 0f)
+            {
+                spawnedProjectile.scale = shotScale;
+                return;
+            }
+
+            spawnedProjectile.scale *= shotScale;
         }
 
         private static void SpawnVisualProjectileIfNeeded(
@@ -334,6 +367,60 @@ namespace NeuroCompanion.Projectiles.Helpers
             visualProjectile.localAI[1] = shot.VisualStyle;
             visualProjectile.scale = shot.Scale;
             visualProjectile.netUpdate = true;
+        }
+
+        private static void LogMeteorProjectileIfNeeded(
+            Projectile projectile,
+            NeuroWeaponShot shot
+        )
+        {
+            if (!NeuroMeteorDebugSystem.Enabled)
+            {
+                return;
+            }
+
+            if (
+                projectile.type != ProjectileID.Meteor1 &&
+                projectile.type != ProjectileID.Meteor2 &&
+                projectile.type != ProjectileID.Meteor3
+            )
+            {
+                return;
+            }
+
+            int frameCount = 0;
+            bool textureLoaded = false;
+
+            if (
+                projectile.type > ProjectileID.None &&
+                projectile.type < TextureAssets.Projectile.Length
+            )
+            {
+                frameCount = Main.projFrames[projectile.type];
+                textureLoaded = TextureAssets.Projectile[projectile.type].IsLoaded;
+            }
+
+            Main.NewText(
+                "[Neuro Meteor Debug] " +
+                $"type={projectile.type}, " +
+                $"name={ProjectileID.Search.GetName(projectile.type)}, " +
+                $"aiStyle={projectile.aiStyle}, " +
+                $"width={projectile.width}, " +
+                $"height={projectile.height}, " +
+                $"alpha={projectile.alpha}, " +
+                $"hide={projectile.hide}, " +
+                $"frame={projectile.frame}, " +
+                $"frames={frameCount}, " +
+                $"scale={projectile.scale}, " +
+                $"tileCollide={projectile.tileCollide}, " +
+                $"timeLeft={projectile.timeLeft}, " +
+                $"velocity={projectile.velocity}, " +
+                $"ai0={projectile.ai[0]}, " +
+                $"ai1={projectile.ai[1]}, " +
+                $"textureLoaded={textureLoaded}, " +
+                $"shotVisualType={shot.VisualProjectileType}, " +
+                $"shotVisualStyle={shot.VisualStyle}"
+            );
         }
 
         private static void ApplyEvilOwnerDamageBehavior(
