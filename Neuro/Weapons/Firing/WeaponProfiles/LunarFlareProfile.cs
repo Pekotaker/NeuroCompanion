@@ -66,10 +66,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     );
 
                 shots[i] = new NeuroWeaponShot(
-                    weapon.shoot,
+                    ProjectileID.LunarFlare,
                     spawnPosition,
                     velocity,
-                    delayTicks: i * DelayBetweenFlaresTicks
+                    delayTicks: i * DelayBetweenFlaresTicks,
+                    useSkyDrawLayer: true,
+                    visualStyle: NeuroWeaponVisualStyle.LunarFlareStreak
                 );
             }
 

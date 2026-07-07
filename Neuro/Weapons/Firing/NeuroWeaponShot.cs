@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 
+using Terraria.ID;
+
 namespace NeuroCompanion.Neuro.Weapons.Firing
 {
     public readonly struct NeuroWeaponShot
@@ -12,6 +14,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
         public float Scale { get; }
         public int DelayTicks { get; }
         public bool ForceVisible { get; }
+        public bool UseSkyDrawLayer { get; }
+        public int FrameOverride { get; }
+        public int VisualProjectileType { get; }
+        public int VisualFrameOverride { get; }
+        public int VisualStyle { get; }
 
         public NeuroWeaponShot(
             int projectileType,
@@ -21,7 +28,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             float ai1 = 0f,
             float scale = 1f,
             int delayTicks = 0,
-            bool forceVisible = false
+            bool forceVisible = false,
+            bool useSkyDrawLayer = false,
+            int frameOverride = -1,
+            int visualProjectileType = ProjectileID.None,
+            int visualFrameOverride = -1,
+            int visualStyle = NeuroWeaponVisualStyle.None
         )
         {
             ProjectileType = projectileType;
@@ -32,6 +44,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Scale = scale;
             DelayTicks = delayTicks;
             ForceVisible = forceVisible;
+            UseSkyDrawLayer = useSkyDrawLayer;
+            FrameOverride = frameOverride;
+            VisualProjectileType = visualProjectileType;
+            VisualFrameOverride = visualFrameOverride;
+            VisualStyle = visualStyle;
         }
     }
 }

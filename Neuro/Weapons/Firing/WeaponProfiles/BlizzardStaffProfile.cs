@@ -15,9 +15,9 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 
         private const int PairDelayTicks = 5;
 
-        private const float HorizontalSpawnHalfWidth = 180f;
-        private const float AimNoiseHalfWidth = 100f;
-        private const float AimNoiseVerticalHalfHeight = 25f;
+        private const float HorizontalSpawnHalfWidth = 160f;
+        private const float AimNoiseHalfWidth = 55f;
+        private const float AimNoiseVerticalHalfHeight = 15f;
 
         public static bool IsWeapon(Item weapon)
         {
@@ -92,7 +92,9 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                         weapon.shoot,
                         spawnPosition,
                         velocity,
-                        delayTicks: delayTicks
+                        delayTicks: delayTicks,
+                        useSkyDrawLayer: true,
+                        frameOverride: RollProjectileFrame(weapon.shoot)
                     );
 
                     shotIndex++;
@@ -105,6 +107,26 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
         public static int GetCooldownTicks(Item weapon)
         {
             return SkySpawnProfileHelper.GetFullUseCooldownTicks(weapon);
+        }
+
+        private static int RollProjectileFrame(int projectileType)
+        {
+            if (
+                projectileType <= ProjectileID.None ||
+                projectileType >= Main.projFrames.Length
+            )
+            {
+                return -1;
+            }
+
+            int frameCount = Main.projFrames[projectileType];
+
+            if (frameCount <= 1)
+            {
+                return -1;
+            }
+
+            return Main.rand.Next(frameCount);
         }
 
         private static bool ShouldUseMythicalExtraPair(Item weapon)

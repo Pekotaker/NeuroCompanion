@@ -11,6 +11,13 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
     {
         private const float HorizontalSpawnNoise = 40f;
 
+        private static readonly int[] MeteorProjectileTypes =
+        {
+            ProjectileID.Meteor1,
+            ProjectileID.Meteor2,
+            ProjectileID.Meteor3
+        };
+
         public static bool IsWeapon(Item weapon)
         {
             return weapon != null &&
@@ -52,12 +59,17 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     shotSpeed
                 );
 
+            int projectileType = PickMeteorProjectileType();
+
             return new[]
             {
                 new NeuroWeaponShot(
-                    weapon.shoot,
+                    projectileType,
                     spawnPosition,
-                    velocity
+                    velocity,
+                    useSkyDrawLayer: true,
+                    visualProjectileType: projectileType,
+                    visualStyle: NeuroWeaponVisualStyle.ProjectileTexture
                 )
             };
         }
@@ -65,6 +77,13 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
         public static int GetCooldownTicks(Item weapon)
         {
             return SkySpawnProfileHelper.GetFullUseCooldownTicks(weapon);
+        }
+
+        private static int PickMeteorProjectileType()
+        {
+            return MeteorProjectileTypes[
+                Main.rand.Next(MeteorProjectileTypes.Length)
+            ];
         }
     }
 }

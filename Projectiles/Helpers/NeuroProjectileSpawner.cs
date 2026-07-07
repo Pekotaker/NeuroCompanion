@@ -10,9 +10,9 @@ using Terraria.ModLoader;
 using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Neuro.Weapons.Firing;
 using NeuroCompanion.Players;
-
 using NeuroCompanion.Projectiles.Attacks;
 using NeuroCompanion.Projectiles.Globals;
+using NeuroCompanion.Projectiles.Visuals;
 
 namespace NeuroCompanion.Projectiles.Helpers
 {
@@ -259,9 +259,81 @@ namespace NeuroCompanion.Projectiles.Helpers
             }
 
             spawnedProjectile.scale *= shot.Scale;
+
+            if (shot.FrameOverride >= 0)
+            {
+                spawnedProjectile.frame = shot.FrameOverride;
+
+                spawnedProjectile
+                    .GetGlobalProjectile<NeuroWeaponProjectileGlobal>()
+                    .FrameOverride = shot.FrameOverride;
+            }
+
+            if (shot.UseSkyDrawLayer)
+            {
+                spawnedProjectile
+                    .GetGlobalProjectile<NeuroWeaponProjectileGlobal>()
+                    .UseSkyDrawLayer = true;
+            }
+
+            SpawnVisualProjectileIfNeeded(
+                source,
+                shot,
+                projectileOwner,
+                spawnedProjectile.whoAmI
+            );
+
             spawnedProjectile.netUpdate = true;
 
             return true;
+        }
+
+        private static void SpawnVisualProjectileIfNeeded(
+            IEntitySource source,
+            NeuroWeaponShot shot,
+            int projectileOwner,
+            int parentProjectileIndex
+        )
+        {
+            if (
+                shot.VisualStyle == NeuroWeaponVisualStyle.None &&
+                shot.VisualProjectileType <= ProjectileID.None
+            )
+            {
+                return;
+            }
+
+            int visualProjectileIndex = Projectile.NewProjectile(
+                source,
+                shot.Position,
+                shot.Velocity,
+                ModContent.ProjectileType<NeuroSkyWeaponVisualProjectile>(),
+                0,
+                0f,
+                projectileOwner,
+                parentProjectileIndex,
+                shot.VisualProjectileType
+            );
+
+            if (
+                visualProjectileIndex < 0 ||
+                visualProjectileIndex >= Main.maxProjectiles
+            )
+            {
+                return;
+            }
+
+            Projectile visualProjectile = Main.projectile[visualProjectileIndex];
+
+            if (visualProjectile == null)
+            {
+                return;
+            }
+
+            visualProjectile.localAI[0] = shot.VisualFrameOverride;
+            visualProjectile.localAI[1] = shot.VisualStyle;
+            visualProjectile.scale = shot.Scale;
+            visualProjectile.netUpdate = true;
         }
 
         private static void ApplyEvilOwnerDamageBehavior(

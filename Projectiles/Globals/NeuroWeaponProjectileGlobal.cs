@@ -1,7 +1,10 @@
-﻿using NeuroCompanion.Neuro.Weapons.Firing;
+﻿using System.Collections.Generic;
+
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ModLoader;
+
+using NeuroCompanion.Neuro.Weapons.Firing;
 
 namespace NeuroCompanion.Projectiles.Globals
 {
@@ -10,6 +13,38 @@ namespace NeuroCompanion.Projectiles.Globals
         public override bool InstancePerEntity => true;
 
         public bool IsNeuroWeaponProjectile { get; private set; }
+
+        public bool UseSkyDrawLayer { get; set; }
+
+        public int FrameOverride { get; set; } = -1;
+
+        public override void PostAI(Projectile projectile)
+        {
+            if (FrameOverride < 0)
+            {
+                return;
+            }
+
+            projectile.frame = FrameOverride;
+        }
+
+        public override void DrawBehind(
+            Projectile projectile,
+            int index,
+            List<int> behindNPCsAndTiles,
+            List<int> behindNPCs,
+            List<int> behindProjectiles,
+            List<int> overPlayers,
+            List<int> overWiresUI
+        )
+        {
+            if (!UseSkyDrawLayer)
+            {
+                return;
+            }
+
+            overPlayers.Add(index);
+        }
 
         public override void OnSpawn(Projectile projectile, IEntitySource source)
         {
