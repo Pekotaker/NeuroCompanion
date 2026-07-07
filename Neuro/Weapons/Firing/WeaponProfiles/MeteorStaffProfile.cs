@@ -11,6 +11,9 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
     {
         private const float HorizontalSpawnNoise = 40f;
 
+        private const float MinimumMeteorVisualScale = 0.5f;
+        private const float MaximumMeteorVisualScale = 0.8f;
+
         private static readonly int[] MeteorProjectileTypes =
         {
             ProjectileID.Meteor1,
@@ -67,6 +70,10 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     projectileType,
                     spawnPosition,
                     velocity,
+                    scale: Main.rand.NextFloat(
+                        MinimumMeteorVisualScale,
+                        MaximumMeteorVisualScale
+                    ),
                     visualProjectileType: projectileType,
                     visualStyle: NeuroWeaponVisualStyle.ProjectileTexture
                 )
