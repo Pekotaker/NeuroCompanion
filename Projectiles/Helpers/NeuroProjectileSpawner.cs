@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 
 using Terraria;
 using Terraria.DataStructures;
@@ -18,26 +16,6 @@ namespace NeuroCompanion.Projectiles.Helpers
 {
     public static class NeuroProjectileSpawner
     {
-        private static readonly List<PendingWeaponShot> PendingWeaponShots = new List<PendingWeaponShot>();
-
-        public static void UpdateDelayedWeaponShots()
-        {
-            for (int i = PendingWeaponShots.Count - 1; i >= 0; i--)
-            {
-                PendingWeaponShot pendingShot = PendingWeaponShots[i];
-
-                if (pendingShot.TicksRemaining > 0)
-                {
-                    pendingShot.TicksRemaining--;
-                    PendingWeaponShots[i] = pendingShot;
-                    continue;
-                }
-
-                PendingWeaponShots.RemoveAt(i);
-                SpawnQueuedWeaponShot(pendingShot);
-            }
-        }
-
         public static void SpawnCompanionWeaponProjectile(
             IEntitySource source,
             int projectileOwner,
@@ -173,55 +151,6 @@ namespace NeuroCompanion.Projectiles.Helpers
                 return;
             }
 
-            for (int i = 0; i < shots.Length; i++)
-            {
-                NeuroWeaponShot shot = shots[i];
-
-                if (shot.DelayTicks <= 0)
-                {
-                    SpawnPreparedWeaponShot(
-                        source,
-                        projectileOwner,
-                        owner,
-                        neuroPlayer,
-                        shot,
-                        damage,
-                        knockBack,
-                        critChance,
-                        isEvil,
-                        killOnOwnerHit
-                    );
-
-                    continue;
-                }
-
-                QueueDelayedWeaponShot(
-                    source,
-                    projectileOwner,
-                    owner,
-                    shot,
-                    damage,
-                    knockBack,
-                    critChance,
-                    isEvil,
-                    killOnOwnerHit
-                );
-            }
-        }
-
-        private static void SpawnPreparedWeaponShot(
-    IEntitySource source,
-    int projectileOwner,
-    Player owner,
-    NeuroCompanionPlayer neuroPlayer,
-    NeuroWeaponShot shot,
-    int damage,
-    float knockBack,
-    int critChance,
-    bool isEvil,
-    bool killOnOwnerHit
-)
-        {
             NeuroWeaponProjectileSpawnContext.Begin(
                 owner,
                 neuroPlayer,
@@ -233,85 +162,21 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             try
             {
-                TrySpawnWeaponProjectile(
-                    source,
-                    shot,
-                    damage,
-                    knockBack,
-                    projectileOwner
-                );
+                for (int i = 0; i < shots.Length; i++)
+                {
+                    TrySpawnWeaponProjectile(
+                        source,
+                        shots[i],
+                        damage,
+                        knockBack,
+                        projectileOwner
+                    );
+                }
             }
             finally
             {
                 NeuroWeaponProjectileSpawnContext.End();
             }
-        }
-
-        private static void QueueDelayedWeaponShot(
-            IEntitySource source,
-            int projectileOwner,
-            Player owner,
-            NeuroWeaponShot shot,
-            int damage,
-            float knockBack,
-            int critChance,
-            bool isEvil,
-            bool killOnOwnerHit
-        )
-        {
-            PendingWeaponShots.Add(
-                new PendingWeaponShot(
-                    source,
-                    projectileOwner,
-                    owner.whoAmI,
-                    shot,
-                    damage,
-                    knockBack,
-                    critChance,
-                    isEvil,
-                    killOnOwnerHit,
-                    shot.DelayTicks
-                )
-            );
-        }
-
-        private static void SpawnQueuedWeaponShot(PendingWeaponShot pendingShot)
-        {
-            if (pendingShot.ProjectileOwner != Main.myPlayer)
-            {
-                return;
-            }
-
-            if (
-                pendingShot.OwnerWhoAmI < 0 ||
-                pendingShot.OwnerWhoAmI >= Main.maxPlayers
-            )
-            {
-                return;
-            }
-
-            Player owner = Main.player[pendingShot.OwnerWhoAmI];
-
-            if (owner == null || !owner.active)
-            {
-                return;
-            }
-
-            NeuroCompanionPlayer neuroPlayer =
-                owner.GetModPlayer<NeuroCompanionPlayer>();
-
-            SpawnPreparedWeaponShot(
-                pendingShot.Source,
-                pendingShot.ProjectileOwner,
-                owner,
-                neuroPlayer,
-                pendingShot.Shot,
-                pendingShot.Damage,
-                pendingShot.KnockBack,
-                pendingShot.CritChance,
-                pendingShot.IsEvil,
-                pendingShot.KillOnOwnerHit
-            );
         }
 
         private static void ApplyEvilOwnerDamageBehavior(
@@ -410,45 +275,6 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             spawnedProjectile = Main.projectile[projectileIndex];
             return spawnedProjectile != null;
-        }
-
-        private struct PendingWeaponShot
-        {
-            public IEntitySource Source { get; }
-            public int ProjectileOwner { get; }
-            public int OwnerWhoAmI { get; }
-            public NeuroWeaponShot Shot { get; }
-            public int Damage { get; }
-            public float KnockBack { get; }
-            public int CritChance { get; }
-            public bool IsEvil { get; }
-            public bool KillOnOwnerHit { get; }
-            public int TicksRemaining { get; set; }
-
-            public PendingWeaponShot(
-                IEntitySource source,
-                int projectileOwner,
-                int ownerWhoAmI,
-                NeuroWeaponShot shot,
-                int damage,
-                float knockBack,
-                int critChance,
-                bool isEvil,
-                bool killOnOwnerHit,
-                int ticksRemaining
-            )
-            {
-                Source = source;
-                ProjectileOwner = projectileOwner;
-                OwnerWhoAmI = ownerWhoAmI;
-                Shot = shot;
-                Damage = damage;
-                KnockBack = knockBack;
-                CritChance = critChance;
-                IsEvil = isEvil;
-                KillOnOwnerHit = killOnOwnerHit;
-                TicksRemaining = ticksRemaining;
-            }
         }
     }
 }
