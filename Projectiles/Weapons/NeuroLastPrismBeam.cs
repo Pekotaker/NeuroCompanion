@@ -29,8 +29,8 @@ namespace NeuroCompanion.Projectiles.Weapons
         private const float VisualEffectThreshold = 0.1f;
 
         private const float OuterBeamOpacityMultiplier = 0.75f;
-        private const float InnerBeamOpacityMultiplier = 1f;
-        private const float InnerBeamScaleMultiplier = 0.9f;
+        private const float InnerBeamOpacityMultiplier = 0.1f;
+        private const float InnerBeamScaleMultiplier = 0.5f;
 
         private const float BeamLightBrightness = 0.75f;
 
@@ -485,13 +485,9 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Projectile.Opacity
             );
 
-            if (ShouldDrawWhiteCore())
+            if (ShouldDrawWhiteInnerBeamPass())
             {
-                DrawCenteredWhiteCore(
-                    texture,
-                    drawScale,
-                    visualBeamLength
-                );
+                DrawWhiteInnerBeamsForHost(texture);
             }
 
             return false;
@@ -523,32 +519,82 @@ namespace NeuroCompanion.Projectiles.Weapons
             );
         }
 
-        private void DrawCenteredWhiteCore(
-            Texture2D texture,
-            Vector2 drawScale,
-            float visualBeamLength
-        )
+        private bool ShouldDrawWhiteInnerBeamPass()
         {
-            Projectile hostPrism = GetHostPrism();
+            int beamType =
+                ModContent.ProjectileType<NeuroLastPrismBeam>();
 
-            if (hostPrism == null)
+            for (int i = Projectile.whoAmI + 1; i < Main.maxProjectiles; i++)
+            {
+                Projectile other = Main.projectile[i];
+
+                if (
+                    other != null &&
+                    other.active &&
+                    other.owner == Projectile.owner &&
+                    other.type == beamType &&
+                    (int)other.ai[1] == HostPrismIndex
+                )
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void DrawWhiteInnerBeamsForHost(Texture2D texture)
+        {
+            int beamType =
+                ModContent.ProjectileType<NeuroLastPrismBeam>();
+
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile other = Main.projectile[i];
+
+                if (
+                    other == null ||
+                    !other.active ||
+                    other.owner != Projectile.owner ||
+                    other.type != beamType ||
+                    (int)other.ai[1] != HostPrismIndex
+                )
+                {
+                    continue;
+                }
+
+                if (other.ModProjectile is NeuroLastPrismBeam beam)
+                {
+                    beam.DrawWhiteInnerBeam(texture);
+                }
+            }
+        }
+
+        private void DrawWhiteInnerBeam(Texture2D texture)
+        {
+            if (Projectile.velocity == Vector2.Zero || BeamLength <= 0f)
             {
                 return;
             }
 
-            Vector2 hostDirection =
-                SafeNormalize(hostPrism.velocity, Projectile.velocity);
+            Vector2 drawScale =
+                new Vector2(Projectile.scale);
+
+            float visualBeamLength =
+                BeamLength - 14.5f * Projectile.scale * Projectile.scale;
+
+            if (visualBeamLength <= 0f)
+            {
+                return;
+            }
 
             Vector2 startPosition =
-                hostPrism.Center.Floor()
-                + hostDirection * Projectile.scale * 10.5f
+                Projectile.Center.Floor()
+                + Projectile.velocity * Projectile.scale * 10.5f
                 - Main.screenPosition;
 
             Vector2 endPosition =
-                startPosition + hostDirection * visualBeamLength;
-
-            float coreOpacity =
-                GetWhiteCoreFocusOpacity();
+                startPosition + Projectile.velocity * visualBeamLength;
 
             DrawBeam(
                 Main.spriteBatch,
@@ -556,33 +602,15 @@ namespace NeuroCompanion.Projectiles.Weapons
                 startPosition,
                 endPosition,
                 drawScale * InnerBeamScaleMultiplier,
-                GetWhiteCoreColor()
+                GetInnerBeamColor() *
+                InnerBeamOpacityMultiplier *
+                Projectile.Opacity
             );
         }
 
-        private Color GetWhiteCoreColor()
+        private Color GetInnerBeamColor()
         {
-            byte alpha =
-                (byte)(255f * GetWhiteCoreFocusOpacity());
-
-            return new Color(255, 255, 255, alpha);
-        }
-
-        private bool ShouldDrawWhiteCore()
-        {
-            // BeamID 5 is spawned last, so this white core is more likely
-            // to draw on top of the colored beams instead of under them.
-            return BeamID == NeuroLastPrismHoldout.NumBeams - 1 &&
-                   ChargeRatioForDrawing >= 0.82f;
-        }
-
-        private float GetWhiteCoreFocusOpacity()
-        {
-            return MathHelper.Clamp(
-                (ChargeRatioForDrawing - 0.82f) / 0.18f,
-                0f,
-                1f
-            );
+            return Color.White;
         }
 
         private Color GetOuterBeamColor()
