@@ -1,7 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using NeuroCompanion.Projectiles.Globals;
+
 using System;
+
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
@@ -29,8 +32,8 @@ namespace NeuroCompanion.Projectiles.Weapons
         private const float VisualEffectThreshold = 0.1f;
 
         private const float OuterBeamOpacityMultiplier = 0.75f;
-        private const float InnerBeamOpacityMultiplier = 1f;
-        private const float InnerBeamScaleMultiplier = 0.9f;
+        private const float InnerBeamOpacityMultiplier = 0.1f;
+        private const float InnerBeamScaleMultiplier = 0.5f;
 
         private const float BeamLightBrightness = 0.75f;
 
@@ -485,14 +488,16 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Projectile.Opacity
             );
 
-            if (ShouldDrawWhiteCore())
-            {
-                DrawCenteredWhiteCore(
-                    texture,
-                    drawScale,
-                    visualBeamLength
-                );
-            }
+            DrawBeam(
+                Main.spriteBatch,
+                texture,
+                startPosition,
+                endPosition,
+                drawScale * InnerBeamScaleMultiplier,
+                GetInnerBeamColor() *
+                InnerBeamOpacityMultiplier *
+                Projectile.Opacity
+            );
 
             return false;
         }
@@ -523,66 +528,9 @@ namespace NeuroCompanion.Projectiles.Weapons
             );
         }
 
-        private void DrawCenteredWhiteCore(
-            Texture2D texture,
-            Vector2 drawScale,
-            float visualBeamLength
-        )
+        private Color GetInnerBeamColor()
         {
-            Projectile hostPrism = GetHostPrism();
-
-            if (hostPrism == null)
-            {
-                return;
-            }
-
-            Vector2 hostDirection =
-                SafeNormalize(hostPrism.velocity, Projectile.velocity);
-
-            Vector2 startPosition =
-                hostPrism.Center.Floor()
-                + hostDirection * Projectile.scale * 10.5f
-                - Main.screenPosition;
-
-            Vector2 endPosition =
-                startPosition + hostDirection * visualBeamLength;
-
-            float coreOpacity =
-                GetWhiteCoreFocusOpacity();
-
-            DrawBeam(
-                Main.spriteBatch,
-                texture,
-                startPosition,
-                endPosition,
-                drawScale * InnerBeamScaleMultiplier,
-                GetWhiteCoreColor()
-            );
-        }
-
-        private Color GetWhiteCoreColor()
-        {
-            byte alpha =
-                (byte)(255f * GetWhiteCoreFocusOpacity());
-
-            return new Color(255, 255, 255, alpha);
-        }
-
-        private bool ShouldDrawWhiteCore()
-        {
-            // BeamID 5 is spawned last, so this white core is more likely
-            // to draw on top of the colored beams instead of under them.
-            return BeamID == NeuroLastPrismHoldout.NumBeams - 1 &&
-                   ChargeRatioForDrawing >= 0.82f;
-        }
-
-        private float GetWhiteCoreFocusOpacity()
-        {
-            return MathHelper.Clamp(
-                (ChargeRatioForDrawing - 0.82f) / 0.18f,
-                0f,
-                1f
-            );
+            return Color.White;
         }
 
         private Color GetOuterBeamColor()
