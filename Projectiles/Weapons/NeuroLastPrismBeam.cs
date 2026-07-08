@@ -54,12 +54,6 @@ namespace NeuroCompanion.Projectiles.Weapons
             set => Projectile.localAI[1] = value;
         }
 
-        private float ChargeRatioForDrawing
-        {
-            get => Projectile.localAI[0];
-            set => Projectile.localAI[0] = value;
-        }
-
         public override void SetDefaults()
         {
             Projectile.width = 18;

@@ -30,8 +30,6 @@ namespace NeuroCompanion.Projectiles.Weapons
         private const float AimResponsiveness = 0.18f;
         private const int SoundInterval = 20;
 
-        private readonly int[] beamIndexes = new int[NumBeams];
-
         private bool initialized;
         private Vector2 fallbackAnchorPosition;
 
@@ -243,7 +241,7 @@ namespace NeuroCompanion.Projectiles.Weapons
 
             for (int i = 0; i < NumBeams; i++)
             {
-                int beamIndex = Projectile.NewProjectile(
+                Projectile.NewProjectile(
                     Projectile.GetSource_FromThis(),
                     Projectile.Center,
                     beamVelocity,
@@ -254,8 +252,6 @@ namespace NeuroCompanion.Projectiles.Weapons
                     i,
                     Projectile.whoAmI
                 );
-
-                beamIndexes[i] = beamIndex;
             }
 
             Projectile.netUpdate = true;
@@ -328,8 +324,6 @@ namespace NeuroCompanion.Projectiles.Weapons
             {
                 RemainingLifeTicks = RefreshGraceTicks;
             }
-
-            Projectile.netUpdate = true;
         }
 
         private void ApplySpawnContext(
@@ -349,18 +343,19 @@ namespace NeuroCompanion.Projectiles.Weapons
         }
 
         private void ApplyOwnerDamageMode(
-            bool canDamageOwner,
+            bool ownerDamageEnabled,
             bool killOnOwnerHit
         )
         {
-            Projectile.friendly = !canDamageOwner;
+            // The holdout itself cannot damage, but the child beams read these flags.
+            Projectile.friendly = !ownerDamageEnabled;
             Projectile.hostile = false;
 
             EvilNeuroPlayerAttackGlobal evilGlobal =
                 Projectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
 
-            evilGlobal.CanDamageOwner = canDamageOwner;
-            evilGlobal.KillOnOwnerHit = canDamageOwner && killOnOwnerHit;
+            evilGlobal.CanDamageOwner = ownerDamageEnabled;
+            evilGlobal.KillOnOwnerHit = ownerDamageEnabled && killOnOwnerHit;
         }
 
         private void ApplyMk4ModeFromContext(
