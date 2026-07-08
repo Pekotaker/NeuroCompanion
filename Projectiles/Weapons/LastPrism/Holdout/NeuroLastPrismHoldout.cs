@@ -4,7 +4,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles.Weapons
+namespace NeuroCompanion.Projectiles.Weapons.LastPrism.Holdout
 {
     public partial class NeuroLastPrismHoldout : ModProjectile
     {

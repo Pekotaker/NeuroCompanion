@@ -3,7 +3,7 @@
 using NeuroCompanion.Neuro.Weapons.Firing;
 using NeuroCompanion.Projectiles.Globals;
 
-namespace NeuroCompanion.Projectiles.Weapons
+namespace NeuroCompanion.Projectiles.Weapons.LastPrism.Holdout
 {
     public partial class NeuroLastPrismHoldout
     {

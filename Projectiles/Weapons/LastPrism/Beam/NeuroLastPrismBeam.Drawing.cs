@@ -5,7 +5,9 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.ID;
 
-namespace NeuroCompanion.Projectiles.Weapons
+using NeuroCompanion.Projectiles.Weapons.LastPrism.Holdout;
+
+namespace NeuroCompanion.Projectiles.Weapons.LastPrism.Beam
 {
     public partial class NeuroLastPrismBeam
     {

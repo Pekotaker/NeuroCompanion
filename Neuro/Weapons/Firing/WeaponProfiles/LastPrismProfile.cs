@@ -6,7 +6,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-using NeuroCompanion.Projectiles.Weapons;
+using NeuroCompanion.Projectiles.Weapons.LastPrism.Holdout;
 
 namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 {

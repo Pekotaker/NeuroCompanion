@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 
-namespace NeuroCompanion.Projectiles.Weapons
+namespace NeuroCompanion.Projectiles.Weapons.LastPrism.Holdout
 {
     public partial class NeuroLastPrismHoldout
     {

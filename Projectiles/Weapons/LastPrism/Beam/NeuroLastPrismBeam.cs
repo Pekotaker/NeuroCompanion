@@ -4,7 +4,9 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NeuroCompanion.Projectiles.Weapons
+using NeuroCompanion.Projectiles.Weapons.LastPrism.Holdout;
+
+namespace NeuroCompanion.Projectiles.Weapons.LastPrism.Beam
 {
     public partial class NeuroLastPrismBeam : ModProjectile
     {
