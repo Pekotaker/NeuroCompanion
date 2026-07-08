@@ -1,13 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+using NeuroCompanion.Projectiles.Globals;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-
-using NeuroCompanion.Projectiles.Globals;
 
 namespace NeuroCompanion.Projectiles.Weapons
 {
@@ -17,6 +16,7 @@ namespace NeuroCompanion.Projectiles.Weapons
             "Terraria/Images/Projectile_" + ProjectileID.LastPrismLaser;
 
         private const float MaxDamageMultiplier = 1.5f;
+        private const float DamageBalanceMultiplier = 0.525f;
         private const float MaxBeamScale = 1.6f;
         private const float MaxBeamSpread = 0.95f;
         private const float MaxBeamLength = 2400f;
@@ -106,7 +106,14 @@ namespace NeuroCompanion.Projectiles.Weapons
             ChargeRatioForDrawing = chargeRatio;
 
             Projectile.damage =
-                (int)(hostPrism.damage * GetDamageMultiplier(chargeRatio));
+                Math.Max(
+                    1,
+                    (int)(
+                        hostPrism.damage *
+                        GetDamageMultiplier(chargeRatio) *
+                        DamageBalanceMultiplier
+                    )
+                );
 
             Projectile.originalDamage = Projectile.damage;
 
@@ -478,16 +485,14 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Projectile.Opacity
             );
 
-            DrawBeam(
-                Main.spriteBatch,
-                texture,
-                startPosition,
-                endPosition,
-                drawScale * InnerBeamScaleMultiplier,
-                Color.White *
-                InnerBeamOpacityMultiplier *
-                Projectile.Opacity
-            );
+            if (ShouldDrawWhiteCore())
+            {
+                DrawCenteredWhiteCore(
+                    texture,
+                    drawScale,
+                    visualBeamLength
+                );
+            }
 
             return false;
         }
@@ -515,6 +520,68 @@ namespace NeuroCompanion.Projectiles.Weapons
                 endPosition,
                 drawScale,
                 lineFraming
+            );
+        }
+
+        private void DrawCenteredWhiteCore(
+            Texture2D texture,
+            Vector2 drawScale,
+            float visualBeamLength
+        )
+        {
+            Projectile hostPrism = GetHostPrism();
+
+            if (hostPrism == null)
+            {
+                return;
+            }
+
+            Vector2 hostDirection =
+                SafeNormalize(hostPrism.velocity, Projectile.velocity);
+
+            Vector2 startPosition =
+                hostPrism.Center.Floor()
+                + hostDirection * Projectile.scale * 10.5f
+                - Main.screenPosition;
+
+            Vector2 endPosition =
+                startPosition + hostDirection * visualBeamLength;
+
+            float coreOpacity =
+                GetWhiteCoreFocusOpacity();
+
+            DrawBeam(
+                Main.spriteBatch,
+                texture,
+                startPosition,
+                endPosition,
+                drawScale * InnerBeamScaleMultiplier,
+                GetWhiteCoreColor()
+            );
+        }
+
+        private Color GetWhiteCoreColor()
+        {
+            byte alpha =
+                (byte)(255f * GetWhiteCoreFocusOpacity());
+
+            return new Color(255, 255, 255, alpha);
+        }
+
+        private bool ShouldDrawWhiteCore()
+        {
+            // BeamID 5 is spawned last, so this white core is more likely
+            // to draw on top of the colored beams instead of under them.
+            return BeamID == NeuroLastPrismHoldout.NumBeams - 1 &&
+                   ChargeRatioForDrawing >= 0.82f;
+        }
+
+        private float GetWhiteCoreFocusOpacity()
+        {
+            return MathHelper.Clamp(
+                (ChargeRatioForDrawing - 0.82f) / 0.18f,
+                0f,
+                1f
             );
         }
 

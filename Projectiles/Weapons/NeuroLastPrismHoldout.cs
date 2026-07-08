@@ -17,7 +17,7 @@ namespace NeuroCompanion.Projectiles.Weapons
             "Terraria/Images/Projectile_" + ProjectileID.LastPrism;
 
         public const int NumBeams = 6;
-        public const int DurationTicks = 150;
+        public const int DurationTicks = 260;
         public const int RefreshGraceTicks = 12;
 
         public const float MaxCharge = 200f;
