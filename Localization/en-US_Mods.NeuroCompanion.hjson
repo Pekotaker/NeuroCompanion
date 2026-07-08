@@ -26,6 +26,8 @@ Projectiles: {
 	NeuroCompanionTyphoon.DisplayName: Neuro Companion Typhoon
 	EvilNeuroBoltProjectile.DisplayName: Evil Neuro Bolt Projectile
 	NeuroSkyWeaponVisualProjectile.DisplayName: Neuro Sky Weapon Visual Projectile
+	NeuroLastPrismBeam.DisplayName: Neuro Last Prism Beam
+	NeuroLastPrismHoldout.DisplayName: Neuro Last Prism Holdout
 }
 
 Buffs: {
