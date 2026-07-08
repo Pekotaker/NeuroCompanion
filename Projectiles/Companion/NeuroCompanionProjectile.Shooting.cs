@@ -192,9 +192,16 @@ namespace NeuroCompanion.Projectiles.Companion
 
             if (classification.Kind == NeuroWeaponKind.SupportedChanneling)
             {
-                return NeuroWeaponFiringProfileRegistry.GetCooldownTicks(
-                    weapon,
-                    (int)SupportedChannelTicks
+                int channelingCooldownTicks =
+                    NeuroWeaponFiringProfileRegistry.GetCooldownTicks(
+                        weapon,
+                        (int)SupportedChannelTicks
+                    );
+
+                return NeuroDamageService.GetEffectiveProfileNeuroShootCooldownTicks(
+                    channelingCooldownTicks,
+                    neuroPlayer.NeuroStaffShootCooldownTicks,
+                    neuroPlayer.NeuroStaffPrefix
                 );
             }
 
@@ -203,8 +210,9 @@ namespace NeuroCompanion.Projectiles.Companion
                     out int profileCooldownTicks
                 ))
             {
-                return NeuroDamageService.GetStaffPrefixShootCooldownTicks(
+                return NeuroDamageService.GetEffectiveProfileNeuroShootCooldownTicks(
                     profileCooldownTicks,
+                    neuroPlayer.NeuroStaffShootCooldownTicks,
                     neuroPlayer.NeuroStaffPrefix
                 );
             }

@@ -11,8 +11,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
     {
         private const float HorizontalSpawnNoise = 40f;
 
-        private const float MinimumMeteorVisualScale = 0.5f;
-        private const float MaximumMeteorVisualScale = 0.8f;
+        private const float MinimumMeteorVisualScale = 0.68f;
+        private const float MaximumMeteorVisualScale = 1.12f;
 
         private static readonly int[] MeteorProjectileTypes =
         {

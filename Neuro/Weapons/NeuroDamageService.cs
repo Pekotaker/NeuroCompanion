@@ -186,6 +186,30 @@ namespace NeuroCompanion.Neuro.Weapons
             return weaponCooldownTicks;
         }
 
+        public static int GetEffectiveProfileNeuroShootCooldownTicks(
+            int profileCooldownTicks,
+            int staffBaseCooldownTicks,
+            int staffPrefix
+        )
+        {
+            if (profileCooldownTicks < 1)
+            {
+                profileCooldownTicks = 1;
+            }
+
+            int staffCooldownTicks = GetStaffPrefixShootCooldownTicks(
+                staffBaseCooldownTicks,
+                staffPrefix
+            );
+
+            if (staffCooldownTicks > profileCooldownTicks)
+            {
+                return staffCooldownTicks;
+            }
+
+            return profileCooldownTicks;
+        }
+
         private static float GetStaffPrefixDamageMultiplier(int prefix)
         {
             switch (prefix)

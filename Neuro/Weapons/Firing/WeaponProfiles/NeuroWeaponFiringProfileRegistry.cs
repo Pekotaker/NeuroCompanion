@@ -114,6 +114,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (SkyFractureProfile.IsWeapon(weapon))
+            {
+                return SkyFractureProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
@@ -150,6 +160,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (LunarFlareProfile.IsWeapon(weapon))
             {
                 cooldownTicks = LunarFlareProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (SkyFractureProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = SkyFractureProfile.GetCooldownTicks();
                 return true;
             }
 
