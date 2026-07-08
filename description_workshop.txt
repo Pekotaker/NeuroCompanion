@@ -41,9 +41,36 @@ Neuro uses her own equipped magic weapon. She does not use the item currently in
 
 [b]Weapon System[/b]
 
-Neuro can use many magic weapons, including normal projectile weapons, controllable projectile weapons, targeted-area weapons such as Resonance Scepter, and supported custom weapon profiles such as Laser Machinegun.
+Neuro can use many magic weapons, including:
 
-Some weapons are still rejected because they need special behavior. This includes stationary cloud/wall/field weapons and beam weapons that normally depend on the player holding the attack button, such as Last Prism.
+[list]
+[*]Normal magic projectile weapons.
+[*]Controllable projectile weapons such as Magic Missile, Flamelash, and Rainbow Rod.
+[*]Weapons that place attacks at a target position, such as Resonance Scepter.
+[*]Special magic weapons with custom Neuro firing profiles.
+[/list]
+
+Custom Neuro weapon profiles currently include:
+
+[list]
+[*]Laser Machinegun
+[*]Bubble Gun
+[*]Bee Gun
+[*]Wasp Gun
+[*]Bat Scepter
+[*]Poison Staff
+[*]Venom Staff
+[*]Meteor Staff
+[*]Blizzard Staff
+[*]Lunar Flare
+[*]Sky Fracture
+[*]Nightglow
+[*]Shadowflame Hex Doll
+[*]Blood Thorn
+[*]Stellar Tune
+[/list]
+
+Some weapons are still rejected because they need special behavior. This includes stationary cloud, wall, or field weapons, plus beam weapons that normally depend on the player holding the attack button, such as Last Prism.
 
 [b]Staff Upgrades[/b]
 

@@ -56,7 +56,7 @@ namespace NeuroCompanion.Neuro.Weapons
             {
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.TargetedArea,
-                    $"{item.Name} is a targeted-area magic weapon. Neuro will place its attack at the target position."
+                    $"{item.Name} places its attack at the target position. Neuro can use it with special handling."
                 );
             }
 
@@ -72,7 +72,7 @@ namespace NeuroCompanion.Neuro.Weapons
             {
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.SupportedChanneling,
-                    $"{item.Name} is a supported channeling magic weapon. Neuro will fire it using a custom channeling profile."
+                    $"{item.Name} has a custom Neuro firing profile."
                 );
             }
 
@@ -80,7 +80,7 @@ namespace NeuroCompanion.Neuro.Weapons
             {
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.HeldBeam,
-                    $"{item.Name} is a held beam/channeling weapon. Neuro cannot use this yet because it needs a custom beam implementation."
+                    $"{item.Name} is a beam weapon that normally depends on the player holding the attack button. Neuro cannot use it yet."
                 );
             }
 
@@ -88,7 +88,7 @@ namespace NeuroCompanion.Neuro.Weapons
             {
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.Channeling,
-                    $"{item.Name} is a channeling magic weapon. Neuro cannot use this yet because vanilla channeling projectiles depend on the player holding the attack button."
+                    $"{item.Name} normally depends on the player holding the attack button. Neuro cannot use it yet without custom support."
                 );
             }
 
@@ -102,13 +102,13 @@ namespace NeuroCompanion.Neuro.Weapons
         {
             return kind switch
             {
-                NeuroWeaponKind.DirectFire => "Direct-fire",
-                NeuroWeaponKind.Controlled => "Controlled projectile",
-                NeuroWeaponKind.SupportedChanneling => "Supported channeling",
-                NeuroWeaponKind.Channeling => "Channeling",
-                NeuroWeaponKind.TargetedArea => "Targeted-area",
-                NeuroWeaponKind.Support => "Support",
-                NeuroWeaponKind.HeldBeam => "Held beam",
+                NeuroWeaponKind.DirectFire => "Direct shot",
+                NeuroWeaponKind.Controlled => "Controllable projectile",
+                NeuroWeaponKind.SupportedChanneling => "Custom Neuro profile",
+                NeuroWeaponKind.Channeling => "Unsupported channeling weapon",
+                NeuroWeaponKind.TargetedArea => "Placed attack",
+                NeuroWeaponKind.Support => "Unsupported support weapon",
+                NeuroWeaponKind.HeldBeam => "Unsupported beam weapon",
                 _ => "Invalid"
             };
         }
