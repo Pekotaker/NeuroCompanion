@@ -154,6 +154,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (StellarTuneProfile.IsWeapon(weapon))
+            {
+                return StellarTuneProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
@@ -214,6 +224,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (BloodThornProfile.IsWeapon(weapon))
             {
                 cooldownTicks = BloodThornProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (StellarTuneProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = StellarTuneProfile.GetCooldownTicks(weapon);
                 return true;
             }
 
