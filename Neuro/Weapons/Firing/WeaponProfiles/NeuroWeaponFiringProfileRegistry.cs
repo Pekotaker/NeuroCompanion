@@ -134,6 +134,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (ShadowflameHexDollProfile.IsWeapon(weapon))
+            {
+                return ShadowflameHexDollProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
@@ -182,6 +192,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (NightglowProfile.IsWeapon(weapon))
             {
                 cooldownTicks = NightglowProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (ShadowflameHexDollProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = ShadowflameHexDollProfile.GetCooldownTicks(weapon);
                 return true;
             }
 
