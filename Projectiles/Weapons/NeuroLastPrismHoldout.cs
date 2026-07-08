@@ -7,6 +7,8 @@ using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
+using NeuroCompanion.Projectiles.Companion;
+
 namespace NeuroCompanion.Projectiles.Weapons
 {
     public class NeuroLastPrismHoldout : ModProjectile
@@ -16,20 +18,31 @@ namespace NeuroCompanion.Projectiles.Weapons
 
         public const int NumBeams = 6;
         public const int DurationTicks = 150;
+        public const int RefreshGraceTicks = 12;
 
-        public const float MaxCharge = 90f;
-        public const float DamageStart = 20f;
+        public const float MaxCharge = 225f;
+        public const float DamageStart = 12f;
 
         private const int NumAnimationFrames = 5;
-        private const float AimResponsiveness = 0.12f;
+        private const float PrismDistanceFromNeuro = 28f;
+        private const float AimResponsiveness = 0.18f;
         private const int SoundInterval = 20;
 
         private readonly int[] beamIndexes = new int[NumBeams];
+
+        private bool initialized;
+        private Vector2 fallbackAnchorPosition;
 
         private float FrameCounter
         {
             get => Projectile.localAI[0];
             set => Projectile.localAI[0] = value;
+        }
+
+        private float RemainingLifeTicks
+        {
+            get => Projectile.localAI[1];
+            set => Projectile.localAI[1] = value;
         }
 
         private Vector2 TargetPosition =>
@@ -43,10 +56,14 @@ namespace NeuroCompanion.Projectiles.Weapons
 
         public override void SetDefaults()
         {
-            Projectile.CloneDefaults(ProjectileID.LastPrism);
+            // Do not CloneDefaults(ProjectileID.LastPrism).
+            // Vanilla Last Prism is a player-held projectile and can lock the
+            // player into item-use animation. Neuro's prism must be independent.
 
             Projectile.width = 40;
             Projectile.height = 40;
+
+            Projectile.DamageType = DamageClass.Magic;
 
             Projectile.friendly = false;
             Projectile.hostile = false;
@@ -55,8 +72,12 @@ namespace NeuroCompanion.Projectiles.Weapons
             Projectile.tileCollide = false;
             Projectile.ignoreWater = true;
 
-            Projectile.netImportant = true;
+            Projectile.alpha = 0;
+            Projectile.scale = 1f;
+
+            Projectile.aiStyle = 0;
             Projectile.timeLeft = DurationTicks + 2;
+            Projectile.netImportant = true;
         }
 
         public override bool? CanDamage()
@@ -64,11 +85,57 @@ namespace NeuroCompanion.Projectiles.Weapons
             return false;
         }
 
+        public override bool ShouldUpdatePosition()
+        {
+            return false;
+        }
+
         public override void AI()
         {
+            if (!initialized)
+            {
+                initialized = true;
+                fallbackAnchorPosition = Projectile.Center;
+
+                if (RemainingLifeTicks <= 0f)
+                {
+                    RemainingLifeTicks = DurationTicks;
+                }
+            }
+
+            RemainingLifeTicks--;
+
+            if (RemainingLifeTicks <= 0f)
+            {
+                Projectile.Kill();
+                return;
+            }
+
             FrameCounter++;
 
+            Projectile.hide = false;
+
+            Vector2 currentDirection =
+                SafeNormalize(
+                    Projectile.velocity,
+                    SafeNormalize(
+                        TargetPosition - Projectile.Center,
+                        Vector2.UnitX
+                    )
+                );
+
+            Projectile.Center = GetAnchorPosition(currentDirection);
+
             UpdateAim();
+
+            Projectile.Center =
+                GetAnchorPosition(
+                    SafeNormalize(
+                        Projectile.velocity,
+                        currentDirection
+                    )
+                );
+
             UpdateAnimation();
             PlaySounds();
 
@@ -81,12 +148,6 @@ namespace NeuroCompanion.Projectiles.Weapons
             if (FrameCounter == 1f)
             {
                 FireBeams();
-            }
-
-            if (FrameCounter >= DurationTicks)
-            {
-                Projectile.Kill();
-                return;
             }
 
             Projectile.timeLeft = 2;
@@ -237,6 +298,55 @@ namespace NeuroCompanion.Projectiles.Weapons
             );
 
             return false;
+        }
+
+        public void RefreshTarget(Vector2 targetPosition)
+        {
+            Projectile.ai[0] = targetPosition.X;
+            Projectile.ai[1] = targetPosition.Y;
+
+            if (RemainingLifeTicks < RefreshGraceTicks)
+            {
+                RemainingLifeTicks = RefreshGraceTicks;
+            }
+
+            Projectile.netUpdate = true;
+        }
+
+        private Vector2 GetAnchorPosition(Vector2 aimDirection)
+        {
+            Projectile companion = FindNeuroCompanionProjectile();
+
+            if (companion != null)
+            {
+                fallbackAnchorPosition =
+                    companion.Center + aimDirection * PrismDistanceFromNeuro;
+            }
+
+            return fallbackAnchorPosition;
+        }
+
+        private Projectile FindNeuroCompanionProjectile()
+        {
+            int companionType =
+                ModContent.ProjectileType<NeuroCompanionProjectile>();
+
+            for (int i = 0; i < Main.maxProjectiles; i++)
+            {
+                Projectile projectile = Main.projectile[i];
+
+                if (
+                    projectile != null &&
+                    projectile.active &&
+                    projectile.owner == Projectile.owner &&
+                    projectile.type == companionType
+                )
+                {
+                    return projectile;
+                }
+            }
+
+            return null;
         }
 
         private static Vector2 SafeNormalize(

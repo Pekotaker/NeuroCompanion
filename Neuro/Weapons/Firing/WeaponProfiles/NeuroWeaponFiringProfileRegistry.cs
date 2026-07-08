@@ -47,6 +47,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (LastPrismProfile.IsWeapon(weapon))
             {
                 return LastPrismProfile.CreateShots(
+                    owner,
                     weapon,
                     basePosition,
                     baseVelocity,

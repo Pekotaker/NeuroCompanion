@@ -17,8 +17,8 @@ namespace NeuroCompanion.Projectiles.Weapons
             "Terraria/Images/Projectile_" + ProjectileID.LastPrismLaser;
 
         private const float MaxDamageMultiplier = 1.5f;
-        private const float MaxBeamScale = 1.8f;
-        private const float MaxBeamSpread = 1.3f;
+        private const float MaxBeamScale = 1.55f;
+        private const float MaxBeamSpread = 0.95f;
         private const float MaxBeamLength = 2400f;
 
         private const float BeamTileCollisionWidth = 1f;
@@ -29,14 +29,13 @@ namespace NeuroCompanion.Projectiles.Weapons
         private const float VisualEffectThreshold = 0.1f;
 
         private const float OuterBeamOpacityMultiplier = 0.75f;
-        private const float InnerBeamOpacityMultiplier = 0.15f;
+        private const float InnerBeamOpacityMultiplier = 0.7f;
+        private const float InnerBeamScaleMultiplier = 0.32f;
 
         private const float BeamLightBrightness = 0.75f;
 
-        private const float BeamColorHue = 0.57f;
-        private const float BeamHueVariance = 0.18f;
-        private const float BeamColorSaturation = 0.66f;
-        private const float BeamColorLightness = 0.53f;
+        private const float BeamColorSaturation = 1f;
+        private const float BeamColorLightness = 0.5f;
 
         private const int OwnerHitCooldownTicks = 30;
 
@@ -50,6 +49,12 @@ namespace NeuroCompanion.Projectiles.Weapons
         {
             get => Projectile.localAI[1];
             set => Projectile.localAI[1] = value;
+        }
+
+        private float ChargeRatioForDrawing
+        {
+            get => Projectile.localAI[0];
+            set => Projectile.localAI[0] = value;
         }
 
         public override void SetDefaults()
@@ -69,6 +74,11 @@ namespace NeuroCompanion.Projectiles.Weapons
             Projectile.localNPCHitCooldown = 10;
 
             Projectile.timeLeft = 2;
+        }
+
+        public override bool ShouldUpdatePosition()
+        {
+            return false;
         }
 
         public override void AI()
@@ -92,6 +102,8 @@ namespace NeuroCompanion.Projectiles.Weapons
                     0f,
                     1f
                 );
+
+            ChargeRatioForDrawing = chargeRatio;
 
             Projectile.damage =
                 (int)(hostPrism.damage * GetDamageMultiplier(chargeRatio));
@@ -120,7 +132,7 @@ namespace NeuroCompanion.Projectiles.Weapons
                     MathHelper.Lerp(MaxBeamSpread, 0f, chargeRatio);
 
                 beamStartSidewaysOffset =
-                    MathHelper.Lerp(20f, 6f, chargeRatio);
+                    MathHelper.Lerp(16f, 3.25f, chargeRatio);
 
                 beamStartForwardsOffset =
                     MathHelper.Lerp(-21f, -17f, chargeRatio);
@@ -133,7 +145,7 @@ namespace NeuroCompanion.Projectiles.Weapons
                         MathHelper.Lerp(0f, 0.4f, phaseRatio);
 
                     spinRate =
-                        MathHelper.Lerp(20f, 16f, phaseRatio);
+                        MathHelper.Lerp(10f, 8f, phaseRatio);
                 }
                 else
                 {
@@ -144,7 +156,7 @@ namespace NeuroCompanion.Projectiles.Weapons
                         MathHelper.Lerp(0.4f, 1f, phaseRatio);
 
                     spinRate =
-                        MathHelper.Lerp(16f, 6f, phaseRatio);
+                        MathHelper.Lerp(8f, 3.5f, phaseRatio);
                 }
             }
             else
@@ -153,9 +165,9 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Projectile.Opacity = 1f;
 
                 beamSpread = 0f;
-                spinRate = 6f;
+                spinRate = 3.5f;
 
-                beamStartSidewaysOffset = 6f;
+                beamStartSidewaysOffset = 3.25f;
                 beamStartForwardsOffset = -17f;
             }
 
@@ -174,7 +186,7 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Vector2.UnitY.RotatedBy(deviationAngle);
 
             Vector2 yVector =
-                new Vector2(4f, beamStartSidewaysOffset);
+                new Vector2(2.5f, beamStartSidewaysOffset);
 
             float hostAngle =
                 hostPrism.velocity.ToRotation();
@@ -466,14 +478,22 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Projectile.Opacity
             );
 
+            float whiteCoreStrength =
+                MathHelper.Lerp(
+                    0.15f,
+                    1f,
+                    ChargeRatioForDrawing
+                );
+
             DrawBeam(
                 Main.spriteBatch,
                 texture,
                 startPosition,
                 endPosition,
-                drawScale * 0.5f,
+                drawScale * InnerBeamScaleMultiplier,
                 Color.White *
                 InnerBeamOpacityMultiplier *
+                whiteCoreStrength *
                 Projectile.Opacity
             );
 
@@ -509,14 +529,11 @@ namespace NeuroCompanion.Projectiles.Weapons
         private Color GetOuterBeamColor()
         {
             float hue =
-                BeamColorHue +
-                BeamID /
-                (float)NeuroLastPrismHoldout.NumBeams *
-                BeamHueVariance;
+                BeamID / (float)NeuroLastPrismHoldout.NumBeams;
 
             Color color =
                 Main.hslToRgb(
-                    hue % 1f,
+                    hue,
                     BeamColorSaturation,
                     BeamColorLightness
                 );
