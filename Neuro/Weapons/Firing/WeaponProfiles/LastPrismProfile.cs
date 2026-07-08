@@ -7,7 +7,6 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 using NeuroCompanion.Projectiles.Weapons;
-using NeuroCompanion.Projectiles.Globals;
 
 namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 {
@@ -107,8 +106,10 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 {
                     if (projectile.ModProjectile is NeuroLastPrismHoldout prism)
                     {
-                        prism.RefreshTarget(targetPosition);
-                        ApplyCurrentSpawnContextToExistingPrism(projectile);
+                        prism.RefreshFromContext(
+                            targetPosition,
+                            NeuroWeaponProjectileSpawnContext.Current
+                        );
                     }
 
                     return true;
@@ -116,45 +117,6 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             }
 
             return false;
-        }
-
-        private static void ApplyCurrentSpawnContextToExistingPrism(
-            Projectile projectile
-        )
-        {
-            NeuroWeaponProjectileSpawnContext context =
-                NeuroWeaponProjectileSpawnContext.Current;
-
-            if (context == null)
-            {
-                return;
-            }
-
-            projectile.damage = context.Damage;
-            projectile.originalDamage = context.Damage;
-            projectile.CritChance = context.CritChance;
-
-            EvilNeuroPlayerAttackGlobal evilGlobal =
-                projectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
-
-            if (context.IsEvil)
-            {
-                projectile.friendly = false;
-                projectile.hostile = false;
-
-                evilGlobal.CanDamageOwner = true;
-                evilGlobal.KillOnOwnerHit = context.KillOnOwnerHit;
-            }
-            else
-            {
-                projectile.friendly = true;
-                projectile.hostile = false;
-
-                evilGlobal.CanDamageOwner = false;
-                evilGlobal.KillOnOwnerHit = false;
-            }
-
-            projectile.netUpdate = true;
         }
     }
 }

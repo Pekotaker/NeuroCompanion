@@ -8,6 +8,8 @@ using Terraria.ID;
 using Terraria.ModLoader;
 
 using NeuroCompanion.Projectiles.Companion;
+using NeuroCompanion.Neuro.Weapons.Firing;
+using NeuroCompanion.Projectiles.Globals;
 
 namespace NeuroCompanion.Projectiles.Weapons
 {
@@ -300,7 +302,24 @@ namespace NeuroCompanion.Projectiles.Weapons
             return false;
         }
 
-        public void RefreshTarget(Vector2 targetPosition)
+        public void RefreshFromContext(
+            Vector2 targetPosition,
+            NeuroWeaponProjectileSpawnContext context
+        )
+        {
+            RefreshTarget(targetPosition);
+
+            if (context == null)
+            {
+                return;
+            }
+
+            ApplySpawnContext(context);
+
+            Projectile.netUpdate = true;
+        }
+
+        private void RefreshTarget(Vector2 targetPosition)
         {
             Projectile.ai[0] = targetPosition.X;
             Projectile.ai[1] = targetPosition.Y;
@@ -311,6 +330,53 @@ namespace NeuroCompanion.Projectiles.Weapons
             }
 
             Projectile.netUpdate = true;
+        }
+
+        private void ApplySpawnContext(
+            NeuroWeaponProjectileSpawnContext context
+        )
+        {
+            Projectile.damage = context.Damage;
+            Projectile.originalDamage = context.Damage;
+            Projectile.CritChance = context.CritChance;
+
+            ApplyOwnerDamageMode(
+                context.IsEvil,
+                context.KillOnOwnerHit
+            );
+
+            ApplyMk4ModeFromContext(context);
+        }
+
+        private void ApplyOwnerDamageMode(
+            bool canDamageOwner,
+            bool killOnOwnerHit
+        )
+        {
+            Projectile.friendly = !canDamageOwner;
+            Projectile.hostile = false;
+
+            EvilNeuroPlayerAttackGlobal evilGlobal =
+                Projectile.GetGlobalProjectile<EvilNeuroPlayerAttackGlobal>();
+
+            evilGlobal.CanDamageOwner = canDamageOwner;
+            evilGlobal.KillOnOwnerHit = canDamageOwner && killOnOwnerHit;
+        }
+
+        private void ApplyMk4ModeFromContext(
+            NeuroWeaponProjectileSpawnContext context
+        )
+        {
+            bool ignoreTiles =
+                context.NeuroPlayer != null &&
+                context.NeuroPlayer.NeuroStaffCanDetectThroughBlocks;
+
+            Projectile
+                .GetGlobalProjectile<NeuroMk4ProjectileGlobal>()
+                .IgnoreTilesForNeuroMk4 = ignoreTiles;
+
+            // The prism body itself should never move/collide like a normal projectile.
+            Projectile.tileCollide = false;
         }
 
         private Vector2 GetAnchorPosition(Vector2 aimDirection)
