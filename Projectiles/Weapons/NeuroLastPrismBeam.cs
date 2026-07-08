@@ -17,7 +17,7 @@ namespace NeuroCompanion.Projectiles.Weapons
             "Terraria/Images/Projectile_" + ProjectileID.LastPrismLaser;
 
         private const float MaxDamageMultiplier = 1.5f;
-        private const float MaxBeamScale = 1.55f;
+        private const float MaxBeamScale = 1.65f;
         private const float MaxBeamSpread = 0.95f;
         private const float MaxBeamLength = 2400f;
 
@@ -29,8 +29,8 @@ namespace NeuroCompanion.Projectiles.Weapons
         private const float VisualEffectThreshold = 0.1f;
 
         private const float OuterBeamOpacityMultiplier = 0.75f;
-        private const float InnerBeamOpacityMultiplier = 0.7f;
-        private const float InnerBeamScaleMultiplier = 0.32f;
+        private const float InnerBeamOpacityMultiplier = 1f;
+        private const float InnerBeamScaleMultiplier = 1f;
 
         private const float BeamLightBrightness = 0.75f;
 
@@ -156,7 +156,7 @@ namespace NeuroCompanion.Projectiles.Weapons
                         MathHelper.Lerp(0.4f, 1f, phaseRatio);
 
                     spinRate =
-                        MathHelper.Lerp(8f, 3.5f, phaseRatio);
+                        MathHelper.Lerp(8f, 1.55f, phaseRatio);
                 }
             }
             else
@@ -165,7 +165,7 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Projectile.Opacity = 1f;
 
                 beamSpread = 0f;
-                spinRate = 3.5f;
+                spinRate = 1.55f;
 
                 beamStartSidewaysOffset = 3.25f;
                 beamStartForwardsOffset = -17f;
@@ -478,13 +478,6 @@ namespace NeuroCompanion.Projectiles.Weapons
                 Projectile.Opacity
             );
 
-            float whiteCoreStrength =
-                MathHelper.Lerp(
-                    0.15f,
-                    1f,
-                    ChargeRatioForDrawing
-                );
-
             DrawBeam(
                 Main.spriteBatch,
                 texture,
@@ -493,7 +486,6 @@ namespace NeuroCompanion.Projectiles.Weapons
                 drawScale * InnerBeamScaleMultiplier,
                 Color.White *
                 InnerBeamOpacityMultiplier *
-                whiteCoreStrength *
                 Projectile.Opacity
             );
 

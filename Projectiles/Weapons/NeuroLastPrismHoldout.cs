@@ -20,7 +20,7 @@ namespace NeuroCompanion.Projectiles.Weapons
         public const int DurationTicks = 150;
         public const int RefreshGraceTicks = 12;
 
-        public const float MaxCharge = 225f;
+        public const float MaxCharge = 200f;
         public const float DamageStart = 12f;
 
         private const int NumAnimationFrames = 5;
