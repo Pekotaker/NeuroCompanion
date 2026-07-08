@@ -179,14 +179,32 @@ namespace NeuroCompanion.Projectiles.Helpers
                 neuroPlayer.NeuroStaffPrefix
             );
 
-            NeuroWeaponShot[] shots =
-                NeuroWeaponShotProfile.CreateShots(
-                    owner,
-                    weapon,
-                    position,
-                    velocity,
-                    targetPosition
-                );
+            NeuroWeaponShot[] shots;
+
+            NeuroWeaponProjectileSpawnContext.Begin(
+                owner,
+                neuroPlayer,
+                damage,
+                critChance,
+                isEvil,
+                killOnOwnerHit
+            );
+
+            try
+            {
+                shots =
+                    NeuroWeaponShotProfile.CreateShots(
+                        owner,
+                        weapon,
+                        position,
+                        velocity,
+                        targetPosition
+                    );
+            }
+            finally
+            {
+                NeuroWeaponProjectileSpawnContext.End();
+            }
 
             if (shots.Length <= 0)
             {
