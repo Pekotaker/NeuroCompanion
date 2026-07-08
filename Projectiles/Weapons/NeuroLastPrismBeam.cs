@@ -17,7 +17,7 @@ namespace NeuroCompanion.Projectiles.Weapons
             "Terraria/Images/Projectile_" + ProjectileID.LastPrismLaser;
 
         private const float MaxDamageMultiplier = 1.5f;
-        private const float MaxBeamScale = 1.65f;
+        private const float MaxBeamScale = 1.6f;
         private const float MaxBeamSpread = 0.95f;
         private const float MaxBeamLength = 2400f;
 
@@ -30,7 +30,7 @@ namespace NeuroCompanion.Projectiles.Weapons
 
         private const float OuterBeamOpacityMultiplier = 0.75f;
         private const float InnerBeamOpacityMultiplier = 1f;
-        private const float InnerBeamScaleMultiplier = 1f;
+        private const float InnerBeamScaleMultiplier = 0.9f;
 
         private const float BeamLightBrightness = 0.75f;
 
