@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.2.4
+
+### Added
+
+* Added custom Neuro firing profiles for more magic weapons:
+  * Bubble Gun
+  * Bee Gun
+  * Wasp Gun
+  * Bat Scepter
+  * Poison Staff
+  * Venom Staff
+  * Meteor Staff
+  * Blizzard Staff
+  * Lunar Flare
+  * Sky Fracture
+  * Nightglow
+  * Shadowflame Hex Doll
+  * Blood Thorn
+  * Stellar Tune
+
+### Changed
+
+* Improved how Neuro handles magic weapons with unusual projectile behavior.
+* Sky-based weapons now spawn their attacks from above instead of firing like simple straight projectiles.
+* Blood Thorn now creates visible thorns from nearby blocks or platforms, with a fallback shot from Neuro when no valid tile is available.
+* Stellar Tune now fires from Neuro and follows a single wide S-shaped path toward the target.
+* Nightglow now uses upward bloom-style shots with related volley colors.
+* Shadowflame Hex Doll now fires bending tentacles instead of straight shots.
+* Custom weapon profiles now better respect the equipped weapon's own use timing and Neuro's staff tier.
+
+### Fixed
+
+* Fixed several magic weapons only producing particles, invisible projectiles, or misplaced attacks when used by Neuro.
+* Fixed Sky Fracture using generic spread behavior instead of its own custom sword pattern.
+* Fixed Blood Thorn failing to show visible thorns when spawned by Neuro.
+* Fixed Stellar Tune projectiles starting from the player instead of Neuro.
+
 ## 0.2.3.1
 
 ### Changed
