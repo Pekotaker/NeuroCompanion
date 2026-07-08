@@ -144,6 +144,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (BloodThornProfile.IsWeapon(weapon))
+            {
+                return BloodThornProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
@@ -198,6 +208,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (ShadowflameHexDollProfile.IsWeapon(weapon))
             {
                 cooldownTicks = ShadowflameHexDollProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (BloodThornProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = BloodThornProfile.GetCooldownTicks(weapon);
                 return true;
             }
 
