@@ -124,6 +124,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (NightglowProfile.IsWeapon(weapon))
+            {
+                return NightglowProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
@@ -166,6 +176,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (SkyFractureProfile.IsWeapon(weapon))
             {
                 cooldownTicks = SkyFractureProfile.GetCooldownTicks();
+                return true;
+            }
+
+            if (NightglowProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = NightglowProfile.GetCooldownTicks(weapon);
                 return true;
             }
 
