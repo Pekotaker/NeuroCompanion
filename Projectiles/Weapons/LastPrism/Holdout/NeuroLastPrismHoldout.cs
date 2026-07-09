@@ -11,18 +11,6 @@ namespace NeuroCompanion.Projectiles.Weapons.LastPrism.Holdout
         public override string Texture =>
             "Terraria/Images/Projectile_" + ProjectileID.LastPrism;
 
-        public const int NumBeams = 6;
-        public const int DurationTicks = 260;
-        public const int RefreshGraceTicks = 12;
-
-        public const float MaxCharge = 200f;
-        public const float DamageStart = 12f;
-
-        private const int NumAnimationFrames = 5;
-        private const float PrismDistanceFromNeuro = 28f;
-        private const float AimResponsiveness = 0.18f;
-        private const int SoundInterval = 20;
-
         private bool initialized;
         private Vector2 fallbackAnchorPosition;
 
