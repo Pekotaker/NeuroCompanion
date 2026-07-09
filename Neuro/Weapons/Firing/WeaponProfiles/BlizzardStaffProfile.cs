@@ -3,8 +3,6 @@
 using Terraria;
 using Terraria.ID;
 
-using NeuroCompanion.Neuro.Weapons.Firing;
-
 namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
 {
     public static class BlizzardStaffProfile

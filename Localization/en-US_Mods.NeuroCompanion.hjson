@@ -28,6 +28,9 @@ Projectiles: {
 	NeuroSkyWeaponVisualProjectile.DisplayName: Neuro Sky Weapon Visual Projectile
 	NeuroLastPrismBeam.DisplayName: Neuro Last Prism Beam
 	NeuroLastPrismHoldout.DisplayName: Neuro Last Prism Holdout
+	NeuroChargedBlasterBeam.DisplayName: Neuro Charged Blaster Beam
+	NeuroChargedBlasterCannonHoldout.DisplayName: Neuro Charged Blaster Cannon Holdout
+	NeuroChargedBlasterOrb.DisplayName: Neuro Charged Blaster Orb
 }
 
 Buffs: {

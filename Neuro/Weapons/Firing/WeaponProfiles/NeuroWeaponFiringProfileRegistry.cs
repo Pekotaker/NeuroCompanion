@@ -10,7 +10,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
         public static bool IsSupportedChannelingProfile(Item weapon)
         {
             return LaserMachinegunProfile.IsWeapon(weapon) ||
-                   LastPrismProfile.IsWeapon(weapon);
+                   LastPrismProfile.IsWeapon(weapon) ||
+                   ChargedBlasterCannonProfile.IsWeapon(weapon);
         }
 
         public static int GetProjectileType(Item weapon)
@@ -23,6 +24,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (LastPrismProfile.IsWeapon(weapon))
             {
                 return LastPrismProfile.ProjectileType;
+            }
+
+            if (ChargedBlasterCannonProfile.IsWeapon(weapon))
+            {
+                return ChargedBlasterCannonProfile.ProjectileType;
             }
 
             return ProjectileID.None;
@@ -47,6 +53,17 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (LastPrismProfile.IsWeapon(weapon))
             {
                 return LastPrismProfile.CreateShots(
+                    owner,
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
+            if (ChargedBlasterCannonProfile.IsWeapon(weapon))
+            {
+                return ChargedBlasterCannonProfile.CreateShots(
                     owner,
                     weapon,
                     basePosition,
@@ -197,6 +214,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (LastPrismProfile.IsWeapon(weapon))
             {
                 return LastPrismProfile.GetCooldownTicks(channelTicks);
+            }
+
+            if (ChargedBlasterCannonProfile.IsWeapon(weapon))
+            {
+                return ChargedBlasterCannonProfile.GetCooldownTicks(channelTicks);
             }
 
             return 1;
