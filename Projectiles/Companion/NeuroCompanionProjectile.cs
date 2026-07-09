@@ -8,6 +8,8 @@ namespace NeuroCompanion.Projectiles.Companion
 {
     public partial class NeuroCompanionProjectile : ModProjectile
     {
+        public const float ShotSpawnOffset = 20f;
+
         private enum CompanionState
         {
             Idle = 0,
@@ -46,7 +48,6 @@ namespace NeuroCompanion.Projectiles.Companion
         private const float ManualTargetSearchRangeFromPlayer = 1200f;
 
         private const float ShotSpeed = 11f;
-        private const float ShotSpawnOffset = 20f;
         private const float MinimumShotDirectionLengthSquared = 1f;
 
         private const float EvilProjectileKnockBack = 2f;

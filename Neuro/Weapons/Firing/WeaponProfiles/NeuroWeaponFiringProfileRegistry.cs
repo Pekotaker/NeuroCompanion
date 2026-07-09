@@ -207,6 +207,15 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (SpiritFlameProfile.IsWeapon(weapon))
+            {
+                return SpiritFlameProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
             return null;
         }
 
@@ -289,6 +298,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (BetsysWrathProfile.IsWeapon(weapon))
             {
                 cooldownTicks = BetsysWrathProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (SpiritFlameProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = SpiritFlameProfile.GetCooldownTicks(weapon);
                 return true;
             }
 
