@@ -198,6 +198,15 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (BetsysWrathProfile.IsWeapon(weapon))
+            {
+                return BetsysWrathProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
             return null;
         }
 
@@ -274,6 +283,12 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (StellarTuneProfile.IsWeapon(weapon))
             {
                 cooldownTicks = StellarTuneProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (BetsysWrathProfile.IsWeapon(weapon))
+            {
+                cooldownTicks = BetsysWrathProfile.GetCooldownTicks(weapon);
                 return true;
             }
 
