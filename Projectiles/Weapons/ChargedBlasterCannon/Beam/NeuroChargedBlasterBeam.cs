@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,32 +9,10 @@ using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout;
 
 namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
 {
-    public class NeuroChargedBlasterBeam : ModProjectile
+    public partial class NeuroChargedBlasterBeam : ModProjectile
     {
         public override string Texture =>
             "Terraria/Images/Projectile_" + ProjectileID.ChargedBlasterLaser;
-
-        private const float MaxBeamLength = 2400f;
-        private const float BeamTileCollisionWidth = 1f;
-        private const float BeamHitboxCollisionWidth = 14f;
-        private const float BeamLengthChangeFactor = 0.75f;
-        private const float BeamStartDistanceFromCannon = 18f;
-        private const float BeamDrawStartOffset = 0f;
-
-        private const float BeamDrawScale = 1f;
-        private const float BeamLightBrightness = 5.5f;
-
-        private const byte BeamColorAlpha = 25;
-
-        private const int BeamDustChanceDenominator = 3;
-        private const float BeamDustScale = 0.4f;
-
-        private const float BeamDustMinDistance = 24f;
-        private const int OwnerHitCooldownTicks = 30;
-
-        private const int BeamLocalNpcHitCooldownTicks = 10;
-        private const float BeamDamageMultiplier = 1f;
-
 
         private int ownerHitCooldown;
 
@@ -199,193 +174,6 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
             evilGlobal.KillOnOwnerHit = false;
         }
 
-        private float PerformBeamHitscan(bool ignoreTiles)
-        {
-            if (ignoreTiles)
-            {
-                return MaxBeamLength;
-            }
-
-            float[] samples = new float[3];
-
-            Collision.LaserScan(
-                Projectile.Center,
-                Projectile.velocity,
-                BeamTileCollisionWidth * Projectile.scale,
-                MaxBeamLength,
-                samples
-            );
-
-            float averageLength = 0f;
-
-            for (int i = 0; i < samples.Length; i++)
-            {
-                averageLength += samples[i];
-            }
-
-            averageLength /= samples.Length;
-
-            return averageLength;
-        }
-
-        public override bool? Colliding(
-            Rectangle projHitbox,
-            Rectangle targetHitbox
-        )
-        {
-            float collisionPoint = 0f;
-
-            Vector2 beamEnd =
-                Projectile.Center + Projectile.velocity * BeamLength;
-
-            return Collision.CheckAABBvLineCollision(
-                targetHitbox.TopLeft(),
-                targetHitbox.Size(),
-                Projectile.Center,
-                beamEnd,
-                BeamHitboxCollisionWidth * Projectile.scale,
-                ref collisionPoint
-            );
-        }
-
-        private void ProduceVisualEffects()
-        {
-            Color beamColor = GetBeamColor();
-
-            DelegateMethods.v3_1 =
-                beamColor.ToVector3() *
-                BeamLightBrightness;
-
-            Utils.PlotTileLine(
-                Projectile.Center,
-                Projectile.Center + Projectile.velocity * BeamLength,
-                Projectile.width * Projectile.scale,
-                DelegateMethods.CastLight
-            );
-
-            if (Main.rand.NextBool(BeamDustChanceDenominator))
-            {
-                Vector2 dustPosition =
-                    Projectile.Center +
-                    Projectile.velocity *
-                    Main.rand.NextFloat(BeamDustMinDistance, BeamLength);
-
-                Dust dust =
-                    Dust.NewDustDirect(
-                        dustPosition,
-                        0,
-                        0,
-                        DustID.BlueTorch,
-                        0f,
-                        0f,
-                        100,
-                        beamColor,
-                        BeamDustScale
-                    );
-
-                dust.noGravity = true;
-            }
-        }
-
-        private void TryDamageOwnerWithBeam(
-            NeuroChargedBlasterCannonHoldout hostCannon
-        )
-        {
-            if (!hostCannon.OwnerDamageEnabled)
-            {
-                return;
-            }
-
-            if (ownerHitCooldown > 0)
-            {
-                return;
-            }
-
-            if (Projectile.owner < 0 || Projectile.owner >= Main.maxPlayers)
-            {
-                return;
-            }
-
-            Player owner = Main.player[Projectile.owner];
-
-            if (!owner.active || owner.dead)
-            {
-                return;
-            }
-
-            float collisionPoint = 0f;
-
-            bool hit =
-                Collision.CheckAABBvLineCollision(
-                    owner.position,
-                    new Vector2(owner.width, owner.height),
-                    Projectile.Center,
-                    Projectile.Center + Projectile.velocity * BeamLength,
-                    BeamHitboxCollisionWidth * Projectile.scale,
-                    ref collisionPoint
-                );
-
-            if (!hit)
-            {
-                return;
-            }
-
-            int hitDirection =
-                owner.Center.X < Projectile.Center.X ? -1 : 1;
-
-            PlayerDeathReason deathReason =
-                PlayerDeathReason.ByCustomReason(
-                    $"{owner.name} was blasted by Evil Neuro."
-                );
-
-            owner.Hurt(
-                deathReason,
-                Projectile.damage,
-                hitDirection,
-                pvp: true
-            );
-
-            ownerHitCooldown = OwnerHitCooldownTicks;
-        }
-
-        public override bool PreDraw(ref Color lightColor)
-        {
-            if (Projectile.velocity == Vector2.Zero || BeamLength <= 0f)
-            {
-                return false;
-            }
-
-            Texture2D texture =
-                TextureAssets.Projectile[Type].Value;
-
-            Vector2 startPosition =
-                Projectile.Center.Floor()
-                + Projectile.velocity * BeamDrawStartOffset
-                - Main.screenPosition;
-
-            Vector2 endPosition =
-                startPosition + Projectile.velocity * BeamLength;
-
-            Utils.LaserLineFraming lineFraming =
-                new Utils.LaserLineFraming(
-                    DelegateMethods.RainbowLaserDraw
-                );
-
-DelegateMethods.c_1 =
-    GetBeamColor();
-
-Utils.DrawLaser(
-    Main.spriteBatch,
-    texture,
-    startPosition,
-    endPosition,
-    new Vector2(BeamDrawScale),
-    lineFraming
-);
-
-            return false;
-        }
-
         private static Vector2 SafeNormalize(
             Vector2 value,
             Vector2 fallback
@@ -398,11 +186,6 @@ Utils.DrawLaser(
 
             value.Normalize();
             return value;
-        }
-
-        private static Color GetBeamColor()
-        {
-            return ChargedBlasterCannonEffectColor.GetColor(BeamColorAlpha);
         }
     }
 }
