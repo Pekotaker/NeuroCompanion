@@ -1,18 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+using NeuroCompanion.Neuro.Weapons.Firing;
+using NeuroCompanion.Projectiles.Companion;
+using NeuroCompanion.Projectiles.Globals;
+using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam;
+using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Orb;
+using System;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-
-using NeuroCompanion.Neuro.Weapons.Firing;
-using NeuroCompanion.Projectiles.Companion;
-using NeuroCompanion.Projectiles.Globals;
-
-using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Orb;
-using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam;
 
 namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
 {
@@ -25,7 +23,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         public const int RefreshGraceTicks = 12;
 
         private const int PhaseTwoStartTicks = 80;
-        private const int BeamStartTicks = 220;
+        private const int BeamStartTicks = 176;
 
         private const int BeamDurationTicks = 300;
         private const int CycleResetTicks = BeamStartTicks + BeamDurationTicks;
@@ -58,9 +56,9 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private const int HeavyOrbPhaseCannonDustIntervalTicks = 4;
         private const int BeamPhaseCannonDustIntervalTicks = 2;
 
-        private const int SmallOrbPhaseCannonDustCount = 1;
-        private const int HeavyOrbPhaseCannonDustCount = 2;
-        private const int BeamPhaseCannonDustCount = 2;
+        private const int SmallOrbPhaseCannonDustCount = 8;
+        private const int HeavyOrbPhaseCannonDustCount = 12;
+        private const int BeamPhaseCannonDustCount = 3;
 
         private const float SmallOrbPhaseCannonDustScale = 0.45f;
         private const float HeavyOrbPhaseCannonDustScale = 0.55f;
@@ -68,24 +66,28 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
 
         private const int CannonDustType = DustID.Electric;
 
-        private const float CannonDustOriginOffset = 0f;
+        private const float CannonDustOriginOffset = 8f;
 
-        private const float SmallOrbPhaseSuctionRadiusMin = 2f;
-        private const float SmallOrbPhaseSuctionRadiusMax = 8f;
+        private const float SmallOrbPhaseSuctionRadiusMin = 4f;
+        private const float SmallOrbPhaseSuctionRadiusMax = 18f;
 
-        private const float HeavyOrbPhaseSuctionRadiusMin = 2f;
-        private const float HeavyOrbPhaseSuctionRadiusMax = 8f;
+        private const float HeavyOrbPhaseSuctionRadiusMin = 4f;
+        private const float HeavyOrbPhaseSuctionRadiusMax = 18f;
 
-        private const float SmallOrbPhaseSuctionSpeed = 5f;
-        private const float HeavyOrbPhaseSuctionSpeed = 6.5f;
+        private const float SmallOrbPhaseSuctionSpeed = 2f;
+        private const float HeavyOrbPhaseSuctionSpeed = 2f;
 
         private const float SuctionDustRandomVelocity = 0.45f;
 
-        private const float BeamPhaseCannonDustSpeed = 12f;
-        private const float BeamPhaseCannonDustMinSpeedMultiplier = 0.8f;
-        private const float BeamPhaseCannonDustConeRadians = 0.32f;
-        private const float BeamPhaseDustSpawnBackOffset = 0f;
+        private const float BeamPhaseCannonDustSpeed = 3f;
+        private const float BeamPhaseCannonDustConeRadians = 0.64f;
+        private const float BeamPhaseDustSpawnBackOffset = -16f;
         private const float BeamPhaseDustSpawnSideSpread = 8f;
+
+        private const float BeamPhaseCannonDustCenterSpeedMultiplier = 5f;
+        private const float BeamPhaseCannonDustEdgeSpeedMultiplier = 1f;
+        private const float BeamPhaseCannonDustFalloffPower = 0.2f;
+        private const float BeamPhaseCannonDustRandomSpeedMultiplier = 0.15f;
 
         private bool initialized;
         private bool beamSpawned;
@@ -654,19 +656,40 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                     BeamPhaseDustSpawnSideSpread
                 );
 
-            Vector2 dustVelocity =
-                beamDirection
-                    .RotatedBy(
-                        Main.rand.NextFloat(
-                            -BeamPhaseCannonDustConeRadians,
-                            BeamPhaseCannonDustConeRadians
-                        )
-                    ) *
+            float angle =
                 Main.rand.NextFloat(
-                    BeamPhaseCannonDustSpeed *
-                    BeamPhaseCannonDustMinSpeedMultiplier,
-                    BeamPhaseCannonDustSpeed
+                    -BeamPhaseCannonDustConeRadians,
+                    BeamPhaseCannonDustConeRadians
                 );
+
+            float normalizedDivergence =
+                MathHelper.Clamp(
+                    Math.Abs(angle) / BeamPhaseCannonDustConeRadians,
+                    0f,
+                    1f
+                );
+
+            float angleSpeedMultiplier =
+                MathHelper.Lerp(
+                    BeamPhaseCannonDustCenterSpeedMultiplier,
+                    BeamPhaseCannonDustEdgeSpeedMultiplier,
+                    MathF.Pow(
+                        normalizedDivergence,
+                        BeamPhaseCannonDustFalloffPower
+                    )
+                );
+
+            float randomSpeedMultiplier =
+                Main.rand.NextFloat(
+                    1f - BeamPhaseCannonDustRandomSpeedMultiplier,
+                    1f
+                );
+
+            Vector2 dustVelocity =
+                beamDirection.RotatedBy(angle) *
+                BeamPhaseCannonDustSpeed *
+                angleSpeedMultiplier *
+                randomSpeedMultiplier;
 
             Dust dust =
                 Dust.NewDustPerfect(
