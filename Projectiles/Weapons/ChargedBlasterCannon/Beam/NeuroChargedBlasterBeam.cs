@@ -35,6 +35,9 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
         private const float BeamDustMinDistance = 24f;
         private const int OwnerHitCooldownTicks = 30;
 
+        private const int BeamLocalNpcHitCooldownTicks = 10;
+        private const float BeamDamageMultiplier = 1f;
+
 
         private int ownerHitCooldown;
 
@@ -62,7 +65,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
             Projectile.ignoreWater = true;
 
             Projectile.usesLocalNPCImmunity = true;
-            Projectile.localNPCHitCooldown = 10;
+            Projectile.localNPCHitCooldown = BeamLocalNpcHitCooldownTicks;
 
             Projectile.alpha = 255;
             Projectile.timeLeft = 2;
@@ -165,8 +168,16 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
             NeuroChargedBlasterCannonHoldout hostCannon
         )
         {
-            Projectile.damage = hostProjectile.damage;
-            Projectile.originalDamage = hostProjectile.damage;
+            int beamDamage =
+                (int)(hostProjectile.damage * BeamDamageMultiplier);
+
+            if (beamDamage < 1)
+            {
+                beamDamage = 1;
+            }
+
+            Projectile.damage = beamDamage;
+            Projectile.originalDamage = beamDamage;
             Projectile.CritChance = hostProjectile.CritChance;
 
             Projectile.friendly = !hostCannon.OwnerDamageEnabled;

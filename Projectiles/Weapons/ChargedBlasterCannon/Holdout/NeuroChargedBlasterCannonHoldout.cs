@@ -35,8 +35,8 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private const float AimResponsiveness = 0.18f;
         private const float MuzzleDistance = 34f;
 
-        private const float SmallOrbDamageMultiplier = 0.45f;
-        private const float HeavyOrbDamageMultiplier = 0.85f;
+        private const float SmallOrbDamageMultiplier = 1f;
+        private const float HeavyOrbDamageMultiplier = 2.5f;
 
         private const int HeavyOrbHumIntervalTicks = 6;
 
