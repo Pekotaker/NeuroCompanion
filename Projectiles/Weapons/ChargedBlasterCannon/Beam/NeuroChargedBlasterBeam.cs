@@ -22,16 +22,16 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
         private const float BeamStartDistanceFromCannon = 24f;
         private const float BeamDrawStartOffset = 0f;
 
-        private const float BeamDrawScale = 1.1f;
-        private const float BeamLightBrightness = 2.2f;
+        private const float BeamDrawScale = 1f;
+        private const float BeamLightBrightness = 5.5f;
 
-        private const byte BeamColorRed = 150;
-        private const byte BeamColorGreen = 230;
+        private const byte BeamColorRed = 222;
+        private const byte BeamColorGreen = 255;
         private const byte BeamColorBlue = 255;
-        private const byte BeamColorAlpha = 255;
+        private const byte BeamColorAlpha = 25;
 
-        private const int BeamDustChanceDenominator = 2;
-        private const float BeamDustScale = 1.45f;
+        private const int BeamDustChanceDenominator = 1;
+        private const float BeamDustScale = 1.9f;
 
         private const float BeamDustMinDistance = 24f;
         private const int OwnerHitCooldownTicks = 30;
@@ -361,17 +361,17 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
                     DelegateMethods.RainbowLaserDraw
                 );
 
-            DelegateMethods.c_1 =
-                GetBeamColor();
+DelegateMethods.c_1 =
+    GetBeamColor();
 
-            Utils.DrawLaser(
-                Main.spriteBatch,
-                texture,
-                startPosition,
-                endPosition,
-                new Vector2(BeamDrawScale),
-                lineFraming
-            );
+Utils.DrawLaser(
+    Main.spriteBatch,
+    texture,
+    startPosition,
+    endPosition,
+    new Vector2(BeamDrawScale),
+    lineFraming
+);
 
             return false;
         }

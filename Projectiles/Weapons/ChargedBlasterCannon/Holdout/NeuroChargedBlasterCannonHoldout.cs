@@ -62,18 +62,26 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private const int HeavyOrbPhaseCannonDustCount = 2;
         private const int BeamPhaseCannonDustCount = 5;
 
-        private const float SmallOrbPhaseCannonDustScale = 1.05f;
-        private const float HeavyOrbPhaseCannonDustScale = 1.35f;
-        private const float BeamPhaseCannonDustScale = 1.75f;
+        private const float SmallOrbPhaseCannonDustScale = 1.45f;
+        private const float HeavyOrbPhaseCannonDustScale = 1.75f;
+        private const float BeamPhaseCannonDustScale = 2.2f;
 
         private const float CannonDustMuzzleOffset = 28f;
-        private const float CannonDustSideSpread = 7f;
+        private const float CannonDustSideSpread = 10f;
 
-        private const float SmallOrbPhaseCannonDustSpeed = 0.8f;
-        private const float HeavyOrbPhaseCannonDustSpeed = 1.2f;
-        private const float BeamPhaseCannonDustSpeed = 3.2f;
+        private const float SmallOrbPhaseCannonDustSpeed = 3.2f;
+        private const float HeavyOrbPhaseCannonDustSpeed = 4.2f;
+        private const float BeamPhaseCannonDustSpeed = 9f;
 
-        private const float BeamPhaseCannonDustConeRadians = 0.65f;
+        private const float SmallOrbPhaseCannonDustMinSpeedMultiplier = 0.45f;
+        private const float HeavyOrbPhaseCannonDustMinSpeedMultiplier = 0.45f;
+        private const float BeamPhaseCannonDustMinSpeedMultiplier = 0.75f;
+
+        private const float BeamPhaseCannonDustConeRadians = 0.22f;
+
+        private const byte CannonDustColorRed = 120;
+        private const byte CannonDustColorGreen = 255;
+        private const byte CannonDustColorBlue = 255;
 
         private bool initialized;
         private bool beamSpawned;
@@ -465,6 +473,15 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             );
         }
 
+        private static Color GetCannonDustColor()
+        {
+            return new Color(
+                CannonDustColorRed,
+                CannonDustColorGreen,
+                CannonDustColorBlue
+            );
+        }
+
         private void FireSingleOrbAndFinish()
         {
             if (ChargeTicks == 1f)
@@ -560,6 +577,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             int dustCount;
             float dustScale;
             float dustSpeed;
+            float minSpeedMultiplier;
             bool beamSpurt;
 
             if (ChargeTicks >= BeamStartTicks)
@@ -568,6 +586,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                 dustCount = BeamPhaseCannonDustCount;
                 dustScale = BeamPhaseCannonDustScale;
                 dustSpeed = BeamPhaseCannonDustSpeed;
+                minSpeedMultiplier = BeamPhaseCannonDustMinSpeedMultiplier;
                 beamSpurt = true;
             }
             else if (ChargeTicks >= PhaseTwoStartTicks)
@@ -576,6 +595,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                 dustCount = HeavyOrbPhaseCannonDustCount;
                 dustScale = HeavyOrbPhaseCannonDustScale;
                 dustSpeed = HeavyOrbPhaseCannonDustSpeed;
+                minSpeedMultiplier = HeavyOrbPhaseCannonDustMinSpeedMultiplier;
                 beamSpurt = false;
             }
             else
@@ -584,6 +604,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                 dustCount = SmallOrbPhaseCannonDustCount;
                 dustScale = SmallOrbPhaseCannonDustScale;
                 dustSpeed = SmallOrbPhaseCannonDustSpeed;
+                minSpeedMultiplier = HeavyOrbPhaseCannonDustMinSpeedMultiplier;
                 beamSpurt = false;
             }
 
@@ -619,6 +640,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
 
                 if (beamSpurt)
                 {
+                    // Beam phase: far, forward-only spurt along the beam direction.
                     dustVelocity =
                         direction
                             .RotatedBy(
@@ -628,15 +650,20 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                                 )
                             ) *
                         Main.rand.NextFloat(
-                            dustSpeed * 0.65f,
+                            dustSpeed * minSpeedMultiplier,
                             dustSpeed
                         );
                 }
                 else
                 {
+                    // Orb phases: uniform spurt all around the cannon muzzle.
+                    Vector2 randomDirection =
+                        Main.rand.NextVector2CircularEdge(1f, 1f);
+
                     dustVelocity =
-                        Main.rand.NextVector2Circular(
-                            dustSpeed,
+                        randomDirection *
+                        Main.rand.NextFloat(
+                            dustSpeed * minSpeedMultiplier,
                             dustSpeed
                         );
                 }
@@ -650,7 +677,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                         dustVelocity.X,
                         dustVelocity.Y,
                         100,
-                        default,
+                        GetCannonDustColor(),
                         dustScale
                     );
 

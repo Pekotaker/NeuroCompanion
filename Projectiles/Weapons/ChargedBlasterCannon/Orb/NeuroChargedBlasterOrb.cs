@@ -14,9 +14,9 @@ public class NeuroChargedBlasterOrb : ModProjectile
     private const int SmallOrbHeight = 14;
     private const float SmallOrbScale = 0.65f;
 
-    private const int HeavyOrbWidth = 24;
-    private const int HeavyOrbHeight = 24;
-    private const float HeavyOrbScale = 0.95f;
+    private const int HeavyOrbWidth = 40;
+    private const int HeavyOrbHeight = 40;
+    private const float HeavyOrbScale = 1f;
 
     private const int SmallOrbPenetration = 1;
     private const int HeavyOrbPenetration = -1;
@@ -26,22 +26,26 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
     private const int HeavyOrbLocalNpcHitCooldownTicks = 12;
 
-    private const int SmallOrbTrailDustCountPerTick = 1;
-    private const int HeavyOrbTrailDustCountPerTick = 2;
+    private const int SmallOrbTrailDustCountPerTick = 2;
+    private const int HeavyOrbTrailDustCountPerTick = 3;
 
-    private const float SmallOrbTrailDustScale = 1.45f;
-    private const float HeavyOrbTrailDustScale = 1.85f;
+    private const float SmallOrbTrailDustScale = 1.75f;
+    private const float HeavyOrbTrailDustScale = 2.05f;
 
-    private const float TrailDustBehindDistance = 10f;
-    private const float HeavyTrailDustBehindDistance = 16f;
+    private const float TrailDustBehindDistance = 22f;
+    private const float HeavyTrailDustBehindDistance = 30f;
 
-    private const float TrailDustSideSpread = 5f;
-    private const float HeavyTrailDustSideSpread = 8f;
+    private const float TrailDustSideSpread = 7f;
+    private const float HeavyTrailDustSideSpread = 10f;
 
-    private const float TrailDustForwardVelocity = 1.6f;
-    private const float HeavyTrailDustForwardVelocity = 2.1f;
+    private const float TrailDustForwardVelocity = 4.8f;
+    private const float HeavyTrailDustForwardVelocity = 5.8f;
 
-    private const float TrailDustRandomVelocity = 0.35f;
+    private const float TrailDustRandomVelocity = 0.55f;
+
+    private const byte OrbEffectColorRed = 222;
+    private const byte OrbEffectColorGreen = 255;
+    private const byte OrbEffectColorBlue = 255;
 
     private const int SmallOrbDeathDustCount = 8;
     private const int HeavyOrbDeathDustCount = 18;
@@ -49,7 +53,6 @@ public class NeuroChargedBlasterOrb : ModProjectile
     private const float SmallOrbDeathDustScale = 0.95f;
     private const float HeavyOrbDeathDustScale = 1.55f;
 
-    private const float TrailDustVelocityMultiplier = 0.15f;
     private const float DeathDustMaxVelocity = 2f;
 
     private const float OrbLightRed = 0.2f;
@@ -63,6 +66,15 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
     private bool IsHeavyOrb =>
         Projectile.ai[0] >= 0.5f;
+
+    private static Color GetOrbEffectColor()
+    {
+        return new Color(
+            OrbEffectColorRed,
+            OrbEffectColorGreen,
+            OrbEffectColorBlue
+        );
+    }
 
     public override void SetStaticDefaults()
     {
@@ -185,7 +197,7 @@ public class NeuroChargedBlasterOrb : ModProjectile
                     dustVelocity.X,
                     dustVelocity.Y,
                     100,
-                    default,
+                    GetOrbEffectColor(),
                     dustScale
                 );
 
@@ -257,7 +269,7 @@ public class NeuroChargedBlasterOrb : ModProjectile
                     Main.rand.NextFloat(-DeathDustMaxVelocity, DeathDustMaxVelocity),
                     Main.rand.NextFloat(-DeathDustMaxVelocity, DeathDustMaxVelocity),
                     100,
-                    default,
+                    GetOrbEffectColor(),
                     dustScale
                 );
 
