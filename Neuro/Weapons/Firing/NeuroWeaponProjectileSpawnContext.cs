@@ -14,13 +14,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
         public bool IsEvil { get; }
         public bool KillOnOwnerHit { get; }
 
+        public bool SingleShotOnly { get; }
+
         private NeuroWeaponProjectileSpawnContext(
             Player owner,
             NeuroCompanionPlayer neuroPlayer,
             int damage,
             int critChance,
             bool isEvil,
-            bool killOnOwnerHit
+            bool killOnOwnerHit,
+            bool singleShotOnly
         )
         {
             Owner = owner;
@@ -29,6 +32,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             CritChance = critChance;
             IsEvil = isEvil;
             KillOnOwnerHit = killOnOwnerHit;
+            SingleShotOnly = singleShotOnly;
         }
 
         public static void Begin(
@@ -37,7 +41,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             int damage,
             int critChance,
             bool isEvil,
-            bool killOnOwnerHit
+            bool killOnOwnerHit,
+            bool singleShotOnly = false
         )
         {
             Current = new NeuroWeaponProjectileSpawnContext(
@@ -46,7 +51,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                 damage,
                 critChance,
                 isEvil,
-                killOnOwnerHit
+                killOnOwnerHit,
+                singleShotOnly
             );
         }
 

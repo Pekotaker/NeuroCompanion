@@ -61,6 +61,10 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     direction * FallbackAimSpeed,
                     ai0: targetPosition.X,
                     ai1: targetPosition.Y,
+                    ai2: NeuroWeaponProjectileSpawnContext.Current != null &&
+                         NeuroWeaponProjectileSpawnContext.Current.SingleShotOnly
+                            ? 1f
+                            : 0f,
                     forceVisible: true,
                     useSkyDrawLayer: true
                 )

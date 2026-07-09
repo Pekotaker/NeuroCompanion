@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
+using Terraria.GameContent;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -15,6 +17,12 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
     private bool IsHeavyOrb =>
         Projectile.ai[0] >= 0.5f;
+
+    public override void SetStaticDefaults()
+    {
+        Main.projFrames[Type] =
+            Main.projFrames[ProjectileID.ChargedBlasterOrb];
+    }
 
     public override void SetDefaults()
     {
@@ -44,8 +52,8 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
             if (IsHeavyOrb)
             {
-                Projectile.Resize(36, 36);
-                Projectile.scale = 1.55f;
+                Projectile.Resize(28, 28);
+                Projectile.scale = 1.15f;
                 Projectile.penetrate = -1;
                 Projectile.timeLeft = 240;
 
@@ -54,14 +62,16 @@ public class NeuroChargedBlasterOrb : ModProjectile
             }
             else
             {
-                Projectile.Resize(18, 18);
-                Projectile.scale = 0.9f;
+                Projectile.Resize(14, 14);
+                Projectile.scale = 0.65f;
                 Projectile.penetrate = 1;
             }
         }
 
-        Projectile.rotation +=
-            0.25f * Projectile.direction;
+        UpdateAnimation();
+
+        Projectile.rotation =
+            Projectile.velocity.ToRotation();
 
         Lighting.AddLight(
             Projectile.Center,
@@ -82,11 +92,52 @@ public class NeuroChargedBlasterOrb : ModProjectile
                     Projectile.velocity.Y * 0.15f,
                     100,
                     default,
-                    IsHeavyOrb ? 1.35f : 0.9f
+                    IsHeavyOrb ? 1f : 0.65f
                 );
 
             dust.noGravity = true;
         }
+    }
+
+    public override bool PreDraw(ref Color lightColor)
+    {
+        Texture2D texture =
+            TextureAssets.Projectile[Type].Value;
+
+        int frameCount = Main.projFrames[Type];
+
+        if (frameCount <= 0)
+        {
+            frameCount = 1;
+        }
+
+        int frameHeight =
+            texture.Height / frameCount;
+
+        Rectangle sourceRectangle =
+            new Rectangle(
+                0,
+                frameHeight * Projectile.frame,
+                texture.Width,
+                frameHeight
+            );
+
+        Vector2 origin =
+            sourceRectangle.Size() * 0.5f;
+
+        Main.EntitySpriteDraw(
+            texture,
+            Projectile.Center - Main.screenPosition,
+            sourceRectangle,
+            lightColor,
+            Projectile.rotation,
+            origin,
+            Projectile.scale,
+            SpriteEffects.None,
+            0
+        );
+
+        return false;
     }
 
     public override void OnKill(int timeLeft)
@@ -105,10 +156,38 @@ public class NeuroChargedBlasterOrb : ModProjectile
                     Main.rand.NextFloat(-2f, 2f),
                     100,
                     default,
-                    IsHeavyOrb ? 1.4f : 0.9f
+                    IsHeavyOrb ? 1.05f : 0.65f
                 );
 
             dust.noGravity = true;
+        }
+    }
+
+    private void UpdateAnimation()
+    {
+        int frameCount = Main.projFrames[Type];
+
+        if (frameCount <= 1)
+        {
+            return;
+        }
+
+        Projectile.frameCounter++;
+
+        int ticksPerFrame =
+            IsHeavyOrb ? 4 : 3;
+
+        if (Projectile.frameCounter < ticksPerFrame)
+        {
+            return;
+        }
+
+        Projectile.frameCounter = 0;
+        Projectile.frame++;
+
+        if (Projectile.frame >= frameCount)
+        {
+            Projectile.frame = 0;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
         public Vector2 Velocity { get; }
         public float Ai0 { get; }
         public float Ai1 { get; }
+        public float Ai2 { get; }
         public float Scale { get; }
         public int DelayTicks { get; }
         public bool ForceVisible { get; }
@@ -26,6 +27,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Vector2 velocity,
             float ai0 = 0f,
             float ai1 = 0f,
+            float ai2 = 0f,
             float scale = 1f,
             int delayTicks = 0,
             bool forceVisible = false,
@@ -41,6 +43,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Velocity = velocity;
             Ai0 = ai0;
             Ai1 = ai1;
+            Ai2 = ai2;
             Scale = scale;
             DelayTicks = delayTicks;
             ForceVisible = forceVisible;

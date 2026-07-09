@@ -149,7 +149,8 @@ namespace NeuroCompanion.Projectiles.Companion
                 shotPosition,
                 shotVelocity,
                 targetPosition,
-                QueuePendingWeaponShot
+                QueuePendingWeaponShot,
+                singleShotOnly: SupportedChannelTicks <= 0f
             );
         }
 

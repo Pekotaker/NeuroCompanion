@@ -24,7 +24,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             Vector2 position,
             Vector2 velocity,
             Vector2 targetPosition,
-            Action<PendingNeuroWeaponShot> queueDelayedShot = null
+            Action<PendingNeuroWeaponShot> queueDelayedShot = null,
+            bool singleShotOnly = false
         )
         {
             SpawnWeaponProjectileWithContext(
@@ -38,7 +39,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                 targetPosition,
                 isEvil: false,
                 killOnOwnerHit: false,
-                queueDelayedShot
+                queueDelayedShot,
+                singleShotOnly
             );
         }
 
@@ -118,7 +120,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                 pendingShot.Damage,
                 pendingShot.CritChance,
                 pendingShot.IsEvil,
-                pendingShot.KillOnOwnerHit
+                pendingShot.KillOnOwnerHit,
+                singleShotOnly: false
             );
 
             try
@@ -148,7 +151,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             Vector2 targetPosition,
             bool isEvil,
             bool killOnOwnerHit,
-            Action<PendingNeuroWeaponShot> queueDelayedShot
+            Action<PendingNeuroWeaponShot> queueDelayedShot,
+            bool singleShotOnly = false
         )
         {
             if (
@@ -187,7 +191,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                 damage,
                 critChance,
                 isEvil,
-                killOnOwnerHit
+                killOnOwnerHit,
+                singleShotOnly
             );
 
             try
@@ -267,7 +272,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                     projectileOwner,
                     out Projectile spawnedProjectile,
                     shot.Ai0,
-                    shot.Ai1
+                    shot.Ai1,
+                    shot.Ai2
                 ))
             {
                 return false;
@@ -415,7 +421,8 @@ namespace NeuroCompanion.Projectiles.Helpers
             int projectileOwner,
             out Projectile spawnedProjectile,
             float ai0 = 0f,
-            float ai1 = 0f
+            float ai1 = 0f,
+            float ai2 = 0f
         )
         {
             spawnedProjectile = null;
@@ -429,7 +436,8 @@ namespace NeuroCompanion.Projectiles.Helpers
                 knockBack,
                 projectileOwner,
                 ai0,
-                ai1
+                ai1,
+                ai2
             );
 
             if (

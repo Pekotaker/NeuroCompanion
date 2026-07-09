@@ -17,10 +17,12 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
 
         private const float MaxBeamLength = 2400f;
         private const float BeamTileCollisionWidth = 1f;
-        private const float BeamHitboxCollisionWidth = 18f;
+        private const float BeamHitboxCollisionWidth = 14f;
         private const float BeamLengthChangeFactor = 0.75f;
+        private const float BeamStartDistanceFromCannon = 24f;
+        private const float BeamDrawStartOffset = 0f;
 
-        private const float BeamLightBrightness = 0.85f;
+        private const float BeamLightBrightness = 1.45f;
         private const int OwnerHitCooldownTicks = 30;
 
         private int ownerHitCooldown;
@@ -74,6 +76,12 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
                 return;
             }
 
+            if (!hostCannon.BeamPhaseActive)
+            {
+                Projectile.Kill();
+                return;
+            }
+
             if (ownerHitCooldown > 0)
             {
                 ownerHitCooldown--;
@@ -83,7 +91,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
                 SafeNormalize(hostProjectile.velocity, Vector2.UnitX);
 
             Projectile.Center =
-                hostProjectile.Center + direction * 38f;
+                hostProjectile.Center + direction * BeamStartDistanceFromCannon;
 
             Projectile.velocity = direction;
             Projectile.rotation = direction.ToRotation();
@@ -331,7 +339,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
 
             Vector2 startPosition =
                 Projectile.Center.Floor()
-                + Projectile.velocity * 10f
+                + Projectile.velocity * BeamDrawStartOffset
                 - Main.screenPosition;
 
             Vector2 endPosition =
@@ -343,26 +351,26 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
                 );
 
             DelegateMethods.c_1 =
-                new Color(90, 180, 255, 180);
+                new Color(120, 220, 255, 255);
 
             Utils.DrawLaser(
                 Main.spriteBatch,
                 texture,
                 startPosition,
                 endPosition,
-                new Vector2(1.25f),
+                new Vector2(1.1f),
                 lineFraming
             );
 
             DelegateMethods.c_1 =
-                Color.White * 0.35f;
+                Color.White * 0.85f;
 
             Utils.DrawLaser(
                 Main.spriteBatch,
                 texture,
                 startPosition,
                 endPosition,
-                new Vector2(0.65f),
+                new Vector2(0.5f),
                 lineFraming
             );
 

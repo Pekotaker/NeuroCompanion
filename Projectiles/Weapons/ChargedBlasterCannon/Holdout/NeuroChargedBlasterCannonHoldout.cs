@@ -27,6 +27,9 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private const int PhaseTwoStartTicks = 80;
         private const int BeamStartTicks = 160;
 
+        private const int BeamDurationTicks = 70;
+        private const int CycleResetTicks = BeamStartTicks + BeamDurationTicks;
+
         private const int RapidOrbCooldownTicks = 8;
         private const int HeavyOrbCooldownTicks = 24;
 
@@ -39,9 +42,11 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
 
         private bool initialized;
         private bool beamSpawned;
+        private bool initialPewSoundPlayed;
 
         private int rapidOrbTimer;
         private int heavyOrbTimer;
+        private int heavyHumTimer;
 
         private Vector2 fallbackAnchorPosition;
 
@@ -62,6 +67,14 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             get => Projectile.localAI[2] >= 0.5f;
             private set => Projectile.localAI[2] = value ? 1f : 0f;
         }
+
+        public bool BeamPhaseActive =>
+            !SingleShotOnly &&
+            ChargeTicks >= BeamStartTicks &&
+            ChargeTicks < CycleResetTicks;
+
+        private bool SingleShotOnly =>
+            Projectile.ai[2] >= 0.5f;
 
         private Vector2 TargetPosition =>
             new Vector2(Projectile.ai[0], Projectile.ai[1]);
@@ -160,11 +173,10 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                 );
 
             UpdateAnimation();
-            PlayChargeSound();
             FireCurrentChargePhase();
 
             Projectile.rotation =
-                Projectile.velocity.ToRotation();
+                Projectile.velocity.ToRotation() - MathHelper.PiOver2;
 
             Projectile.spriteDirection =
                 Projectile.velocity.X >= 0f ? 1 : -1;
@@ -299,25 +311,22 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             }
         }
 
-        private void PlayChargeSound()
-        {
-            if (Projectile.soundDelay > 0)
-            {
-                return;
-            }
-
-            Projectile.soundDelay =
-                ChargeTicks >= BeamStartTicks ? 20 :
-                ChargeTicks >= PhaseTwoStartTicks ? HeavyOrbCooldownTicks :
-                RapidOrbCooldownTicks;
-
-            SoundEngine.PlaySound(SoundID.Item91, Projectile.Center);
-        }
-
         private void FireCurrentChargePhase()
         {
             if (Projectile.owner != Main.myPlayer)
             {
+                return;
+            }
+
+            if (SingleShotOnly)
+            {
+                FireSingleOrbAndFinish();
+                return;
+            }
+
+            if (ChargeTicks >= CycleResetTicks)
+            {
+                ResetChargeCycle();
                 return;
             }
 
@@ -336,6 +345,14 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
 
             if (ChargeTicks < BeamStartTicks)
             {
+                heavyHumTimer++;
+
+                if (heavyHumTimer >= 6)
+                {
+                    heavyHumTimer = 0;
+                    PlayHeavyOrbHumSound();
+                }
+
                 heavyOrbTimer++;
 
                 if (heavyOrbTimer >= HeavyOrbCooldownTicks)
@@ -350,8 +367,86 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             if (!beamSpawned)
             {
                 beamSpawned = true;
+                PlayBeamStartSound();
                 SpawnBeam();
             }
+        }
+
+        private void PlayInitialPewSound()
+        {
+            if (initialPewSoundPlayed)
+            {
+                return;
+            }
+
+            initialPewSoundPlayed = true;
+
+            SoundEngine.PlaySound(
+                SoundID.Item75,
+                Projectile.Center
+            );
+        }
+
+        private void PlaySmallOrbHumSound()
+        {
+            SoundEngine.PlaySound(
+                SoundID.Item15 with
+                {
+                    Volume = 0.25f,
+                    Pitch = -0.35f
+                },
+                Projectile.Center
+            );
+        }
+
+        private void PlayHeavyOrbHumSound()
+        {
+            SoundEngine.PlaySound(
+                SoundID.Item15 with
+                {
+                    Volume = 0.45f,
+                    Pitch = -0.2f
+                },
+                Projectile.Center
+            );
+        }
+
+        private void PlayBeamStartSound()
+        {
+            SoundEngine.PlaySound(
+                SoundID.Item15 with
+                {
+                    Volume = 0.95f,
+                    Pitch = -0.05f
+                },
+                Projectile.Center
+            );
+        }
+
+        private void FireSingleOrbAndFinish()
+        {
+            if (ChargeTicks == 1f)
+            {
+                SpawnOrb(isHeavy: false);
+            }
+
+            if (ChargeTicks >= 2f)
+            {
+                Projectile.Kill();
+            }
+        }
+
+        private void ResetChargeCycle()
+        {
+            ChargeTicks = 0f;
+            rapidOrbTimer = 0;
+            heavyOrbTimer = 0;
+            heavyHumTimer = 0;
+
+            beamSpawned = false;
+            initialPewSoundPlayed = false;
+
+            Projectile.netUpdate = true;
         }
 
         private void SpawnOrb(bool isHeavy)
@@ -395,6 +490,20 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
                 projectileIndex,
                 useGenericOwnerDamage: true
             );
+
+            if (isHeavy)
+            {
+                return;
+            }
+
+            if (!initialPewSoundPlayed)
+            {
+                PlayInitialPewSound();
+            }
+            else
+            {
+                PlaySmallOrbHumSound();
+            }
         }
 
         private void SpawnBeam()
