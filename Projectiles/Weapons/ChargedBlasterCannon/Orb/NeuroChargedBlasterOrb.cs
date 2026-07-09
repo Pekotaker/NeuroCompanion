@@ -14,9 +14,9 @@ public class NeuroChargedBlasterOrb : ModProjectile
     private const int SmallOrbHeight = 14;
     private const float SmallOrbScale = 0.65f;
 
-    private const int HeavyOrbWidth = 28;
-    private const int HeavyOrbHeight = 28;
-    private const float HeavyOrbScale = 1.15f;
+    private const int HeavyOrbWidth = 24;
+    private const int HeavyOrbHeight = 24;
+    private const float HeavyOrbScale = 0.95f;
 
     private const int SmallOrbPenetration = 1;
     private const int HeavyOrbPenetration = -1;
@@ -26,11 +26,22 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
     private const int HeavyOrbLocalNpcHitCooldownTicks = 12;
 
-    private const int SmallOrbTrailDustChanceDenominator = 4;
-    private const int HeavyOrbTrailDustChanceDenominator = 2;
+    private const int SmallOrbTrailDustCountPerTick = 1;
+    private const int HeavyOrbTrailDustCountPerTick = 2;
 
-    private const float SmallOrbTrailDustScale = 0.95f;
-    private const float HeavyOrbTrailDustScale = 1.45f;
+    private const float SmallOrbTrailDustScale = 1.45f;
+    private const float HeavyOrbTrailDustScale = 1.85f;
+
+    private const float TrailDustBehindDistance = 10f;
+    private const float HeavyTrailDustBehindDistance = 16f;
+
+    private const float TrailDustSideSpread = 5f;
+    private const float HeavyTrailDustSideSpread = 8f;
+
+    private const float TrailDustForwardVelocity = 1.6f;
+    private const float HeavyTrailDustForwardVelocity = 2.1f;
+
+    private const float TrailDustRandomVelocity = 0.35f;
 
     private const int SmallOrbDeathDustCount = 8;
     private const int HeavyOrbDeathDustCount = 18;
@@ -115,29 +126,67 @@ public class NeuroChargedBlasterOrb : ModProjectile
             OrbLightBlue
         );
 
-        int trailDustChance =
-            IsHeavyOrb
-                ? HeavyOrbTrailDustChanceDenominator
-                : SmallOrbTrailDustChanceDenominator;
+        EmitDraggedTrailDust();
+    }
 
-        float trailDustScale =
+    private void EmitDraggedTrailDust()
+    {
+        Vector2 direction =
+            Projectile.velocity.SafeNormalize(Vector2.UnitX);
+
+        Vector2 perpendicular =
+            direction.RotatedBy(MathHelper.PiOver2);
+
+        int dustCount =
+            IsHeavyOrb
+                ? HeavyOrbTrailDustCountPerTick
+                : SmallOrbTrailDustCountPerTick;
+
+        float dustScale =
             IsHeavyOrb
                 ? HeavyOrbTrailDustScale
                 : SmallOrbTrailDustScale;
 
-        if (Main.rand.NextBool(trailDustChance))
+        float behindDistance =
+            IsHeavyOrb
+                ? HeavyTrailDustBehindDistance
+                : TrailDustBehindDistance;
+
+        float sideSpread =
+            IsHeavyOrb
+                ? HeavyTrailDustSideSpread
+                : TrailDustSideSpread;
+
+        float forwardVelocity =
+            IsHeavyOrb
+                ? HeavyTrailDustForwardVelocity
+                : TrailDustForwardVelocity;
+
+        for (int i = 0; i < dustCount; i++)
         {
+            Vector2 dustPosition =
+                Projectile.Center -
+                direction * behindDistance +
+                perpendicular * Main.rand.NextFloat(-sideSpread, sideSpread);
+
+            Vector2 dustVelocity =
+                direction * forwardVelocity +
+                Main.rand.NextVector2Circular(
+                    TrailDustRandomVelocity,
+                    TrailDustRandomVelocity
+                );
+
             Dust dust =
                 Dust.NewDustDirect(
-                    Projectile.position,
-                    Projectile.width,
-                    Projectile.height,
+                    dustPosition,
+                    0,
+                    0,
                     DustID.BlueTorch,
-                    Projectile.velocity.X * TrailDustVelocityMultiplier,
-                    Projectile.velocity.Y * TrailDustVelocityMultiplier,
+                    dustVelocity.X,
+                    dustVelocity.Y,
                     100,
                     default,
-                    trailDustScale
+                    dustScale
                 );
 
             dust.noGravity = true;

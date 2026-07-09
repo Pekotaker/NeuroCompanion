@@ -54,6 +54,27 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private const float BeamStartHumSoundVolume = 1.05f;
         private const float BeamStartHumSoundPitch = -0.05f;
 
+        private const int SmallOrbPhaseCannonDustIntervalTicks = 3;
+        private const int HeavyOrbPhaseCannonDustIntervalTicks = 2;
+        private const int BeamPhaseCannonDustIntervalTicks = 1;
+
+        private const int SmallOrbPhaseCannonDustCount = 1;
+        private const int HeavyOrbPhaseCannonDustCount = 2;
+        private const int BeamPhaseCannonDustCount = 5;
+
+        private const float SmallOrbPhaseCannonDustScale = 1.05f;
+        private const float HeavyOrbPhaseCannonDustScale = 1.35f;
+        private const float BeamPhaseCannonDustScale = 1.75f;
+
+        private const float CannonDustMuzzleOffset = 28f;
+        private const float CannonDustSideSpread = 7f;
+
+        private const float SmallOrbPhaseCannonDustSpeed = 0.8f;
+        private const float HeavyOrbPhaseCannonDustSpeed = 1.2f;
+        private const float BeamPhaseCannonDustSpeed = 3.2f;
+
+        private const float BeamPhaseCannonDustConeRadians = 0.65f;
+
         private bool initialized;
         private bool beamSpawned;
         private bool initialPewSoundPlayed;
@@ -61,6 +82,8 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private int rapidOrbTimer;
         private int heavyOrbTimer;
         private int heavyHumTimer;
+
+        private int cannonDustTimer;
 
         private Vector2 fallbackAnchorPosition;
 
@@ -188,6 +211,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
 
             UpdateAnimation();
             FireCurrentChargePhase();
+            EmitCannonPhaseDust();
 
             Projectile.rotation =
                 Projectile.velocity.ToRotation() - MathHelper.PiOver2;
@@ -460,8 +484,10 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             rapidOrbTimer = 0;
             heavyOrbTimer = 0;
             heavyHumTimer = 0;
+            cannonDustTimer = 0;
 
             beamSpawned = false;
+            initialPewSoundPlayed = false;
 
             Projectile.netUpdate = true;
         }
@@ -520,6 +546,115 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             else
             {
                 PlaySmallOrbHumSound();
+            }
+        }
+
+        private void EmitCannonPhaseDust()
+        {
+            if (SingleShotOnly)
+            {
+                return;
+            }
+
+            int intervalTicks;
+            int dustCount;
+            float dustScale;
+            float dustSpeed;
+            bool beamSpurt;
+
+            if (ChargeTicks >= BeamStartTicks)
+            {
+                intervalTicks = BeamPhaseCannonDustIntervalTicks;
+                dustCount = BeamPhaseCannonDustCount;
+                dustScale = BeamPhaseCannonDustScale;
+                dustSpeed = BeamPhaseCannonDustSpeed;
+                beamSpurt = true;
+            }
+            else if (ChargeTicks >= PhaseTwoStartTicks)
+            {
+                intervalTicks = HeavyOrbPhaseCannonDustIntervalTicks;
+                dustCount = HeavyOrbPhaseCannonDustCount;
+                dustScale = HeavyOrbPhaseCannonDustScale;
+                dustSpeed = HeavyOrbPhaseCannonDustSpeed;
+                beamSpurt = false;
+            }
+            else
+            {
+                intervalTicks = SmallOrbPhaseCannonDustIntervalTicks;
+                dustCount = SmallOrbPhaseCannonDustCount;
+                dustScale = SmallOrbPhaseCannonDustScale;
+                dustSpeed = SmallOrbPhaseCannonDustSpeed;
+                beamSpurt = false;
+            }
+
+            cannonDustTimer++;
+
+            if (cannonDustTimer < intervalTicks)
+            {
+                return;
+            }
+
+            cannonDustTimer = 0;
+
+            Vector2 direction =
+                SafeNormalize(Projectile.velocity, Vector2.UnitX);
+
+            Vector2 perpendicular =
+                direction.RotatedBy(MathHelper.PiOver2);
+
+            Vector2 muzzlePosition =
+                Projectile.Center + direction * CannonDustMuzzleOffset;
+
+            for (int i = 0; i < dustCount; i++)
+            {
+                Vector2 dustPosition =
+                    muzzlePosition +
+                    perpendicular *
+                    Main.rand.NextFloat(
+                        -CannonDustSideSpread,
+                        CannonDustSideSpread
+                    );
+
+                Vector2 dustVelocity;
+
+                if (beamSpurt)
+                {
+                    dustVelocity =
+                        direction
+                            .RotatedBy(
+                                Main.rand.NextFloat(
+                                    -BeamPhaseCannonDustConeRadians,
+                                    BeamPhaseCannonDustConeRadians
+                                )
+                            ) *
+                        Main.rand.NextFloat(
+                            dustSpeed * 0.65f,
+                            dustSpeed
+                        );
+                }
+                else
+                {
+                    dustVelocity =
+                        Main.rand.NextVector2Circular(
+                            dustSpeed,
+                            dustSpeed
+                        );
+                }
+
+                Dust dust =
+                    Dust.NewDustDirect(
+                        dustPosition,
+                        0,
+                        0,
+                        DustID.BlueTorch,
+                        dustVelocity.X,
+                        dustVelocity.Y,
+                        100,
+                        default,
+                        dustScale
+                    );
+
+                dust.noGravity = true;
             }
         }
 
