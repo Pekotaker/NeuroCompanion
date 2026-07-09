@@ -22,8 +22,20 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
         private const float BeamStartDistanceFromCannon = 24f;
         private const float BeamDrawStartOffset = 0f;
 
-        private const float BeamLightBrightness = 1.45f;
+        private const float BeamDrawScale = 1.1f;
+        private const float BeamLightBrightness = 2.2f;
+
+        private const byte BeamColorRed = 150;
+        private const byte BeamColorGreen = 230;
+        private const byte BeamColorBlue = 255;
+        private const byte BeamColorAlpha = 255;
+
+        private const int BeamDustChanceDenominator = 2;
+        private const float BeamDustScale = 1.45f;
+
+        private const float BeamDustMinDistance = 24f;
         private const int OwnerHitCooldownTicks = 30;
+
 
         private int ownerHitCooldown;
 
@@ -228,8 +240,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
 
         private void ProduceVisualEffects()
         {
-            Color beamColor =
-                new Color(90, 180, 255);
+            Color beamColor = GetBeamColor();
 
             DelegateMethods.v3_1 =
                 beamColor.ToVector3() *
@@ -242,12 +253,12 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
                 DelegateMethods.CastLight
             );
 
-            if (Main.rand.NextBool(3))
+            if (Main.rand.NextBool(BeamDustChanceDenominator))
             {
                 Vector2 dustPosition =
                     Projectile.Center +
                     Projectile.velocity *
-                    Main.rand.NextFloat(24f, BeamLength);
+                    Main.rand.NextFloat(BeamDustMinDistance, BeamLength);
 
                 Dust dust =
                     Dust.NewDustDirect(
@@ -259,7 +270,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
                         0f,
                         100,
                         beamColor,
-                        1.1f
+                        BeamDustScale
                     );
 
                 dust.noGravity = true;
@@ -351,26 +362,14 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
                 );
 
             DelegateMethods.c_1 =
-                new Color(120, 220, 255, 255);
+                GetBeamColor();
 
             Utils.DrawLaser(
                 Main.spriteBatch,
                 texture,
                 startPosition,
                 endPosition,
-                new Vector2(1.1f),
-                lineFraming
-            );
-
-            DelegateMethods.c_1 =
-                Color.White * 0.85f;
-
-            Utils.DrawLaser(
-                Main.spriteBatch,
-                texture,
-                startPosition,
-                endPosition,
-                new Vector2(0.5f),
+                new Vector2(BeamDrawScale),
                 lineFraming
             );
 
@@ -389,6 +388,16 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
 
             value.Normalize();
             return value;
+        }
+
+        private static Color GetBeamColor()
+        {
+            return new Color(
+                BeamColorRed,
+                BeamColorGreen,
+                BeamColorBlue,
+                BeamColorAlpha
+            );
         }
     }
 }

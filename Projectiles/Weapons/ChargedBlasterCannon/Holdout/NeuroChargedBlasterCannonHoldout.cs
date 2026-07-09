@@ -40,6 +40,20 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private const float SmallOrbDamageMultiplier = 0.45f;
         private const float HeavyOrbDamageMultiplier = 0.85f;
 
+        private const int HeavyOrbHumIntervalTicks = 6;
+
+        private const float InitialPewSoundVolume = 1f;
+        private const float InitialPewSoundPitch = 0f;
+
+        private const float SmallOrbHumSoundVolume = 0.25f;
+        private const float SmallOrbHumSoundPitch = -0.35f;
+
+        private const float HeavyOrbHumSoundVolume = 0.45f;
+        private const float HeavyOrbHumSoundPitch = -0.2f;
+
+        private const float BeamStartHumSoundVolume = 1.05f;
+        private const float BeamStartHumSoundPitch = -0.05f;
+
         private bool initialized;
         private bool beamSpawned;
         private bool initialPewSoundPlayed;
@@ -347,7 +361,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             {
                 heavyHumTimer++;
 
-                if (heavyHumTimer >= 6)
+                if (heavyHumTimer >= HeavyOrbHumIntervalTicks)
                 {
                     heavyHumTimer = 0;
                     PlayHeavyOrbHumSound();
@@ -382,7 +396,11 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             initialPewSoundPlayed = true;
 
             SoundEngine.PlaySound(
-                SoundID.Item75,
+                SoundID.Item75 with
+                {
+                    Volume = InitialPewSoundVolume,
+                    Pitch = InitialPewSoundPitch
+                },
                 Projectile.Center
             );
         }
@@ -392,8 +410,8 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             SoundEngine.PlaySound(
                 SoundID.Item15 with
                 {
-                    Volume = 0.25f,
-                    Pitch = -0.35f
+                    Volume = SmallOrbHumSoundVolume,
+                    Pitch = SmallOrbHumSoundPitch
                 },
                 Projectile.Center
             );
@@ -404,8 +422,8 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             SoundEngine.PlaySound(
                 SoundID.Item15 with
                 {
-                    Volume = 0.45f,
-                    Pitch = -0.2f
+                    Volume = HeavyOrbHumSoundVolume,
+                    Pitch = HeavyOrbHumSoundPitch
                 },
                 Projectile.Center
             );
@@ -416,8 +434,8 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             SoundEngine.PlaySound(
                 SoundID.Item15 with
                 {
-                    Volume = 0.95f,
-                    Pitch = -0.05f
+                    Volume = BeamStartHumSoundVolume,
+                    Pitch = BeamStartHumSoundPitch
                 },
                 Projectile.Center
             );
@@ -444,7 +462,6 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
             heavyHumTimer = 0;
 
             beamSpawned = false;
-            initialPewSoundPlayed = false;
 
             Projectile.netUpdate = true;
         }

@@ -10,6 +10,41 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Orb;
 
 public class NeuroChargedBlasterOrb : ModProjectile
 {
+    private const int SmallOrbWidth = 14;
+    private const int SmallOrbHeight = 14;
+    private const float SmallOrbScale = 0.65f;
+
+    private const int HeavyOrbWidth = 28;
+    private const int HeavyOrbHeight = 28;
+    private const float HeavyOrbScale = 1.15f;
+
+    private const int SmallOrbPenetration = 1;
+    private const int HeavyOrbPenetration = -1;
+
+    private const int SmallOrbLifetimeTicks = 180;
+    private const int HeavyOrbLifetimeTicks = 240;
+
+    private const int HeavyOrbLocalNpcHitCooldownTicks = 12;
+
+    private const int SmallOrbTrailDustChanceDenominator = 4;
+    private const int HeavyOrbTrailDustChanceDenominator = 2;
+
+    private const float SmallOrbTrailDustScale = 0.95f;
+    private const float HeavyOrbTrailDustScale = 1.45f;
+
+    private const int SmallOrbDeathDustCount = 8;
+    private const int HeavyOrbDeathDustCount = 18;
+
+    private const float SmallOrbDeathDustScale = 0.95f;
+    private const float HeavyOrbDeathDustScale = 1.55f;
+
+    private const float TrailDustVelocityMultiplier = 0.15f;
+    private const float DeathDustMaxVelocity = 2f;
+
+    private const float OrbLightRed = 0.2f;
+    private const float OrbLightGreen = 0.45f;
+    private const float OrbLightBlue = 1f;
+
     public override string Texture =>
         "Terraria/Images/Projectile_" + ProjectileID.ChargedBlasterOrb;
 
@@ -38,7 +73,7 @@ public class NeuroChargedBlasterOrb : ModProjectile
         Projectile.tileCollide = true;
         Projectile.ignoreWater = true;
 
-        Projectile.timeLeft = 180;
+        Projectile.timeLeft = SmallOrbLifetimeTicks;
         Projectile.alpha = 0;
 
         Projectile.extraUpdates = 1;
@@ -52,19 +87,19 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
             if (IsHeavyOrb)
             {
-                Projectile.Resize(28, 28);
-                Projectile.scale = 1.15f;
-                Projectile.penetrate = -1;
-                Projectile.timeLeft = 240;
+                Projectile.Resize(HeavyOrbWidth, HeavyOrbHeight);
+                Projectile.scale = HeavyOrbScale;
+                Projectile.penetrate = HeavyOrbPenetration;
+                Projectile.timeLeft = HeavyOrbLifetimeTicks;
 
                 Projectile.usesLocalNPCImmunity = true;
-                Projectile.localNPCHitCooldown = 12;
+                Projectile.localNPCHitCooldown = HeavyOrbLocalNpcHitCooldownTicks;
             }
             else
             {
-                Projectile.Resize(14, 14);
-                Projectile.scale = 0.65f;
-                Projectile.penetrate = 1;
+                Projectile.Resize(SmallOrbWidth, SmallOrbHeight);
+                Projectile.scale = SmallOrbScale;
+                Projectile.penetrate = SmallOrbPenetration;
             }
         }
 
@@ -75,12 +110,22 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
         Lighting.AddLight(
             Projectile.Center,
-            0.2f,
-            0.45f,
-            1f
+            OrbLightRed,
+            OrbLightGreen,
+            OrbLightBlue
         );
 
-        if (Main.rand.NextBool(IsHeavyOrb ? 2 : 4))
+        int trailDustChance =
+            IsHeavyOrb
+                ? HeavyOrbTrailDustChanceDenominator
+                : SmallOrbTrailDustChanceDenominator;
+
+        float trailDustScale =
+            IsHeavyOrb
+                ? HeavyOrbTrailDustScale
+                : SmallOrbTrailDustScale;
+
+        if (Main.rand.NextBool(trailDustChance))
         {
             Dust dust =
                 Dust.NewDustDirect(
@@ -88,11 +133,11 @@ public class NeuroChargedBlasterOrb : ModProjectile
                     Projectile.width,
                     Projectile.height,
                     DustID.BlueTorch,
-                    Projectile.velocity.X * 0.15f,
-                    Projectile.velocity.Y * 0.15f,
+                    Projectile.velocity.X * TrailDustVelocityMultiplier,
+                    Projectile.velocity.Y * TrailDustVelocityMultiplier,
                     100,
                     default,
-                    IsHeavyOrb ? 1f : 0.65f
+                    trailDustScale
                 );
 
             dust.noGravity = true;
@@ -142,7 +187,15 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
     public override void OnKill(int timeLeft)
     {
-        int dustCount = IsHeavyOrb ? 18 : 8;
+        int dustCount =
+            IsHeavyOrb
+                ? HeavyOrbDeathDustCount
+                : SmallOrbDeathDustCount;
+
+        float dustScale =
+            IsHeavyOrb
+                ? HeavyOrbDeathDustScale
+                : SmallOrbDeathDustScale;
 
         for (int i = 0; i < dustCount; i++)
         {
@@ -152,11 +205,11 @@ public class NeuroChargedBlasterOrb : ModProjectile
                     Projectile.width,
                     Projectile.height,
                     DustID.Electric,
-                    Main.rand.NextFloat(-2f, 2f),
-                    Main.rand.NextFloat(-2f, 2f),
+                    Main.rand.NextFloat(-DeathDustMaxVelocity, DeathDustMaxVelocity),
+                    Main.rand.NextFloat(-DeathDustMaxVelocity, DeathDustMaxVelocity),
                     100,
                     default,
-                    IsHeavyOrb ? 1.05f : 0.65f
+                    dustScale
                 );
 
             dust.noGravity = true;
