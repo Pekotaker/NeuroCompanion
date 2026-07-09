@@ -25,9 +25,9 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         public const int RefreshGraceTicks = 12;
 
         private const int PhaseTwoStartTicks = 80;
-        private const int BeamStartTicks = 160;
+        private const int BeamStartTicks = 220;
 
-        private const int BeamDurationTicks = 70;
+        private const int BeamDurationTicks = 300;
         private const int CycleResetTicks = BeamStartTicks + BeamDurationTicks;
 
         private const int RapidOrbCooldownTicks = 8;
@@ -54,27 +54,27 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
         private const float BeamStartHumSoundVolume = 1.05f;
         private const float BeamStartHumSoundPitch = -0.05f;
 
-        private const int SmallOrbPhaseCannonDustIntervalTicks = 5;
+        private const int SmallOrbPhaseCannonDustIntervalTicks = 6;
         private const int HeavyOrbPhaseCannonDustIntervalTicks = 4;
         private const int BeamPhaseCannonDustIntervalTicks = 2;
 
         private const int SmallOrbPhaseCannonDustCount = 1;
-        private const int HeavyOrbPhaseCannonDustCount = 1;
+        private const int HeavyOrbPhaseCannonDustCount = 2;
         private const int BeamPhaseCannonDustCount = 2;
 
-        private const float SmallOrbPhaseCannonDustScale = 0.7f;
-        private const float HeavyOrbPhaseCannonDustScale = 0.9f;
-        private const float BeamPhaseCannonDustScale = 1.25f;
+        private const float SmallOrbPhaseCannonDustScale = 0.45f;
+        private const float HeavyOrbPhaseCannonDustScale = 0.55f;
+        private const float BeamPhaseCannonDustScale = 0.8f;
 
         private const int CannonDustType = DustID.Electric;
 
         private const float CannonDustOriginOffset = 0f;
 
-        private const float SmallOrbPhaseSuctionRadiusMin = 32f;
-        private const float SmallOrbPhaseSuctionRadiusMax = 48f;
+        private const float SmallOrbPhaseSuctionRadiusMin = 2f;
+        private const float SmallOrbPhaseSuctionRadiusMax = 8f;
 
-        private const float HeavyOrbPhaseSuctionRadiusMin = 40f;
-        private const float HeavyOrbPhaseSuctionRadiusMax = 56f;
+        private const float HeavyOrbPhaseSuctionRadiusMin = 2f;
+        private const float HeavyOrbPhaseSuctionRadiusMax = 8f;
 
         private const float SmallOrbPhaseSuctionSpeed = 5f;
         private const float HeavyOrbPhaseSuctionSpeed = 6.5f;
@@ -83,9 +83,9 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout
 
         private const float BeamPhaseCannonDustSpeed = 12f;
         private const float BeamPhaseCannonDustMinSpeedMultiplier = 0.8f;
-        private const float BeamPhaseCannonDustConeRadians = 0.16f;
-        private const float BeamPhaseDustSpawnBackOffset = 4f;
-        private const float BeamPhaseDustSpawnSideSpread = 4f;
+        private const float BeamPhaseCannonDustConeRadians = 0.32f;
+        private const float BeamPhaseDustSpawnBackOffset = 0f;
+        private const float BeamPhaseDustSpawnSideSpread = 8f;
 
         private bool initialized;
         private bool beamSpawned;

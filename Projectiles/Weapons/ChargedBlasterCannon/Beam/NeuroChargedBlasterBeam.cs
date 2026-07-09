@@ -9,7 +9,6 @@ using Terraria.ModLoader;
 
 using NeuroCompanion.Projectiles.Globals;
 using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout;
-using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon;
 
 namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
 {
@@ -22,7 +21,7 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
         private const float BeamTileCollisionWidth = 1f;
         private const float BeamHitboxCollisionWidth = 14f;
         private const float BeamLengthChangeFactor = 0.75f;
-        private const float BeamStartDistanceFromCannon = 6f;
+        private const float BeamStartDistanceFromCannon = 22f;
         private const float BeamDrawStartOffset = 0f;
 
         private const float BeamDrawScale = 1f;
