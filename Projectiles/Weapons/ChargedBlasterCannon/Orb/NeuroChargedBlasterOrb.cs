@@ -26,26 +26,25 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
     private const int HeavyOrbLocalNpcHitCooldownTicks = 12;
 
-    private const int SmallOrbTrailDustCountPerTick = 2;
-    private const int HeavyOrbTrailDustCountPerTick = 3;
+    private const int SmallOrbTrailDustCountPerTick = 1;
+    private const int HeavyOrbTrailDustCountPerTick = 1;
 
-    private const float SmallOrbTrailDustScale = 1.75f;
-    private const float HeavyOrbTrailDustScale = 2.05f;
+    private const float SmallOrbTrailDustScale = 0.35f;
+    private const float HeavyOrbTrailDustScale = 0.4f;
 
-    private const float TrailDustBehindDistance = 22f;
-    private const float HeavyTrailDustBehindDistance = 30f;
+    private const float SmallOrbTrailLength = 72f;
+    private const float HeavyOrbTrailLength = 96f;
 
-    private const float TrailDustSideSpread = 7f;
-    private const float HeavyTrailDustSideSpread = 10f;
+    private const float SmallOrbTrailSideSpread = 6f;
+    private const float HeavyOrbTrailSideSpread = 9f;
 
-    private const float TrailDustForwardVelocity = 4.8f;
-    private const float HeavyTrailDustForwardVelocity = 5.8f;
+    private const float SmallOrbTrailPullVelocity = 5.8f;
+    private const float HeavyOrbTrailPullVelocity = 7.2f;
 
-    private const float TrailDustRandomVelocity = 0.55f;
+    private const float TrailDustRandomVelocity = 0.75f;
 
-    private const byte OrbEffectColorRed = 222;
-    private const byte OrbEffectColorGreen = 255;
-    private const byte OrbEffectColorBlue = 255;
+    private const int OrbTrailDustType = DustID.Electric;
+    private const int OrbDeathDustType = DustID.Electric;
 
     private const int SmallOrbDeathDustCount = 8;
     private const int HeavyOrbDeathDustCount = 18;
@@ -69,11 +68,7 @@ public class NeuroChargedBlasterOrb : ModProjectile
 
     private static Color GetOrbEffectColor()
     {
-        return new Color(
-            OrbEffectColorRed,
-            OrbEffectColorGreen,
-            OrbEffectColorBlue
-        );
+        return ChargedBlasterCannonEffectColor.GetColor();
     }
 
     public override void SetStaticDefaults()
@@ -159,43 +154,46 @@ public class NeuroChargedBlasterOrb : ModProjectile
                 ? HeavyOrbTrailDustScale
                 : SmallOrbTrailDustScale;
 
-        float behindDistance =
+        float trailLength =
             IsHeavyOrb
-                ? HeavyTrailDustBehindDistance
-                : TrailDustBehindDistance;
+                ? HeavyOrbTrailLength
+                : SmallOrbTrailLength;
 
         float sideSpread =
             IsHeavyOrb
-                ? HeavyTrailDustSideSpread
-                : TrailDustSideSpread;
+                ? HeavyOrbTrailSideSpread
+                : SmallOrbTrailSideSpread;
 
-        float forwardVelocity =
+        float pullVelocity =
             IsHeavyOrb
-                ? HeavyTrailDustForwardVelocity
-                : TrailDustForwardVelocity;
+                ? HeavyOrbTrailPullVelocity
+                : SmallOrbTrailPullVelocity;
 
         for (int i = 0; i < dustCount; i++)
         {
+            float distanceBehindOrb =
+                Main.rand.NextFloat(0f, trailLength);
+
             Vector2 dustPosition =
                 Projectile.Center -
-                direction * behindDistance +
+                direction * distanceBehindOrb +
                 perpendicular * Main.rand.NextFloat(-sideSpread, sideSpread);
 
             Vector2 dustVelocity =
-                direction * forwardVelocity +
+                direction * Main.rand.NextFloat(
+                    pullVelocity * 0.65f,
+                    pullVelocity
+                ) +
                 Main.rand.NextVector2Circular(
                     TrailDustRandomVelocity,
                     TrailDustRandomVelocity
                 );
 
             Dust dust =
-                Dust.NewDustDirect(
+                Dust.NewDustPerfect(
                     dustPosition,
-                    0,
-                    0,
-                    DustID.BlueTorch,
-                    dustVelocity.X,
-                    dustVelocity.Y,
+                    OrbTrailDustType,
+                    dustVelocity,
                     100,
                     GetOrbEffectColor(),
                     dustScale
@@ -265,7 +263,7 @@ public class NeuroChargedBlasterOrb : ModProjectile
                     Projectile.position,
                     Projectile.width,
                     Projectile.height,
-                    DustID.Electric,
+                    OrbDeathDustType,
                     Main.rand.NextFloat(-DeathDustMaxVelocity, DeathDustMaxVelocity),
                     Main.rand.NextFloat(-DeathDustMaxVelocity, DeathDustMaxVelocity),
                     100,

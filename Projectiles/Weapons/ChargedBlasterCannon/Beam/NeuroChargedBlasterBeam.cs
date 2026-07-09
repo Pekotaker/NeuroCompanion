@@ -1,12 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using NeuroCompanion.Projectiles.Globals;
-using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout;
+
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
+
+using NeuroCompanion.Projectiles.Globals;
+using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Holdout;
+using NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon;
 
 namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
 {
@@ -19,19 +22,16 @@ namespace NeuroCompanion.Projectiles.Weapons.ChargedBlasterCannon.Beam
         private const float BeamTileCollisionWidth = 1f;
         private const float BeamHitboxCollisionWidth = 14f;
         private const float BeamLengthChangeFactor = 0.75f;
-        private const float BeamStartDistanceFromCannon = 24f;
+        private const float BeamStartDistanceFromCannon = 6f;
         private const float BeamDrawStartOffset = 0f;
 
         private const float BeamDrawScale = 1f;
         private const float BeamLightBrightness = 5.5f;
 
-        private const byte BeamColorRed = 222;
-        private const byte BeamColorGreen = 255;
-        private const byte BeamColorBlue = 255;
         private const byte BeamColorAlpha = 25;
 
-        private const int BeamDustChanceDenominator = 1;
-        private const float BeamDustScale = 1.9f;
+        private const int BeamDustChanceDenominator = 3;
+        private const float BeamDustScale = 0.4f;
 
         private const float BeamDustMinDistance = 24f;
         private const int OwnerHitCooldownTicks = 30;
@@ -392,12 +392,7 @@ Utils.DrawLaser(
 
         private static Color GetBeamColor()
         {
-            return new Color(
-                BeamColorRed,
-                BeamColorGreen,
-                BeamColorBlue,
-                BeamColorAlpha
-            );
+            return ChargedBlasterCannonEffectColor.GetColor(BeamColorAlpha);
         }
     }
 }
