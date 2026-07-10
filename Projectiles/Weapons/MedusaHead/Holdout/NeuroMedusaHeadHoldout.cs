@@ -14,7 +14,12 @@ namespace NeuroCompanion.Projectiles.Weapons.MedusaHead.Holdout
 
         private int remainingLifeTicks;
 
+        private bool attackSoundPlayed;
+
         private Microsoft.Xna.Framework.Vector2 fallbackAnchorPosition;
+
+        private int attackTimer = AttackIntervalTicks;
+        private bool singleShotBurstFired;
 
         public override void SetStaticDefaults()
         {
@@ -27,6 +32,8 @@ namespace NeuroCompanion.Projectiles.Weapons.MedusaHead.Holdout
         public override void SetDefaults()
         {
             Projectile.CloneDefaults(ProjectileID.MedusaHead);
+
+            Projectile.hide = false;
 
             Projectile.DamageType = DamageClass.Magic;
 
@@ -69,6 +76,7 @@ namespace NeuroCompanion.Projectiles.Weapons.MedusaHead.Holdout
 
             UpdateAimAndPosition();
             UpdateAnimation();
+            TryFireBurst();
 
             Projectile.timeLeft = 2;
         }

@@ -33,6 +33,7 @@ Projectiles: {
 	NeuroChargedBlasterOrb.DisplayName: Neuro Charged Blaster Orb
 	NeuroSpiritFlameProjectile.DisplayName: Neuro Spirit Flame Projectile
 	NeuroMedusaHeadHoldout.DisplayName: Neuro Medusa Head Holdout
+	NeuroMedusaHeadRay.DisplayName: Neuro Medusa Head Ray
 }
 
 Buffs: {

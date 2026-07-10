@@ -10,6 +10,22 @@
         private const float FallbackAimSpeed = 30f;
         private const float AimResponsiveness = 0.2f;
 
+        private const int AttackIntervalTicks = 15;
+        private const int PostBurstLifetimeTicks = 8;
+
+        private const int MaxTargetCount = 3;
+
+        private const int MinimumRandomRayCount = 1;
+        private const int MaximumRandomRayCount = 4;
+
+        // Terraria tiles are 16 pixels wide.
+        private const float MinimumRandomRayLength = 24f;
+        private const float MaximumRandomRayLength = 180f;
+
+        // 400 pixels = 25 tiles.
+        // Adjust this later if Neuro's range feels too short or too long.
+        private const float TargetSearchRange = 400f;
+
         // Position relative to Neuro's center.
         //
         // Positive X moves the head farther toward the direction Neuro is facing.

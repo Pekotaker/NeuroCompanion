@@ -71,7 +71,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                     ai0: targetPosition.X,
                     ai1: targetPosition.Y,
                     ai2: singleShotOnly ? 1f : 0f,
-                    forceVisible: true
+                    forceVisible: true,
+                    useSkyDrawLayer: true
                 )
             };
         }
