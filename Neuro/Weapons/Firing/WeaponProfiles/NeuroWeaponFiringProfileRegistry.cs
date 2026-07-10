@@ -11,7 +11,8 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
         {
             return LaserMachinegunProfile.IsWeapon(weapon) ||
                    LastPrismProfile.IsWeapon(weapon) ||
-                   ChargedBlasterCannonProfile.IsWeapon(weapon);
+                   ChargedBlasterCannonProfile.IsWeapon(weapon) ||
+                   MedusaHeadProfile.IsWeapon(weapon);
         }
 
         public static int GetProjectileType(Item weapon)
@@ -29,6 +30,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (ChargedBlasterCannonProfile.IsWeapon(weapon))
             {
                 return ChargedBlasterCannonProfile.ProjectileType;
+            }
+
+            if (MedusaHeadProfile.IsWeapon(weapon))
+            {
+                return MedusaHeadProfile.ProjectileType;
             }
 
             return ProjectileID.None;
@@ -216,6 +222,17 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (MedusaHeadProfile.IsWeapon(weapon))
+            {
+                return MedusaHeadProfile.CreateShots(
+                    owner,
+                    weapon,
+                    basePosition,
+                    baseVelocity,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
@@ -237,6 +254,11 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (ChargedBlasterCannonProfile.IsWeapon(weapon))
             {
                 return ChargedBlasterCannonProfile.GetCooldownTicks(channelTicks);
+            }
+
+            if (MedusaHeadProfile.IsWeapon(weapon))
+            {
+                return MedusaHeadProfile.GetCooldownTicks(channelTicks);
             }
 
             return 1;

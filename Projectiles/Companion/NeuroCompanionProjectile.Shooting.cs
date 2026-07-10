@@ -166,10 +166,13 @@ namespace NeuroCompanion.Projectiles.Companion
 
         private void PlayWeaponSound(Item weapon)
         {
-            if (ChargedBlasterCannonProfile.IsWeapon(weapon))
+            if (
+                ChargedBlasterCannonProfile.IsWeapon(weapon) ||
+                MedusaHeadProfile.IsWeapon(weapon)
+            )
             {
-                // Charged Blaster Cannon has custom phase sounds in its holdout.
-                // Do not let the generic item-use sound spam Item75 every refresh.
+                // These weapons manage their sounds inside their custom holdouts.
+                // Do not replay the item-use sound every time the holdout refreshes.
                 return;
             }
 
