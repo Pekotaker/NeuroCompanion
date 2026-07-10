@@ -54,6 +54,12 @@ Custom Neuro weapon profiles currently include:
 
 [list]
 [*]Laser Machinegun
+[*]Last Prism
+[*]Charged Blaster Cannon
+[*]Betsy's Wrath
+[*]Spirit Flame
+[*]Medusa Head
+[*]Life Drain
 [*]Bubble Gun
 [*]Bee Gun
 [*]Wasp Gun
@@ -70,7 +76,7 @@ Custom Neuro weapon profiles currently include:
 [*]Stellar Tune
 [/list]
 
-Some weapons are still rejected because they need special behavior. This includes stationary cloud, wall, or field weapons, plus beam weapons that normally depend on the player holding the attack button, such as Last Prism.
+Support weapons are rejected for now until I can figure out how to implement them.
 
 [b]Staff Upgrades[/b]
 

@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.2.4.1
+
+### Added
+
+* Added custom Neuro firing profiles for more magic weapons:
+
+  * Last Prism
+  * Charged Blaster Cannon
+  * Betsy's Wrath
+  * Spirit Flame
+  * Medusa Head
+  * Life Drain
+
+### Changed
+
+* Last Prism now appears beside Neuro and fires its six-beam prism attack.
+* Charged Blaster Cannon now uses separate rapid-shot, heavy-shot, and sustained-beam phases.
+* Betsy's Wrath now fires its full three-projectile volley with the correct additional delay.
+* Spirit Flame now forms around Neuro and homes toward nearby enemies.
+* Medusa Head now attacks up to three nearby enemies with targeted rays and additional scattered rays.
+* Life Drain now places its drain area around the selected target, affects every enemy inside it, and grants the player Life Drain regeneration.
+* Added visible Life Drain particle streams from affected enemies toward Neuro and the player.
+
+### Fixed
+
+* Fixed Last Prism and Charged Blaster Cannon being rejected as unsupported channeling weapons.
+* Fixed Medusa Head ray drawing and Mk4 holdout visibility.
+* Fixed Life Drain attacking only enemies close to Neuro instead of enemies around the selected target.
+* Fixed Life Drain failing to apply its regeneration effect to the player.
+* Fixed Life Drain particles ending early or moving past their destination.
+
+
 ## 0.2.4
 
 ### Added

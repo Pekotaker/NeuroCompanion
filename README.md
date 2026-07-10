@@ -280,10 +280,6 @@ Important rule for most weapons:
 Actual Neuro fire interval = max(staff fire limit, equipped weapon useTime)
 ```
 
-Some custom weapon profiles can define special behavior.
-
-For example, Laser Machinegun uses a custom Neuro firing profile instead of normal player-held channeling behavior.
-
 Recipes:
 
 ```text
@@ -329,7 +325,7 @@ Neuro currently accepts:
 
 * Magic weapons that fire normal projectiles.
 * Magic weapons with controllable projectiles, such as Magic Missile.
-* Magic weapons that place attacks at a target position, such as Resonance Scepter.
+* Magic weapons that place attacks at a target position, such as Resonance Scepter and Life Drain.
 * Magic weapons with custom Neuro firing profiles.
 
 Neuro currently rejects:
@@ -338,53 +334,45 @@ Neuro currently rejects:
 * Items with no damage.
 * Items with no mana cost.
 * Items that do not shoot projectiles.
-* Weapons that create stationary clouds, fields, walls, or similar effects.
-* Generic channeling weapons that depend on the player holding the attack button.
-* Beam weapons that need custom behavior attached to Neuro's body, such as Last Prism.
+* Weapons that create stationary clouds, fields, walls, or similar effects unless they have custom Neuro support.
+* Generic channeling weapons that depend on the player holding the attack button unless they have a custom Neuro profile.
 
 Examples:
 
 ```text
-Examples:
-
-```text
-Wand of Sparking        -> accepted
-Water Bolt              -> accepted
-Demon Scythe            -> accepted
-Magic Missile           -> accepted
-Flamelash               -> accepted
-Rainbow Rod             -> accepted
-Resonance Scepter       -> accepted
-Laser Machinegun        -> accepted with custom Neuro profile
-Bubble Gun              -> accepted with custom Neuro profile
-Bee Gun                 -> accepted with custom Neuro profile
-Wasp Gun                -> accepted with custom Neuro profile
-Bat Scepter             -> accepted with custom Neuro profile
-Poison Staff            -> accepted with custom Neuro profile
-Venom Staff             -> accepted with custom Neuro profile
-Meteor Staff            -> accepted with custom Neuro profile
-Blizzard Staff          -> accepted with custom Neuro profile
-Lunar Flare             -> accepted with custom Neuro profile
-Sky Fracture            -> accepted with custom Neuro profile
-Nightglow               -> accepted with custom Neuro profile
-Shadowflame Hex Doll    -> accepted with custom Neuro profile
-Blood Thorn             -> accepted with custom Neuro profile
-Stellar Tune            -> accepted with custom Neuro profile
-Nimbus Rod              -> rejected
-Clinger Staff           -> rejected
-Magnet Sphere           -> rejected
-Last Prism              -> rejected
+Wand of Sparking         -> accepted
+Water Bolt               -> accepted
+Demon Scythe             -> accepted
+Magic Missile            -> accepted
+Flamelash                -> accepted
+Rainbow Rod              -> accepted
+Resonance Scepter        -> accepted
+Laser Machinegun         -> accepted with custom Neuro profile
+Last Prism               -> accepted with custom Neuro profile
+Charged Blaster Cannon   -> accepted with custom Neuro profile
+Betsy's Wrath            -> accepted with custom Neuro profile
+Spirit Flame             -> accepted with custom Neuro profile
+Medusa Head              -> accepted with custom Neuro profile
+Life Drain               -> accepted with custom Neuro profile
+Bubble Gun               -> accepted with custom Neuro profile
+Bee Gun                  -> accepted with custom Neuro profile
+Wasp Gun                 -> accepted with custom Neuro profile
+Bat Scepter              -> accepted with custom Neuro profile
+Poison Staff             -> accepted with custom Neuro profile
+Venom Staff              -> accepted with custom Neuro profile
+Meteor Staff             -> accepted with custom Neuro profile
+Blizzard Staff           -> accepted with custom Neuro profile
+Lunar Flare              -> accepted with custom Neuro profile
+Sky Fracture             -> accepted with custom Neuro profile
+Nightglow                -> accepted with custom Neuro profile
+Shadowflame Hex Doll     -> accepted with custom Neuro profile
+Blood Thorn              -> accepted with custom Neuro profile
+Stellar Tune             -> accepted with custom Neuro profile
+Nimbus Rod               -> rejected
+Clinger Staff            -> rejected
+Magnet Sphere            -> rejected
 ```
 
-Some weapons do not work like normal projectiles.
-
-For example, Resonance Scepter places its attack at the target position, so Neuro handles it with special placement logic.
-
-Laser Machinegun normally depends on the player holding the attack button. Neuro handles it with a custom weapon profile instead.
-
-Several special magic weapons now have custom Neuro profiles so they behave closer to their normal Terraria attacks when fired by Neuro.
-
-Last Prism and similar beam weapons still need custom support.
 
 ## Evil Neuro
 
