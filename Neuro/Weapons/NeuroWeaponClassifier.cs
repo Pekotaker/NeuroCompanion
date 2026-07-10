@@ -173,7 +173,9 @@ namespace NeuroCompanion.Neuro.Weapons
             switch (item.type)
             {
                 case ItemID.PrincessWeapon:
+                case ItemID.SoulDrain:
                     return true;
+
                 default:
                     return false;
             }

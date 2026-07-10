@@ -233,6 +233,14 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (LifeDrainProfile.IsWeapon(weapon))
+            {
+                return LifeDrainProfile.CreateShots(
+                    weapon,
+                    targetPosition
+                );
+            }
+
             return null;
         }
 
@@ -326,6 +334,14 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (SpiritFlameProfile.IsWeapon(weapon))
             {
                 cooldownTicks = SpiritFlameProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (LifeDrainProfile.IsWeapon(weapon))
+            {
+                cooldownTicks =
+                    LifeDrainProfile.GetCooldownTicks(weapon);
+
                 return true;
             }
 
