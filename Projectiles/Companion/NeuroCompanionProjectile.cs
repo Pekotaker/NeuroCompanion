@@ -77,6 +77,28 @@ namespace NeuroCompanion.Projectiles.Companion
         private const float EvilAttackHoverHeight = 80f;
         private const float EvilAttackTeleportDistance = 240f;
 
+        // Do not create a trail for tiny corrective movements.
+        private const float MinimumTeleportEffectDistance = 32f;
+
+        // Trail density scales with distance but remains capped.
+        private const float TeleportParticleSpacing = 12f;
+        private const int MinimumTeleportTrailParticles = 12;
+        private const int MaximumTeleportTrailParticles = 48;
+
+        // Small bursts mark the departure and arrival positions.
+        private const int TeleportEndpointParticleCount = 10;
+
+        private const float TeleportTrailHalfWidth = 5f;
+        private const float TeleportTrailLongitudinalJitter = 3f;
+
+        private const float TeleportTrailVelocity = 0.8f;
+        private const float TeleportEndpointVelocity = 2.2f;
+
+        private const float MinimumTeleportDustScale = 1.0f;
+        private const float MaximumTeleportDustScale = 1.45f;
+
+        private const float NeuroLightIntensity = 1.05f;
+
 
         private CompanionState State
         {
@@ -156,6 +178,7 @@ namespace NeuroCompanion.Projectiles.Companion
 
             Animate();
             CreateVisualEffects();
+            UpdateCompanionLighting();
         }
 
         private bool ShouldStayAlive(Player owner)

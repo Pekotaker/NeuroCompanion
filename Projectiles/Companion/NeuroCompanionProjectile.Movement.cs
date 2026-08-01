@@ -361,9 +361,17 @@ namespace NeuroCompanion.Projectiles.Companion
 
         private void TeleportTo(Vector2 destination)
         {
+            Vector2 departurePosition =
+                Projectile.Center;
+
             Projectile.Center = destination;
             Projectile.velocity = Vector2.Zero;
             Projectile.netUpdate = true;
+
+            CreateTeleportEffects(
+                departurePosition,
+                destination
+            );
         }
 
         private void FaceMovementDirection()
