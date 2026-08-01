@@ -213,6 +213,15 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            if (TomeOfInfiniteWisdomProfile.IsWeapon(weapon))
+            {
+                return TomeOfInfiniteWisdomProfile.CreateShots(
+                    weapon,
+                    basePosition,
+                    baseVelocity
+                );
+            }
+
             if (SpiritFlameProfile.IsWeapon(weapon))
             {
                 return SpiritFlameProfile.CreateShots(
@@ -328,6 +337,16 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
             if (BetsysWrathProfile.IsWeapon(weapon))
             {
                 cooldownTicks = BetsysWrathProfile.GetCooldownTicks(weapon);
+                return true;
+            }
+
+            if (TomeOfInfiniteWisdomProfile.IsWeapon(weapon))
+            {
+                cooldownTicks =
+                    TomeOfInfiniteWisdomProfile.GetCooldownTicks(
+                        weapon
+                    );
+
                 return true;
             }
 
