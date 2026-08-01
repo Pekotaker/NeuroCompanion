@@ -72,7 +72,11 @@ namespace NeuroCompanion.Projectiles.Companion
                 return;
             }
 
-            HoverNearOwnerForCombat(owner, target);
+            PositionForImmediateEnemyAttack(
+                owner,
+                target
+            );
+
             ShootWeaponAtTarget(owner, target);
         }
 
@@ -86,7 +90,7 @@ namespace NeuroCompanion.Projectiles.Companion
 
             neuroPlayer.TriggerEvilVisual();
 
-            HoverNearOwnerForEvilAttack(owner);
+            PositionForEvilAttack(owner);
             ShootEvilProjectileAtOwner(owner);
         }
 
@@ -99,14 +103,28 @@ namespace NeuroCompanion.Projectiles.Companion
                 State = CompanionState.Idle;
                 ShootTimer = 0f;
                 SupportedChannelTicks = 0f;
+
                 FollowOwner(owner);
                 return;
             }
 
             State = CompanionState.Attacking;
 
-            HoverNearOwnerForCombat(owner, target);
-            ShootWeaponAtTargetWhenReady(owner, target);
+            bool isReadyToFire =
+                MoveIntoSustainedEnemyAttackPosition(
+                    owner,
+                    target
+                );
+
+            if (!isReadyToFire)
+            {
+                return;
+            }
+
+            ShootWeaponAtTargetWhenReady(
+                owner,
+                target
+            );
         }
     }
 }

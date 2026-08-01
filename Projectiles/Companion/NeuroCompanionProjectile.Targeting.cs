@@ -1,5 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+
+using Microsoft.Xna.Framework;
+
 using Terraria;
+
 using NeuroCompanion.Players;
 
 namespace NeuroCompanion.Projectiles.Companion
@@ -8,14 +12,15 @@ namespace NeuroCompanion.Projectiles.Companion
     {
         private NPC FindTarget(Player owner)
         {
-            NPC manualTarget = FindManualTarget(owner);
+            NPC manualTarget =
+                FindManualTarget(owner);
 
             if (manualTarget != null)
             {
                 return manualTarget;
             }
 
-            return FindClosestTargetToPlayer(owner);
+            return FindClosestVisibleTarget(owner);
         }
 
         private NPC FindManualTarget(Player owner)
@@ -25,9 +30,27 @@ namespace NeuroCompanion.Projectiles.Companion
                 return null;
             }
 
-            NPC selectedTarget = Main.npc[owner.MinionAttackTargetNPC];
+            int targetIndex =
+                owner.MinionAttackTargetNPC;
 
-            if (IsValidTarget(selectedTarget, owner, ManualTargetSearchRangeFromPlayer))
+            if (
+                targetIndex < 0 ||
+                targetIndex >= Main.maxNPCs
+            )
+            {
+                return null;
+            }
+
+            NPC selectedTarget =
+                Main.npc[targetIndex];
+
+            if (
+                IsValidTargetWithinRange(
+                    selectedTarget,
+                    owner,
+                    ManualTargetSearchRangeFromPlayer
+                )
+            )
             {
                 return selectedTarget;
             }
@@ -35,51 +58,72 @@ namespace NeuroCompanion.Projectiles.Companion
             return null;
         }
 
-        private NPC FindClosestTargetToPlayer(Player owner)
+        private NPC FindClosestVisibleTarget(
+            Player owner
+        )
         {
-            NPC bestTarget = null;
-            float bestDistanceFromPlayer = TargetSearchRangeFromPlayer;
+            Rectangle visibleWorldBounds =
+                GetVisibleWorldBounds();
+
+            NPC closestTarget = null;
+
+            float closestDistanceSquared =
+                float.MaxValue;
 
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 NPC npc = Main.npc[i];
 
-                if (!IsValidTarget(npc, owner, TargetSearchRangeFromPlayer))
+                if (
+                    !IsValidVisibleTarget(
+                        npc,
+                        owner,
+                        visibleWorldBounds
+                    )
+                )
                 {
                     continue;
                 }
 
-                float distanceFromPlayer = Vector2.Distance(owner.Center, npc.Center);
+                float distanceSquared =
+                    Vector2.DistanceSquared(
+                        owner.Center,
+                        npc.Center
+                    );
 
-                if (distanceFromPlayer < bestDistanceFromPlayer)
+                if (
+                    distanceSquared >=
+                    closestDistanceSquared
+                )
                 {
-                    bestDistanceFromPlayer = distanceFromPlayer;
-                    bestTarget = npc;
+                    continue;
                 }
+
+                closestDistanceSquared =
+                    distanceSquared;
+
+                closestTarget = npc;
             }
 
-            return bestTarget;
+            return closestTarget;
         }
 
-        private bool IsValidTarget(
+        private bool IsValidVisibleTarget(
             NPC npc,
             Player owner,
-            float maxDistanceFromOwner
+            Rectangle visibleWorldBounds
         )
         {
-            if (!npc.active)
+            if (!IsChaseableTarget(npc))
             {
                 return false;
             }
 
-            if (!npc.CanBeChasedBy(this))
-            {
-                return false;
-            }
-
-            float distanceFromOwner = Vector2.Distance(owner.Center, npc.Center);
-
-            if (distanceFromOwner > maxDistanceFromOwner)
+            if (
+                !visibleWorldBounds.Intersects(
+                    npc.Hitbox
+                )
+            )
             {
                 return false;
             }
@@ -92,23 +136,123 @@ namespace NeuroCompanion.Projectiles.Companion
             return CanShootTarget(npc, owner);
         }
 
-        private bool CanShootTarget(NPC npc, Player owner)
+        private bool IsValidTargetWithinRange(
+            NPC npc,
+            Player owner,
+            float maximumDistance
+        )
         {
-            bool companionCanSeeTarget = Collision.CanHitLine(
-                Projectile.position,
-                Projectile.width,
-                Projectile.height,
-                npc.position,
-                npc.width,
-                npc.height
+            if (!IsChaseableTarget(npc))
+            {
+                return false;
+            }
+
+            float distanceSquared =
+                Vector2.DistanceSquared(
+                    owner.Center,
+                    npc.Center
+                );
+
+            if (
+                distanceSquared >
+                maximumDistance * maximumDistance
+            )
+            {
+                return false;
+            }
+
+            if (CanDetectTargetsThroughBlocks(owner))
+            {
+                return true;
+            }
+
+            return CanShootTarget(npc, owner);
+        }
+
+        private bool IsChaseableTarget(NPC npc)
+        {
+            return npc != null &&
+                   npc.active &&
+                   npc.CanBeChasedBy(this);
+        }
+
+        private static Rectangle GetVisibleWorldBounds()
+        {
+            Vector2 zoom =
+                Main.GameViewMatrix.Zoom;
+
+            float horizontalZoom =
+                Math.Max(
+                    zoom.X,
+                    MinimumViewportZoom
+                );
+
+            float verticalZoom =
+                Math.Max(
+                    zoom.Y,
+                    MinimumViewportZoom
+                );
+
+            Vector2 unscaledScreenSize =
+                new Vector2(
+                    Main.screenWidth,
+                    Main.screenHeight
+                );
+
+            Vector2 visibleWorldSize =
+                new Vector2(
+                    unscaledScreenSize.X /
+                    horizontalZoom,
+
+                    unscaledScreenSize.Y /
+                    verticalZoom
+                );
+
+            Vector2 screenCenter =
+                Main.screenPosition +
+                unscaledScreenSize * 0.5f;
+
+            Vector2 visibleWorldTopLeft =
+                screenCenter -
+                visibleWorldSize * 0.5f;
+
+            return new Rectangle(
+                (int)Math.Floor(
+                    visibleWorldTopLeft.X
+                ),
+                (int)Math.Floor(
+                    visibleWorldTopLeft.Y
+                ),
+                (int)Math.Ceiling(
+                    visibleWorldSize.X
+                ),
+                (int)Math.Ceiling(
+                    visibleWorldSize.Y
+                )
             );
+        }
+
+        private bool CanShootTarget(
+            NPC npc,
+            Player owner
+        )
+        {
+            bool companionCanSeeTarget =
+                Collision.CanHitLine(
+                    Projectile.position,
+                    Projectile.width,
+                    Projectile.height,
+                    npc.position,
+                    npc.width,
+                    npc.height
+                );
 
             if (companionCanSeeTarget)
             {
                 return true;
             }
 
-            bool ownerCanSeeTarget = Collision.CanHitLine(
+            return Collision.CanHitLine(
                 owner.position,
                 owner.width,
                 owner.height,
@@ -116,13 +260,16 @@ namespace NeuroCompanion.Projectiles.Companion
                 npc.width,
                 npc.height
             );
-
-            return ownerCanSeeTarget;
         }
 
-        private static bool CanDetectTargetsThroughBlocks(Player owner)
+        private static bool CanDetectTargetsThroughBlocks(
+            Player owner
+        )
         {
-            if (owner == null || !owner.active)
+            if (
+                owner == null ||
+                !owner.active
+            )
             {
                 return false;
             }

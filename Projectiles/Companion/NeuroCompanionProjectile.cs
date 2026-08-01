@@ -31,9 +31,6 @@ namespace NeuroCompanion.Projectiles.Companion
         private const float IdleOffsetX = 48f;
         private const float IdleOffsetY = -60f;
 
-        private const float CombatOffsetX = 64f;
-        private const float CombatOffsetY = -70f;
-
         private const float TeleportDistance = 2000f;
         private const float FarDistance = 600f;
         private const float ArriveDistance = 20f;
@@ -44,7 +41,6 @@ namespace NeuroCompanion.Projectiles.Companion
         private const float IdleInertia = 40f;
         private const float FarInertia = 60f;
 
-        private const float TargetSearchRangeFromPlayer = 700f;
         private const float ManualTargetSearchRangeFromPlayer = 1200f;
 
         private const float ShotSpeed = 11f;
@@ -58,6 +54,28 @@ namespace NeuroCompanion.Projectiles.Companion
 
         private const float SlowdownWhenArrived = 0.9f;
         private const float MinimumFacingVelocity = 0.1f;
+
+        // Preferred distance from the enemy's upper-left or upper-right edge.
+        private const float CombatHorizontalGap = 96f;
+        private const float CombatVerticalGap = 72f;
+
+        // Directly overhead is only a fallback when both side positions are blocked.
+        private const float DirectOverheadExtraHeight = 32f;
+
+        // Prevent division by zero while calculating the visible world area.
+        private const float MinimumViewportZoom = 0.01f;
+
+        // During autoattack, Neuro teleports when farther than this
+        // from her desired combat position.
+        private const float CombatTeleportDistance = 320f;
+
+        // Neuro waits until she reaches this distance from the desired
+        // combat position before firing during autoattack.
+        private const float CombatReadyDistance = 64f;
+
+        // Evil Neuro returns above the player before attacking.
+        private const float EvilAttackHoverHeight = 80f;
+        private const float EvilAttackTeleportDistance = 240f;
 
 
         private CompanionState State
