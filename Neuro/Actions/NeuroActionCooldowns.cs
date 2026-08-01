@@ -82,6 +82,7 @@ namespace NeuroCompanion.Neuro.Actions
                 NeuroCommandType.AttackOnce => config.AttackOnceCooldownSeconds,
                 NeuroCommandType.StartTimedAttack => config.AutoAttackCooldownSeconds,
                 NeuroCommandType.AttackPlayer => config.EvilAttackPlayerCooldownSeconds,
+                NeuroCommandType.HealPlayer => config.HealPlayerCooldownSeconds,
                 NeuroCommandType.BuffPlayer => config.BuffPlayerCooldownSeconds,
                 NeuroCommandType.DebuffPlayer => config.DebuffPlayerCooldownSeconds,
                 NeuroCommandType.DebuffNearestEnemy => config.DebuffEnemyCooldownSeconds,

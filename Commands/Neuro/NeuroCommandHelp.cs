@@ -13,6 +13,7 @@ namespace NeuroCompanion.Commands.Neuro
             caller.Reply("/neuro attack");
             caller.Reply("/neuro attack player");
             caller.Reply("/neuro autoattack [seconds]");
+            caller.Reply("/neuro heal <amount>");
             caller.Reply("/neuro buff [buff name/id]");
             caller.Reply("/neuro debuff player [debuff name/id]");
             caller.Reply("/neuro debuff enemy [debuff name/id]");

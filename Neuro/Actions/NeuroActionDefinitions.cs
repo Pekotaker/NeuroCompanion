@@ -46,6 +46,35 @@
                 },
                 new
                 {
+                    name = NeuroActionNames.HealPlayer,
+
+                    description =
+                        "Heal the player by the requested amount of health. " +
+                        "The actual healing is limited by the player's missing health. " +
+                        "This action cannot revive a dead player. " +
+                        "If Neuro's companion is not summoned, the action is skipped.",
+
+                    schema = new
+                    {
+                        type = "object",
+
+                        properties = new
+                        {
+                            amount = new
+                            {
+                                type = "integer",
+                                minimum = 1
+                            }
+                        },
+
+                        required = new[]
+                        {
+                            "amount"
+                        }
+                    }
+                },
+                new
+                {
                     name = NeuroActionNames.WeaponStatus,
                     description = "Check what magic weapon Neuro currently has equipped."
                 },

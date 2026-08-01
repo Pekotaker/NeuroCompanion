@@ -45,6 +45,13 @@ namespace NeuroCompanion.Neuro.Actions
                     );
                     return true;
 
+                case NeuroActionNames.HealPlayer:
+                    return TryCreateHealPlayerCommand(
+                        data,
+                        out command,
+                        out error
+                    );
+
                 case NeuroActionNames.BuffPlayer:
                     return TryCreateBuffPlayerCommand(
                         data,
@@ -204,6 +211,68 @@ namespace NeuroCompanion.Neuro.Actions
                     return null;
                 }
             }
+        }
+
+        private static bool TryCreateHealPlayerCommand(
+            JsonNode data,
+            out NeuroCommand command,
+            out string error
+        )
+        {
+            command = null;
+            error = null;
+
+            JsonNode actionData =
+                ParseActionData(data);
+
+            if (actionData == null)
+            {
+                error =
+                    "heal_player requires action data containing a positive integer amount.";
+
+                return false;
+            }
+
+            JsonNode amountNode =
+                actionData["amount"];
+
+            if (amountNode == null)
+            {
+                error =
+                    "heal_player requires the amount field.";
+
+                return false;
+            }
+
+            int healAmount;
+
+            try
+            {
+                healAmount =
+                    amountNode.GetValue<int>();
+            }
+            catch
+            {
+                error =
+                    "heal_player amount must be a whole number.";
+
+                return false;
+            }
+
+            if (healAmount <= 0)
+            {
+                error =
+                    "heal_player amount must be greater than zero.";
+
+                return false;
+            }
+
+            command = new NeuroCommand(
+                NeuroCommandType.HealPlayer,
+                healAmount: healAmount
+            );
+
+            return true;
         }
 
         private static JsonNode ParseActionData(JsonNode data)

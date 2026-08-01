@@ -7,6 +7,7 @@
         public const string AttackOnce = "attack_once";
         public const string AttackPlayer = "attack_player";
         public const string AutoAttack = "autoattack";
+        public const string HealPlayer = "heal_player";
         public const string BuffPlayer = "buff_player";
         public const string DebuffPlayer = "debuff_player";
         public const string DebuffEnemy = "debuff_enemy";

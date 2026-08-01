@@ -14,7 +14,7 @@ namespace NeuroCompanion.Commands
 
         public override string Command => "neuro";
         public override string Usage =>
-            "/neuro <help|status|follow|attack [player]|autoattack [seconds]|buff [buff name/id]|debuff player/enemy [debuff name/id]>";
+            "/neuro <help|status|follow|attack [player]|autoattack [seconds]|heal <amount>|buff [buff name/id]|debuff player/enemy [debuff name/id]>";
 
         public override string Description =>
             "Controls the Neuro Companion test state.";

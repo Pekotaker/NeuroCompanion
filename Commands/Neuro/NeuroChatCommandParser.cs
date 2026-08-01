@@ -54,6 +54,13 @@ namespace NeuroCompanion.Commands.Neuro
                         out error
                     );
 
+                case "heal":
+                    return TryCreateHealCommand(
+                        args,
+                        out command,
+                        out error
+                    );
+
                 default:
                     return false;
             }
@@ -187,6 +194,43 @@ namespace NeuroCompanion.Commands.Neuro
             command = new NeuroCommand(
                 commandType,
                 effectBuffId: debuffId
+            );
+
+            return true;
+        }
+
+        private static bool TryCreateHealCommand(
+            string[] args,
+            out NeuroCommand command,
+            out string error
+        )
+        {
+            command = null;
+            error = null;
+
+            if (args.Length != 2)
+            {
+                error = "Usage: /neuro heal <amount>";
+                return false;
+            }
+
+            if (
+                !int.TryParse(
+                    args[1],
+                    out int healAmount
+                ) ||
+                healAmount <= 0
+            )
+            {
+                error =
+                    "Heal amount must be a positive whole number. Usage: /neuro heal <amount>";
+
+                return false;
+            }
+
+            command = new NeuroCommand(
+                NeuroCommandType.HealPlayer,
+                healAmount: healAmount
             );
 
             return true;

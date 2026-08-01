@@ -60,6 +60,11 @@ namespace NeuroCompanion.Configs
         [DefaultValue(5)]
         public int AutoAttackCooldownSeconds { get; set; }
 
+        [Range(0, 300)]
+        [Slider]
+        [DefaultValue(30)]
+        public int HealPlayerCooldownSeconds { get; set; }
+
 
         [Range(0, 60)]
         [Slider]

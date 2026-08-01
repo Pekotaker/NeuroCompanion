@@ -156,7 +156,6 @@ namespace NeuroCompanion.Neuro.Context
         )
         {
             builder.AppendLine("- Available Neuro actions:");
-
             builder.AppendLine("  buff_player: applies positive buffs to the player. Optional field: buff.");
             builder.AppendLine("  debuff_player: applies debuffs to the player. Optional field: debuff.");
             builder.AppendLine("  debuff_enemy: applies debuffs to the nearest valid enemy. Optional field: debuff.");
@@ -174,6 +173,7 @@ namespace NeuroCompanion.Neuro.Context
                 builder.AppendLine("  follow: skipped because the companion is not summoned.");
                 builder.AppendLine("  attack_once: skipped because the companion is not summoned.");
                 builder.AppendLine("  attack_player: skipped because the companion is not summoned.");
+                builder.AppendLine("  heal_player: skipped because the companion is not summoned.");
                 builder.AppendLine("  autoattack: skipped because the companion is not summoned.");
                 builder.AppendLine("  The player must summon Neuro Companion with the staff before companion actions can run.");
                 return;
@@ -185,6 +185,9 @@ namespace NeuroCompanion.Neuro.Context
             builder.AppendLine("  weapon_status: checks what magic weapon Neuro currently has equipped.");
             builder.AppendLine("  equip_weapon_from_inventory: moves the strongest valid magic weapon from the player's inventory into Neuro's weapon slot.");
             builder.AppendLine("  return_weapon_to_player: returns Neuro's equipped weapon to the player's inventory.");
+            builder.AppendLine(
+                "  heal_player: restores player health. Use a positive integer amount and avoid using it when the player is already at full health."
+            );
 
             if (validEnemyAvailable)
             {

@@ -7,6 +7,7 @@
         AttackOnce,
         AttackPlayer,
         StartTimedAttack,
+        HealPlayer,
         BuffPlayer,
         DebuffPlayer,
         DebuffNearestEnemy,
@@ -23,17 +24,21 @@
         public int DurationSeconds { get; }
         public int EffectBuffId { get; }
 
+        public int HealAmount { get; }
+
         public bool HasSpecificEffect => EffectBuffId >= 0;
 
         public NeuroCommand(
             NeuroCommandType type,
             int durationSeconds = 10,
-            int effectBuffId = NoSpecificEffect
+            int effectBuffId = NoSpecificEffect,
+            int healAmount = 0
         )
         {
             Type = type;
             DurationSeconds = durationSeconds;
             EffectBuffId = effectBuffId;
+            HealAmount = healAmount;
         }
     }
 }

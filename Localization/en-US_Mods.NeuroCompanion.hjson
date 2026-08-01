@@ -159,5 +159,10 @@ Configs: {
 			Label: Evil Attack Player Cooldown Seconds
 			Tooltip: ""
 		}
+
+		HealPlayerCooldownSeconds: {
+			Label: Heal Player Cooldown Seconds
+			Tooltip: ""
+		}
 	}
 }

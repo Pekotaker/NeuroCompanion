@@ -80,6 +80,15 @@ namespace NeuroCompanion.Neuro.Actions
                         NeuroActionResult.Ok("Evil Neuro attack requested.")
                     );
 
+                case NeuroCommandType.HealPlayer:
+                    return StartCooldownAndReturn(
+                        command.Type,
+                        NeuroHealingService.HealPlayer(
+                            player,
+                            command.HealAmount
+                        )
+                    );
+
                 case NeuroCommandType.BuffPlayer:
                     return StartCooldownAndReturn(
                         command.Type,

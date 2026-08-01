@@ -48,6 +48,7 @@ namespace NeuroCompanion.Neuro.Actions
                 commandType == NeuroCommandType.AttackOnce ||
                 commandType == NeuroCommandType.AttackPlayer ||
                 commandType == NeuroCommandType.StartTimedAttack ||
+                commandType == NeuroCommandType.HealPlayer ||
                 commandType == NeuroCommandType.BuffPlayer ||
                 commandType == NeuroCommandType.DebuffPlayer ||
                 commandType == NeuroCommandType.DebuffNearestEnemy;
