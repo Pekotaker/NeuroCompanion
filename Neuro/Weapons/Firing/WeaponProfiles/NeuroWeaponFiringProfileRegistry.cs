@@ -250,7 +250,31 @@ namespace NeuroCompanion.Neuro.Weapons.Firing.WeaponProfiles
                 );
             }
 
+            // Default ranged weapon handling
+            if (weapon.DamageType == DamageClass.Ranged)
+            {
+                return CreateDefaultRangedShots(weapon, basePosition, baseVelocity);
+            }
+
             return null;
+        }
+
+        private static NeuroWeaponShot[] CreateDefaultRangedShots(
+            Item weapon,
+            Vector2 basePosition,
+            Vector2 baseVelocity
+        )
+        {
+            // Ranged weapons (bows, guns, etc.) typically fire a single projectile
+            // The projectile type is determined by the weapon's shoot property
+            return new NeuroWeaponShot[]
+            {
+                new NeuroWeaponShot(
+                    weapon.shoot,
+                    basePosition,
+                    baseVelocity
+                )
+            };
         }
 
         public static int GetCooldownTicks(

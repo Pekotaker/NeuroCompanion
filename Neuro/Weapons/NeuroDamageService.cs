@@ -20,8 +20,9 @@ namespace NeuroCompanion.Neuro.Weapons
                 return 0;
             }
 
+            DamageClass damageClass = weapon.DamageType;
             int playerScaledDamage = (int)owner
-                .GetTotalDamage(DamageClass.Magic)
+                .GetTotalDamage(damageClass)
                 .ApplyTo(weapon.damage);
 
             float staffDamageMultiplier =
@@ -45,8 +46,9 @@ namespace NeuroCompanion.Neuro.Weapons
                 return 0f;
             }
 
+            DamageClass damageClass = weapon.DamageType;
             float playerScaledKnockBack = owner
-                .GetTotalKnockback(DamageClass.Magic)
+                .GetTotalKnockback(damageClass)
                 .ApplyTo(weapon.knockBack);
 
             return playerScaledKnockBack *

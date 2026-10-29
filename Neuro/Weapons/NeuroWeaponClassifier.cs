@@ -22,12 +22,15 @@ namespace NeuroCompanion.Neuro.Weapons
                 return Invalid($"{item.Name} does not deal damage.");
             }
 
-            if (item.DamageType != DamageClass.Magic)
+            bool isMagic = item.DamageType == DamageClass.Magic;
+            bool isRanged = item.DamageType == DamageClass.Ranged;
+
+            if (!isMagic && !isRanged)
             {
-                return Invalid($"{item.Name} is not a magic weapon.");
+                return Invalid($"{item.Name} is not a magic or ranged weapon.");
             }
 
-            if (item.mana <= 0)
+            if (isMagic && item.mana <= 0)
             {
                 return Invalid($"{item.Name} does not use mana.");
             }
@@ -46,9 +49,10 @@ namespace NeuroCompanion.Neuro.Weapons
 
             if (LooksLikeSupportWeapon(item, projectile))
             {
+                string weaponType = isMagic ? "magic" : "ranged";
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.Support,
-                    $"{item.Name} is a support, stationary, or persistent-field magic weapon. Neuro cannot use it yet."
+                    $"{item.Name} is a support, stationary, or persistent-field {weaponType} weapon. Neuro cannot use it yet."
                 );
             }
 
@@ -78,23 +82,25 @@ namespace NeuroCompanion.Neuro.Weapons
 
             if (item.channel && LooksLikeHeldBeamWeapon(projectile))
             {
+                string weaponType = isMagic ? "magic" : "ranged";
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.HeldBeam,
-                    $"{item.Name} is a beam weapon that normally depends on the player holding the attack button. Neuro cannot use it yet."
+                    $"{item.Name} is a beam {weaponType} weapon that normally depends on the player holding the attack button. Neuro cannot use it yet."
                 );
             }
 
             if (item.channel)
             {
+                string weaponType = isMagic ? "magic" : "ranged";
                 return new NeuroWeaponClassification(
                     NeuroWeaponKind.Channeling,
-                    $"{item.Name} normally depends on the player holding the attack button. Neuro cannot use it yet without custom support."
+                    $"{item.Name} is a channeling {weaponType} weapon that normally depends on the player holding the attack button. Neuro cannot use it yet without custom support."
                 );
             }
 
             return new NeuroWeaponClassification(
                 NeuroWeaponKind.DirectFire,
-                $"{item.Name} is a direct-fire magic weapon."
+                $"{item.Name} is a direct-fire {(isMagic ? "magic" : "ranged")} weapon."
             );
         }
 
@@ -139,9 +145,10 @@ namespace NeuroCompanion.Neuro.Weapons
             Projectile projectile
         )
         {
-            // Stationary placement-style weapons usually have little or no shoot speed.
+            // Magic stationary placement-style weapons usually have little or no shoot speed.
             // Example category: cloud/wall/field weapons.
-            if (item.shootSpeed <= MinimumUsefulShootSpeed)
+            // Note: Ranged weapons like bows might have low shootSpeed, so only check for magic.
+            if (item.DamageType == DamageClass.Magic && item.shootSpeed <= MinimumUsefulShootSpeed)
             {
                 return true;
             }
