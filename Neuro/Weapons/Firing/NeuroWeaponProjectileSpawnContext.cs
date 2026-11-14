@@ -1,5 +1,6 @@
 ﻿using NeuroCompanion.Players;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace NeuroCompanion.Neuro.Weapons.Firing
 {
@@ -11,6 +12,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
         public NeuroCompanionPlayer NeuroPlayer { get; }
         public int Damage { get; }
         public int CritChance { get; }
+        public DamageClass WeaponDamageClass { get; }
         public bool IsEvil { get; }
         public bool KillOnOwnerHit { get; }
 
@@ -21,6 +23,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             NeuroCompanionPlayer neuroPlayer,
             int damage,
             int critChance,
+            DamageClass weaponDamageClass,
             bool isEvil,
             bool killOnOwnerHit,
             bool singleShotOnly
@@ -30,6 +33,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             NeuroPlayer = neuroPlayer;
             Damage = damage;
             CritChance = critChance;
+            WeaponDamageClass = weaponDamageClass;
             IsEvil = isEvil;
             KillOnOwnerHit = killOnOwnerHit;
             SingleShotOnly = singleShotOnly;
@@ -40,6 +44,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             NeuroCompanionPlayer neuroPlayer,
             int damage,
             int critChance,
+            DamageClass weaponDamageClass,
             bool isEvil,
             bool killOnOwnerHit,
             bool singleShotOnly = false
@@ -50,6 +55,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                 neuroPlayer,
                 damage,
                 critChance,
+                weaponDamageClass,
                 isEvil,
                 killOnOwnerHit,
                 singleShotOnly

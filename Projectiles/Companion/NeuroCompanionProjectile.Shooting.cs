@@ -2,6 +2,7 @@
 
 using Terraria;
 using Terraria.Audio;
+using Terraria.ModLoader;
 
 using NeuroCompanion.Neuro.Weapons;
 using NeuroCompanion.Neuro.Effects;
@@ -126,6 +127,11 @@ namespace NeuroCompanion.Projectiles.Companion
                 return;
             }
 
+            if (!HasRequiredAmmo(owner, weapon))
+            {
+                return;
+            }
+
             ShootTimer = 0f;
 
             Vector2 shotDirection =
@@ -152,6 +158,13 @@ namespace NeuroCompanion.Projectiles.Companion
                 QueuePendingWeaponShot,
                 singleShotOnly: SupportedChannelTicks <= 0f
             );
+        }
+
+        private static bool HasRequiredAmmo(Player owner, Item weapon)
+        {
+            return weapon.DamageType != DamageClass.Ranged ||
+                   weapon.useAmmo <= 0 ||
+                   owner.HasAmmo(weapon);
         }
 
         private static float GetWeaponShootSpeed(Item weapon)
@@ -306,6 +319,11 @@ namespace NeuroCompanion.Projectiles.Companion
             NeuroWeaponClassification classification
         )
         {
+            if (!HasRequiredAmmo(owner, weapon))
+            {
+                return;
+            }
+
             ShootTimer = 0f;
 
             if (classification.Kind == NeuroWeaponKind.TargetedArea)

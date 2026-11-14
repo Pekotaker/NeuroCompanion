@@ -25,14 +25,10 @@ namespace NeuroCompanion.Neuro.Weapons
                 .GetTotalDamage(damageClass)
                 .ApplyTo(weapon.damage);
 
-            float staffDamageMultiplier =
-                GetStaffPrefixDamageMultiplier(staffPrefix);
-
-            int finalDamage = (int)Math.Round(
-                playerScaledDamage * staffDamageMultiplier
+            return ApplyStaffPrefixDamage(
+                playerScaledDamage,
+                staffPrefix
             );
-
-            return finalDamage < 1 ? 1 : finalDamage;
         }
 
         public static float GetNeuroWeaponKnockBack(
@@ -51,7 +47,30 @@ namespace NeuroCompanion.Neuro.Weapons
                 .GetTotalKnockback(damageClass)
                 .ApplyTo(weapon.knockBack);
 
-            return playerScaledKnockBack *
+            return ApplyStaffPrefixKnockBack(
+                playerScaledKnockBack,
+                staffPrefix
+            );
+        }
+
+        public static int ApplyStaffPrefixDamage(
+            int baseDamage,
+            int staffPrefix
+        )
+        {
+            int finalDamage = (int)Math.Round(
+                baseDamage * GetStaffPrefixDamageMultiplier(staffPrefix)
+            );
+
+            return Math.Max(1, finalDamage);
+        }
+
+        public static float ApplyStaffPrefixKnockBack(
+            float baseKnockBack,
+            int staffPrefix
+        )
+        {
+            return baseKnockBack *
                    GetStaffPrefixKnockBackMultiplier(staffPrefix);
         }
 

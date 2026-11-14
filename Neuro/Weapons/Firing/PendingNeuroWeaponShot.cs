@@ -1,5 +1,6 @@
 ﻿using Terraria;
 using Terraria.DataStructures;
+using Terraria.ModLoader;
 
 using NeuroCompanion.Players;
 
@@ -15,6 +16,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
         public int Damage { get; }
         public float KnockBack { get; }
         public int CritChance { get; }
+        public DamageClass WeaponDamageClass { get; }
         public bool IsEvil { get; }
         public bool KillOnOwnerHit { get; }
         public int RemainingTicks { get; }
@@ -28,6 +30,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             int damage,
             float knockBack,
             int critChance,
+            DamageClass weaponDamageClass,
             bool isEvil,
             bool killOnOwnerHit,
             int remainingTicks
@@ -41,6 +44,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
             Damage = damage;
             KnockBack = knockBack;
             CritChance = critChance;
+            WeaponDamageClass = weaponDamageClass;
             IsEvil = isEvil;
             KillOnOwnerHit = killOnOwnerHit;
             RemainingTicks = remainingTicks;
@@ -57,6 +61,7 @@ namespace NeuroCompanion.Neuro.Weapons.Firing
                 Damage,
                 KnockBack,
                 CritChance,
+                WeaponDamageClass,
                 IsEvil,
                 KillOnOwnerHit,
                 remainingTicks

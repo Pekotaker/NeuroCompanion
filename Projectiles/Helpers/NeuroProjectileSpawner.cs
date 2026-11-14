@@ -119,6 +119,7 @@ namespace NeuroCompanion.Projectiles.Helpers
                 pendingShot.NeuroPlayer,
                 pendingShot.Damage,
                 pendingShot.CritChance,
+                pendingShot.WeaponDamageClass,
                 pendingShot.IsEvil,
                 pendingShot.KillOnOwnerHit,
                 singleShotOnly: false
@@ -185,11 +186,55 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             NeuroWeaponShot[] shots;
 
+            bool usesAmmo =
+                weapon.DamageType == DamageClass.Ranged &&
+                weapon.useAmmo > 0;
+
+            int ammoProjectileType = ProjectileID.None;
+            float ammoShootSpeed = 0f;
+
+            if (usesAmmo)
+            {
+                if (!owner.PickAmmo(
+                        weapon,
+                        out ammoProjectileType,
+                        out ammoShootSpeed,
+                        out int ammoDamage,
+                        out float ammoKnockBack,
+                        out _,
+                        dontConsume: false
+                    ))
+                {
+                    return;
+                }
+
+                if (
+                    ammoProjectileType <= ProjectileID.None ||
+                    ammoProjectileType >= ProjectileLoader.ProjectileCount
+                )
+                {
+                    return;
+                }
+
+                // PickAmmo already accounts for the player's ranged stats
+                // and the selected ammunition. Only apply Neuro's staff prefix.
+                damage = NeuroDamageService.ApplyStaffPrefixDamage(
+                    ammoDamage,
+                    neuroPlayer.NeuroStaffPrefix
+                );
+
+                knockBack = NeuroDamageService.ApplyStaffPrefixKnockBack(
+                    ammoKnockBack,
+                    neuroPlayer.NeuroStaffPrefix
+                );
+            }
+
             NeuroWeaponProjectileSpawnContext.Begin(
                 owner,
                 neuroPlayer,
                 damage,
                 critChance,
+                weapon.DamageType,
                 isEvil,
                 killOnOwnerHit,
                 singleShotOnly
@@ -197,14 +242,31 @@ namespace NeuroCompanion.Projectiles.Helpers
 
             try
             {
-                shots =
-                    NeuroWeaponShotProfile.CreateShots(
+                if (usesAmmo)
+                {
+                    Vector2 shotDirection = velocity.SafeNormalize(
+                        new Vector2(owner.direction, 0f)
+                    );
+
+                    shots = new[]
+                    {
+                        new NeuroWeaponShot(
+                            ammoProjectileType,
+                            position,
+                            shotDirection * ammoShootSpeed
+                        )
+                    };
+                }
+                else
+                {
+                    shots = NeuroWeaponShotProfile.CreateShots(
                         owner,
                         weapon,
                         position,
                         velocity,
                         targetPosition
                     );
+                }
             }
             finally
             {
@@ -228,6 +290,7 @@ namespace NeuroCompanion.Projectiles.Helpers
                         damage,
                         knockBack,
                         critChance,
+                        weapon.DamageType,
                         isEvil,
                         killOnOwnerHit,
                         Math.Max(0, shots[i].DelayTicks)

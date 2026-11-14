@@ -97,7 +97,7 @@ namespace NeuroCompanion.Projectiles.Globals
         {
             IsNeuroWeaponProjectile = true;
 
-            projectile.DamageType = DamageClass.Magic;
+            projectile.DamageType = context.WeaponDamageClass;
 
             TryInitializeNeuroStellarTuneAi(projectile);
 
